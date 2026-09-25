@@ -18,11 +18,7 @@
 .metric small { font-size: 0.3em; font-variation-settings: 'wdth' 100; font-weight: 500; letter-spacing: 0; margin-left: 0.15em; color: var(--graphite); }
 .metric p { margin: 16px 0 0; font-size: 16px; line-height: 1.45; color: var(--graphite); max-width: 26ch; }
 
-.spec { margin: clamp(48px, 6vw, 80px) 0 0; display: flex; flex-wrap: wrap; border-top: 1px solid var(--rule); font-family: var(--f-mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; }
-.spec div { padding: 12px 22px 0 0; margin-right: 22px; display: flex; gap: 10px; }
-.spec dt { color: var(--graphite-2); }
-.spec dd { margin: 0; color: var(--fg); }
-.note { margin: 28px 0 0; max-width: 92ch; font-family: var(--f-mono); font-size: 11px; line-height: 1.7; color: var(--graphite); }
+.note { margin: clamp(48px, 6vw, 80px) 0 0; padding-top: 16px; border-top: 1px solid var(--rule); max-width: 92ch; font-family: var(--f-mono); font-size: 11px; line-height: 1.7; color: var(--graphite); }
 
 @media (max-width: 900px) {
   .row { grid-template-columns: 1fr; }

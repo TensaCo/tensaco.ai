@@ -2,7 +2,7 @@
 import dynamic from 'next/dynamic'
 import { useMemo, useRef } from 'react'
 import VALID from '@/data/sim-validation.json'
-import { K_TRIPS, LENGTH, N, PASSIVE_RETENTION, PLANE_DATA, PLANE_Z, ROUTE_LENGTH, TRIP_TIME } from '@/lib/phaser-sim'
+import { K_TRIPS, LENGTH, N, PLANE_DATA, PLANE_Z, ROUTE_LENGTH, TRIP_TIME } from '@/lib/phaser-sim'
 import { LiveStack } from '@/lib/live'
 import type { Annotation } from '../machine/StackView'
 import type { StackStatus } from '../machine/StackScene'
@@ -16,8 +16,6 @@ const TRIP_SECONDS = 2.4
 const TOP = LENGTH * 1e3
 const PLATE = 1 // which LCD plane Fig. 3 shows (0-based)
 const PMAX = Math.max(...PLANE_DATA[PLATE].phase)
-const sup = (n: number) => String(n).split('').map((c) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[+c] ?? c).join('')
-const sci = (x: number) => { const e = Math.floor(Math.log10(x)); return `${(x / 10 ** e).toFixed(1)} × 10${sup(e)}` }
 const mm = (z: number) => (z * 1e3).toFixed(1)
 
 const NOTES: Annotation[] = [
@@ -94,15 +92,6 @@ export function MachineSection() {
           <div className={s.metric}><span className="num">16,384</span><p>programmable pixels on the light&apos;s path, each crossed twice per round trip.</p></div>
         </div>
 
-        <dl className={s.spec}>
-          <div><dt>λ</dt><dd>650 nm</dd></div>
-          <div><dt>Planes</dt><dd>4 × LCD 64 × 64 · 63.5 µm · 1.8π · 256 levels</dd></div>
-          <div><dt>Cavity</dt><dd>{TOP} mm · end mirror R 400 mm</dd></div>
-          <div><dt>Round trip</dt><dd>{(ROUTE_LENGTH * 1e3).toFixed(0)} mm · {(TRIP_TIME * 1e9).toFixed(3)} ns</dd></div>
-          <div><dt>Loss</dt><dd>{Math.round((1 - PASSIVE_RETENTION) * 100)} % per trip · gain clamped</dd></div>
-          <div><dt>Input</dt><dd>every {K_TRIPS} round trips</dd></div>
-          <div><dt>Shown</dt><dd>{sci(TRIP_SECONDS / TRIP_TIME)}× slower</dd></div>
-        </dl>
         <p className={s.note}>
           Live simulation in your browser of a linear-stack cavity built with the research simulator (TensaCo/phaser-design): a
           scalar field on a {N} × {N} grid at 31.75 µm, angular-spectrum propagation between thin elements, the research&apos;s

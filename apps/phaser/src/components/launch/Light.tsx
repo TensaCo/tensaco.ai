@@ -14,7 +14,6 @@ export function Light() {
           <span className="num">1,000×</span>
           <p>
             <span>less energy per step than a GPU.</span>
-            <span className={s.note}>Modeled at one megapixel of optics · not yet built</span>
           </p>
         </div>
         <Carriers />

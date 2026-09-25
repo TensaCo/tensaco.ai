@@ -1,4 +1,4 @@
-.sec { color: var(--fg); padding: 0 0 clamp(96px, 12vw, 200px); }
+.sec { color: var(--fg); padding: 0; }
 
 /* full-bleed b-roll with the copy laid over it */
 .stage { position: relative; min-height: max(100svh, 680px); display: flex; overflow: hidden; }

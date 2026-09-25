@@ -1,4 +1,4 @@
-.sec { padding: clamp(96px, 12vw, 180px) 0 clamp(80px, 10vw, 140px); }
+.sec { padding: clamp(56px, 6vw, 96px) 0 clamp(80px, 10vw, 140px); }
 .grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: clamp(40px, 6vw, 96px); align-items: start; }
 .h { margin: 0; font-variation-settings: 'wdth' 70; font-weight: 700; font-size: clamp(44px, 6vw, 96px); line-height: 0.92; letter-spacing: -0.03em; }
 .list { list-style: none; margin: 40px 0 0; padding: 0; border-top: 1px solid var(--rule); }

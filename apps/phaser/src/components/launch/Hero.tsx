@@ -16,7 +16,6 @@ export function Hero() {
           materials, and no new power plants.
         </p>
       </div>
-      <a className={s.scroll} href="#light"><span className="label">Why it matters</span><i /></a>
     </header>
   )
 }

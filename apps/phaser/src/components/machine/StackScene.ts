@@ -5,7 +5,7 @@
  * y = 24 mm; the output tap leaves through the input mirror to a detector below it. Light goes up through the planes,
  * reflects, and comes back down: route position s (mm) runs 0 → 24 up and 24 → 48 down.
  *
- * Wavefronts: a few packets travel the route, each drawn as a handful of crest sheets (stylised: true 650 nm crests cannot
+ * Wavefronts: dozens of short packets travel the route at once (time-multiplexed, nearly overlapping), each drawn as a handful of crest sheets (stylised: true 650 nm crests cannot
  * be drawn at this scale). Every sheet's cross-section is the simulated |E|² at its plane on the trip it belongs to,
  * computed from the model's own angular spectrum for that gap, so the pattern changes as a packet passes each plane and
  * reflects. The model itself is continuous-wave; the packets show where along the round trip we are looking.
@@ -21,10 +21,10 @@ const ROUTE_MM = ROUTE_LENGTH * 1e3 // 48
 const W = N * PITCH * 1e3 / 2 // window / panel width, mm (4.064)
 const SLICE = 0.6 // mm between precomputed cross-sections along the route
 const LAYERS = Math.round(ROUTE_MM / SLICE) // per trip
-const PACKETS = 3
-const CRESTS = 5
-const CREST_GAP = 0.55 // mm between drawn crests (stylised)
-const ENVELOPE = [0.35, 0.75, 1, 0.75, 0.35]
+const PACKETS = 36 // time-multiplexed wavefronts in flight at once, 1.33 mm apart along the 48 mm round trip
+const CRESTS = 3
+const CREST_GAP = 0.3 // mm between drawn crests (stylised)
+const ENVELOPE = [0.5, 1, 0.5]
 export const DETECTOR_Y = -7
 
 export type V3 = [number, number, number]
@@ -110,7 +110,7 @@ export class StackScene {
     geo.setAttribute('aLayer', this.aLayer)
     geo.setAttribute('aWeight', this.aWeight)
     const mat = new THREE.ShaderMaterial({
-      uniforms: { uField: { value: this.tex }, uRed: { value: RED }, uGain: { value: opts.framing === 'hero' ? 1.0 : 1.0 } },
+      uniforms: { uField: { value: this.tex }, uRed: { value: RED }, uGain: { value: 0.55 } },
       vertexShader: /* glsl */ `
         attribute float aLayer; attribute float aWeight;
         varying vec2 vUv; varying float vLayer; varying float vWeight;

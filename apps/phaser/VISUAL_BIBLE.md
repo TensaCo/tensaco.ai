@@ -55,15 +55,17 @@ No blue, no gradients, no glass, no glow outside the beam itself.
   simulator and compares every round trip (bit-identical over 4,000); rerun it whenever the port changes. Nothing on the page
   may pretend to compute what the model didn't.
 - The hero and Fig. 2 show the cavity at true proportions (mm), axis vertical, long lens (22°). Wavefronts bounce up and
-  down the stack, three in flight, each drawn as a few crest sheets. The crests are stylised (true 650 nm crests can't be
+  down the stack, dozens in flight (time-multiplexed, nearly overlapping), each drawn as a few crest sheets. The crests are stylised (true 650 nm crests can't be
   drawn at this scale), but every sheet's cross-section is the simulated |E|² at its plane on its round trip, from the model's
   own angular spectrum, so the pattern changes as it passes each plane and reflects. Don't label the crest spacing; the time
   plate states the slow-down. The LCD panels show their phase programs in graphite (per pixel, with the black matrix) and the
   light crossing them in red (per sample); the detector under the input mirror shows the 8 % tap in red.
 - Fig. 2's annotations are hairline leaders to mono labels, stacked so they never overlap. Fig. 3 is one plane's 64 × 64 pixels.
-- The carriers figures are small live simulations, not device models: an electron wave packet (2-D Schrödinger, split-step)
-  crossing a lattice of vibrating ions that push back (Ehrenfest), drawn in paper and graphite; a light packet (2-D wave
-  equation) crossing glass, in red. Their pJ numbers live in one object (`CARRIER_NUMBERS`) and always say "modeled".
+- The electrons-and-light figure is one illustration with a shallow depth of field (front layer sharp, layers behind
+  blurred): light rains down through a glass slab above (red wave packets whose fringes close up by n = 1.5 inside), and
+  below, atoms drawn as points sampled from orbital densities, with electrons struggling to tunnel from cloud to cloud (most
+  attempts fall back; each hop shakes the lattice: heat). Labels are leader-line annotations inside it (a list below it on
+  phones). Its pJ numbers live in one object (`CARRIER_NUMBERS`) and always say "modeled".
 - Slow 15-second drift and faint pointer parallax; no cuts. Page motion is discrete: numbers count once, rules draw once,
   and nothing floats. Simulations pause offscreen. Reduced motion shows one still frame of a warmed-up state.
 - The oscilloscope bench at the end of 02 butts directly against the 03 reel: no black gap, no fade between them.

@@ -1,14 +1,6 @@
 .stage { position: absolute; inset: 0; }
 .view { position: absolute !important; inset: 0; }
-.plate { position: absolute; left: var(--gutter); top: clamp(96px, 14vh, 140px); z-index: 2; margin: 0; display: grid; gap: 7px; min-width: 300px; padding-top: 12px; border-top: 1px solid var(--rule); font-family: var(--f-mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--graphite); pointer-events: none; }
-.plate div { display: grid; grid-template-columns: 64px 1fr; gap: 12px; }
-.plate dt { color: var(--graphite-2); }
-.plate dd { margin: 0; }
-.plate b { font-weight: 400; color: var(--fg); font-feature-settings: 'tnum' 1; }
 @media (max-width: 820px) {
-  .plate { left: var(--gutter); right: auto; top: 76px; bottom: auto; min-width: 0; gap: 5px; font-size: 9.5px; }
-  .plate div { grid-template-columns: 48px 1fr; }
-  .plate div:nth-child(2), .plate div:nth-child(4) { display: none; }
   .view > div { display: none; }
   .view > svg { display: none; }
 }
