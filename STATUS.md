@@ -12,7 +12,10 @@
 - https://phaser.tensaco.ai — `apps/phaser` (launch page, blog with the PHASER post copied from jvboid.dev, subscribe)
 - https://tensorcode.tensaco.ai → 301 https://tensorcode.dev — `apps/tensorcode-alias` (TensorCode itself: TensaCo/tensacode)
 - `/api/subscribe` on tensaco.ai and phaser.tensaco.ai → D1 `tensaco-subscribers` (collect only; empty as of this note)
-- Contact: hello@tensaco.ai (mail for tensaco.ai is Google Workspace; the mailbox/alias must exist there)
+- Contact: hello@tensaco.ai. tensaco.ai is a user alias domain in the **humanrobots.ai** Google Workspace (hello@ feeds
+  jacob@humanrobots.ai). Mail DNS (2026-09-25): SPF `include:_spf.google.com`, Google DKIM `google._domainkey`
+  (authenticate in the humanrobots.ai Admin console), DMARC `p=none` with reports to hello@; Resend signs its own
+  mail on `send.tensaco.ai` / `resend._domainkey`. Tighten DMARC to quarantine → reject after 2–4 weeks of clean reports.
 
 ## Open
 1. **Deploy-on-push token.** `.github/workflows/deploy.yml` skips deploys until the repo secret exists:
@@ -23,8 +26,6 @@
    - double opt-in for `/api/subscribe` (confirmation email; only confirmed rows count);
    - `/api/unsubscribe?token=…` + `List-Unsubscribe` / one-click headers, and a send script (Markdown update →
      confirmed subscribers of one arm);
-   - a DMARC record at `_dmarc.tensaco.ai` (start `p=none`) if Resend's domain setup didn't add one — DNS changes are
-     made by the user or with explicit approval.
 3. **tensaco.ai negative DNS cache** after the old A records were deleted (SOA negative TTL 1800 s): cleared by ~19:05 PDT
    2026-09-24. Nothing to do unless a resolver still misses it (flush at developers.google.com/speed/public-dns/cache).
 
