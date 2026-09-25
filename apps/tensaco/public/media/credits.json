@@ -286,5 +286,13 @@
     "source_page": "https://www.pexels.com/photo/engineer-holding-laptop-1181316/",
     "author": "Christina Morillo",
     "license": "Pexels License (https://www.pexels.com/license/)"
+  },
+  {
+    "slug": "san-francisco",
+    "kind": "photo",
+    "subject": "A San Francisco street at blue hour looking toward downtown and the Bay Bridge",
+    "source_page": null,
+    "author": "TensaCo Inc.",
+    "license": "Owned by TensaCo Inc. Generated for TensaCo with fal (nano-banana-pro); not stock."
   }
 ]

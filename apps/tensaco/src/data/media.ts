@@ -33,6 +33,7 @@ export const MEDIA = {
   electronics: p('electronics-bench', 'An electronics test bench'),
   screens: p('engineers-reviewing-screens', 'TensaCo engineers reviewing optics data and code on monitors'),
   energyPhoto: p('transmission-lines', 'Energy infrastructure'),
+  sanFrancisco: p('san-francisco', 'A San Francisco street at blue hour, looking toward downtown and the Bay Bridge'),
   hq: p('glass-headquarters', 'A glass office building'),
   executive: p('woman-executive-desk', 'An executive at her desk'),
   phoneWindow: p('man-suit-phone', 'An executive on a call by a window'),
