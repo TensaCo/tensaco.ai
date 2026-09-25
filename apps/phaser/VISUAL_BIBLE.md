@@ -62,7 +62,10 @@ No blue, no gradients, no glass, no glow outside the beam itself.
   etched fused-silica plates (5 × 5 × 1 mm, AR-coated, the etch's pixel relief visible up close) in slim anodised cells on
   cantilever arms; the concave end mirror in a kinematic mount; the gain crystal whose top face is the input-mirror coating;
   an OV3660 camera module on its polyimide flex to an ESP32-S3 dev board. Physically based materials (anodised aluminium,
-  stainless, fused silica, dielectric coatings, FR-4, gold), dim darkroom lighting; no floor grid. Light is the only red
+  stainless, fused silica, dielectric coatings, FR-4, gold, a tarnished copper heatsink), dim darkroom lighting. Nothing looks
+  new (`surfaces.ts`): handling wear at a believable density (nicks that show bare aluminium or fresh copper, hairline
+  scratches, a thumbprint on the shield can), bump-mapped board copper and silkscreen, a few bent header pins, wires that
+  wander and kink (the diode pair twisted by hand), solder fillets, part markings; keep the wear subtle at hero scale; no floor grid. Light is the only red
   (including the faint red it throws on the parts next to the beam). The camera fits the whole assembly inside the frame on
   every screen (it solves distance and lens shift from a target rectangle). Dozens of wavefronts bounce up and down the
   stack (time-multiplexed, nearly overlapping), each drawn as a few crest sheets. The crests are stylised (true 650 nm crests
