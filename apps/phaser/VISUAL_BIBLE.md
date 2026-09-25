@@ -47,12 +47,22 @@ No blue, no gradients, no glass, no glow outside the beam itself.
 
 ## Motion
 
-- The machine carries the motion. It runs as a real FDTD wave simulation: a pinhole source, 7 phase-plate SLMs and a
-  concave mirror that refocuses light onto the pinhole. Pulses are synchronous with the round trip, so one coherent
-  wavefront bounces continuously and builds up.
-- The camera is a long lens (22°), almost frontal, with a slow 15-second drift and faint pointer parallax. There are no cuts
-  inside the hero.
-- Page motion is discrete: numbers count once, rules draw once, and nothing floats. Reduced motion shows a still frame.
+- The machine carries the motion, and it is never an animation of an idea. It is the research model running live in the
+  browser (`src/lib/phaser-sim.ts`): a port of the TensaCo/phaser-design simulator for the Exp. 15/29 reservoir ("Apre_lin":
+  the preset reflective SLM ring, 650 nm, LCOS 64 × 64 px at 20 µm with its random program, f = 40 mm relay, global gain
+  clamp, K = 10 round trips per input). `scripts/validate-sim.ts` checks it against the research simulator (bit-identical
+  over 32,000 trips); rerun it whenever the port changes. Nothing on the page may pretend to compute what the model didn't.
+- The hero is the ring at true proportions (mm), seen with a long lens (22°) from inside the ring, 16 mm from the SLM. The SLM
+  shows its phase program in graphite and the light on it in red, one texel per pixel. The beam is the simulated |E|²: a
+  cross-section every 1 mm (2 mm on small screens) plus a faint ray-marched volume through the same sections, exposed as
+  1 − exp(−I/I₀). A front sweeps the route once per round trip (1.6 s, ≈ 2.4 × 10⁹× slower than the device): sections behind
+  it show the new trip. Slow 15-second drift and faint pointer parallax; no cuts.
+- The machine section explains the computation with plates drawn from the same live run: the whole ring (Fig. 2), the
+  64 × 64 SLM (Fig. 3), one input's ten laps (input, on the SLM, after the relay, detector), the 256 detector bins against the
+  readout's weights, and a trace of target vs prediction with a live score. Red = light (plates, bins); graphite = phase and
+  inputs; paper white = the digital readout. The readout is always labelled digital and trained offline.
+- Page motion is discrete: numbers count once, rules draw once, and nothing floats. The simulations pause offscreen. Reduced
+  motion shows one still frame of a warmed-up state.
 
 ## Composition rules
 
@@ -70,4 +80,4 @@ No blue, no gradients, no glass, no glow outside the beam itself.
   (`*.fal.media`) is unreachable from the build machine, so no video could be downloaded. The same shot is done in WebGL instead
   (`LivingPhoto.tsx`), which is deterministic, a few KB, and loops forever: flow-noise displacement masked to the plume, and
   synced blinking on the red pixels. Stills come through fal's `sync_mode` (inline data URI).
-- **Procedural** (three.js and GLSL): the machine. It is never generated video.
+- **Procedural** (three.js and GLSL): the machine, drawn from the live simulation. It is never generated video.
