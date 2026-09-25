@@ -34,7 +34,7 @@ export default function Privacy() {
                 <thead><tr><th>When</th><th>What we collect</th></tr></thead>
                 <tbody>
                   <tr><td>You subscribe to updates</td><td>Email address; the site and page you signed up from; the country your request came from (as reported by our hosting provider); a one-way cryptographic hash of your IP address, used only to prevent abuse.</td></tr>
-                  <tr><td>You create an account</td><td>Name; email address; organization (optional); a salted cryptographic hash of your password (we never store your password itself); account creation and last sign-in times.</td></tr>
+                  <tr><td>You create an account</td><td>Name; email address; organization (optional); a salted cryptographic hash of your password (we never store your password itself); account creation and last sign-in times; whether you verified your email address; single-use tokens for email verification and password resets (stored hashed, expiring); a log of the transactional emails we sent you (type, time, delivery status).</td></tr>
                   <tr><td>You are signed in</td><td>A session record containing a hash of your session token, its expiry, a hash of your IP address and your browser’s user-agent string.</td></tr>
                   <tr><td>You contact customer success</td><td>The subject, topic and content of your messages, and our replies.</td></tr>
                   <tr><td>You request a service</td><td>The service requested, your organization, your description of the use case, scale and timeline, and any notes we add while reviewing it.</td></tr>
@@ -79,7 +79,7 @@ export default function Privacy() {
             <>
               <p>We do not sell personal information, and we do not share it for cross-context behavioral advertising. We share information only:</p>
               <ul>
-                <li><strong>With service providers</strong> that process it on our behalf under contractual obligations: Cloudflare, Inc. (website hosting, databases and file storage) Google LLC (Google Workspace, for email) and Resend (Plus Five Five, Inc.), which delivers our transactional emails such as account verification, password resets and notifications about your requests.</li>
+                <li><strong>With service providers</strong> that process it on our behalf under contractual obligations: Cloudflare, Inc. (website hosting, databases and file storage), Google LLC (Google Workspace, for email) and Resend (Plus Five Five, Inc.), which delivers our transactional emails such as account verification, password resets and notifications about your requests.</li>
                 <li><strong>Within TensaCo</strong>, with personnel who need it to perform their roles, such as reviewing a service request or an application.</li>
                 <li><strong>For legal reasons</strong>, when required by law, legal process or to protect the rights, property or safety of TensaCo, our users or others.</li>
                 <li><strong>In a corporate transaction</strong>, such as a merger, financing or acquisition, subject to this Policy.</li>

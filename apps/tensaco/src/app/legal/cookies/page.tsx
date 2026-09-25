@@ -23,7 +23,8 @@ export default function Cookies() {
               <table>
                 <thead><tr><th>Name</th><th>Purpose</th><th>Type</th><th>Duration</th></tr></thead>
                 <tbody>
-                  <tr><td>tc_session</td><td>Keeps you signed in to your TensaCo account. It holds a random token; only a hash of it is stored on our servers.</td><td>Strictly necessary, first-party, HttpOnly, Secure</td><td>30 days, or until you sign out</td></tr>
+                  <tr><td>tc_session</td><td>Keeps you signed in to your TensaCo account across tensaco.ai and account.tensaco.ai (scoped to .tensaco.ai). It holds a random token; only a hash of it is stored on our servers.</td><td>Strictly necessary, first-party, HttpOnly, Secure</td><td>30 days, or until you sign out</td></tr>
+                  <tr><td>tensaco_signed_in</td><td>Tells tensaco.ai pages that you are signed in, so the menu can show “My account”. Its value is always 1 and it identifies no one.</td><td>Strictly necessary, first-party, Secure</td><td>30 days, or until you sign out</td></tr>
                 </tbody>
               </table>
               <p>We do not use analytics, advertising or social-media tracking cookies, and we do not allow third parties to set cookies through the Sites.</p>
