@@ -1,0 +1,61 @@
+{
+ "date": "2026-09-25",
+ "research": "TensaCo/phaser-design research/2026-09-14, OPS.Apre_lin (15-reservoir.ts), driven as 29-noise.ts with N_c = ∞",
+ "steps": 3200,
+ "trips": 32000,
+ "tripTime": {
+  "research": 6.673175776646975e-10,
+  "port": 6.673175776646976e-10
+ },
+ "inputPatternRelL2": 0,
+ "checkpoints": [
+  {
+   "trip": 1,
+   "field": 0,
+   "tap": 0,
+   "power": 26.103726051129648
+  },
+  {
+   "trip": 2,
+   "field": 0,
+   "tap": 0,
+   "power": 24.634616233735105
+  },
+  {
+   "trip": 10,
+   "field": 0,
+   "tap": 0,
+   "power": 28.86825806807941
+  },
+  {
+   "trip": 100,
+   "field": 0,
+   "tap": 0,
+   "power": 65.10216499974135
+  },
+  {
+   "trip": 1000,
+   "field": 0,
+   "tap": 0,
+   "power": 71.07135477597842
+  },
+  {
+   "trip": 10000,
+   "field": 0,
+   "tap": 0,
+   "power": 64.64349715025064
+  },
+  {
+   "trip": 32000,
+   "field": 0,
+   "tap": 0,
+   "power": 61.314510168802045
+  }
+ ],
+ "featuresMaxRelL2": {
+  "vsLiveResearch": 0,
+  "worstStep": -1,
+  "vsStoredExp29": 0
+ },
+ "seconds": 77.673728681
+}
