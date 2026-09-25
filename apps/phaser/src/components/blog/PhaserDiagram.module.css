@@ -1,0 +1,12 @@
+.fig { margin: 2.2em 0; }
+.svg { display: block; width: 100%; height: auto; }
+.svg :global(.echo-box) { fill: none; stroke: var(--fg); stroke-width: 1.1; }
+.svg :global(.echo-line) { fill: none; stroke: var(--fg); stroke-width: 1.1; }
+.svg :global(.echo-line-dim) { stroke: var(--graphite-2); }
+.svg :global(.echo-line-accent) { stroke: var(--red); }
+.svg :global(.echo-accent) { fill: var(--red); }
+.svg :global(.echo-text-title) { fill: var(--fg); font-family: var(--f-display); font-size: 13px; font-weight: 600; }
+.svg :global(.echo-text-small) { fill: var(--graphite); font-family: var(--f-display); font-size: 11.5px; }
+.svg :global(.echo-mono) { font-family: var(--f-mono); }
+.svg :global(.echo-dim) { fill: var(--graphite-2); }
+.fig figcaption { margin-top: 14px; font-family: var(--f-mono); font-size: 12px; line-height: 1.6; color: var(--graphite); }

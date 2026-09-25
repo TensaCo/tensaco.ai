@@ -1,0 +1,13 @@
+.form { display: grid; grid-template-columns: 1fr auto; gap: 10px; max-width: 560px; }
+.input { font: inherit; font-size: 17px; background: transparent; color: var(--fg); border: 1px solid var(--rule); padding: 15px 16px; border-radius: 0; outline: none; transition: border-color .2s; }
+.input::placeholder { color: var(--graphite-2); }
+.input:focus { border-color: var(--red); }
+.button { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; background: var(--red); color: #fff; padding: 0 22px; border: 0; cursor: pointer; transition: filter .2s; }
+.button:hover { filter: brightness(1.12); }
+.button:disabled { opacity: 0.6; cursor: default; }
+.trap { position: absolute; left: -10000px; width: 1px; height: 1px; opacity: 0; }
+.visuallyHidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.error { grid-column: 1 / -1; margin: 4px 0 0; color: var(--red); font-size: 14px; }
+.fine { grid-column: 1 / -1; margin: 6px 0 0; font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--graphite-2); }
+.done { margin: 0; font-size: 18px; color: var(--fg); border-left: 2px solid var(--red); padding-left: 14px; max-width: 40ch; }
+@media (max-width: 560px) { .form { grid-template-columns: 1fr; } .button { padding: 15px 22px; } }

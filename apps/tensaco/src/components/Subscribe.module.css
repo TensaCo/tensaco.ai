@@ -1,0 +1,11 @@
+.form { display: grid; grid-template-columns: 1fr auto; gap: 10px; max-width: 560px; }
+.input { font: inherit; font-size: 17px; background: var(--paper); color: var(--ink); border: 1px solid var(--ink); padding: 14px 16px; border-radius: 0; outline: none; }
+.input:focus { box-shadow: 0 0 0 3px rgba(13, 13, 12, 0.12); }
+.button { font: inherit; font-size: 15px; font-weight: 500; background: var(--ink); color: var(--paper); padding: 0 24px; border: 0; cursor: pointer; }
+.button:disabled { opacity: 0.6; cursor: default; }
+.trap { position: absolute; left: -10000px; width: 1px; height: 1px; opacity: 0; }
+.hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.error { grid-column: 1 / -1; margin: 4px 0 0; color: #b3261e; font-size: 14px; }
+.fine { grid-column: 1 / -1; margin: 6px 0 0; font-size: 13px; color: var(--dim); }
+.done { margin: 0; font-family: var(--f-serif); font-size: 24px; }
+@media (max-width: 560px) { .form { grid-template-columns: 1fr; } .button { padding: 14px 24px; } }

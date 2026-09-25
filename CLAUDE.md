@@ -1,0 +1,28 @@
+# CLAUDE.md
+
+Websites for TensaCo Inc. and its companies (see README.md for the map).
+
+## Git workflow
+
+- Work and commit directly on `main`. Don't create feature branches or PRs unless asked.
+- Deploys are manual (`npm run deploy` in an app); pushing does not deploy.
+
+## Brands stay separate
+
+- Each company is presented as a self-contained product with its own audience and visual identity. Don't share
+  components or styles across apps; share only infrastructure (`packages/subscribe`, D1).
+- TensaCo (parent): white letterhead, Newsreader serif, black ink, no accent of its own.
+- PHASER: darkroom, 650 nm red, Archivo + IBM Plex Mono. Its art direction is `apps/phaser/VISUAL_BIBLE.md`.
+- TensorCode: canonical at tensorcode.dev, built in the TensaCo/tensacode repo. `tensorcode.tensaco.ai` only redirects.
+
+## Cloudflare
+
+- Account `20d4becc35c40a0bbfb8803a525aaae1` (jacobfv123@gmail.com). Zones `tensaco.ai` and `tensorcode.dev`.
+- Hostnames are Worker custom domains (Cloudflare manages their DNS records). Wrangler's OAuth login cannot edit DNS;
+  ask the user before any DNS change.
+- D1 `tensaco-subscribers` (`888cd573-e771-4a12-9834-b7fe800eaf2a`), schema in `migrations/`.
+
+## Claims
+
+- PHASER energy and throughput figures are modeled (research: TensaCo/phaser-design, Exp. 29). Keep the "modeled" caveat
+  next to them and never quote 1e6×.

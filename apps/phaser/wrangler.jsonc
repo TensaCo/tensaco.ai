@@ -1,0 +1,18 @@
+// PHASER site — https://phaser.tensaco.ai (Cloudflare account 20d4becc…, zone tensaco.ai).
+// Build:   npm run build          (Next.js static export to out/)
+// Deploy:  npm run deploy
+{
+  "name": "phaser-site",
+  "compatibility_date": "2026-09-01",
+  "main": "worker/index.js",
+  "assets": {
+    "directory": "./out",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [{ "binding": "DB", "database_name": "tensaco-subscribers", "database_id": "888cd573-e771-4a12-9834-b7fe800eaf2a", "migrations_dir": "../../migrations" }],
+  "routes": [{ "pattern": "phaser.tensaco.ai", "custom_domain": true }],
+  "workers_dev": true
+}

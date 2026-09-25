@@ -1,0 +1,17 @@
+:root {
+  --paper: #ffffff;
+  --ink: #0d0d0c;
+  --ink-2: #3a3a37;
+  --dim: #6d6c67;
+  --rule: #e4e2dc;
+  --gutter: clamp(16px, 4vw, 64px);
+  --maxw: 1280px;
+}
+* { box-sizing: border-box; }
+html { background: var(--paper); color: var(--ink); -webkit-font-smoothing: antialiased; }
+body { margin: 0; background: var(--paper); font-family: var(--f-sans), system-ui, sans-serif; font-size: 17px; line-height: 1.55; }
+a { color: inherit; }
+::selection { background: var(--ink); color: var(--paper); }
+.wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gutter); }
+.label { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }

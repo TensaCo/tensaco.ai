@@ -1,0 +1,8 @@
+// tensorcode.tensaco.ai → 301 https://tensorcode.dev (zone tensaco.ai). Deploy: npx wrangler deploy
+{
+  "name": "tensorcode-alias",
+  "compatibility_date": "2026-09-01",
+  "main": "index.js",
+  "routes": [{ "pattern": "tensorcode.tensaco.ai", "custom_domain": true }],
+  "workers_dev": false
+}
