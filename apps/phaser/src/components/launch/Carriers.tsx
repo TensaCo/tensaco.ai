@@ -26,9 +26,10 @@ export const CARRIER_NUMBERS = {
 
 const GLASS = { top: 0.42, bottom: 0.53, n: 1.5 }
 const LAYERS = [
-  { scale: 1, blur: 0, alpha: 1, seed: 1, rain: 9 },
-  { scale: 0.76, blur: 1.8, alpha: 0.75, seed: 2, rain: 13 },
-  { scale: 0.58, blur: 4.5, alpha: 0.5, seed: 3, rain: 18 },
+  // depth of field: layers behind the focus are rendered at lower resolution and upscaled (a cheap, GPU-free blur)
+  { scale: 1, res: 1, blur: 0, alpha: 1, seed: 1, rain: 9 }, // front: 1 canvas px per CSS px (sharp enough; the dots are 1–2 px)
+  { scale: 0.76, res: 0.5, blur: 1.5, alpha: 0.75, seed: 2, rain: 13 },
+  { scale: 0.58, res: 0.33, blur: 3, alpha: 0.5, seed: 3, rain: 18 },
 ]
 
 function rng(seed: number) {
@@ -151,18 +152,19 @@ class Layer {
     return g.bottom + (path - g.top - inGlass)
   }
 
-  draw(ctx: CanvasRenderingContext2D, W: number, H: number) {
-    const { scale: k } = this.cfg
+  draw(ras: Raster, W: number, H: number) {
+    const { scale: k, res } = this.cfg
     const vx = W * 0.5, vy = H * 0.45
-    const X = (x: number) => vx + (x - vx) * k, Y = (y: number) => vy + (y - vy) * k
-    ctx.clearRect(0, 0, W, H)
+    // page coordinates (CSS px) → this layer's pixels: depth scaling about the vanishing point, then the layer's resolution
+    const X = (x: number) => (vx + (x - vx) * k) * res, Y = (y: number) => (vy + (y - vy) * k) * res
+    ras.clear()
     // glass slab
     const gt = Y(H * GLASS.top), gb = Y(H * GLASS.bottom)
-    ctx.fillStyle = 'rgba(233,229,220,0.035)'; ctx.fillRect(X(0), gt, X(W) - X(0), gb - gt)
-    ctx.fillStyle = 'rgba(233,229,220,0.28)'; ctx.fillRect(X(0), gt, X(W) - X(0), 1); ctx.fillRect(X(0), gb, X(W) - X(0), 1)
-    // light
+    ras.rect(X(0), gt, X(W) - X(0), gb - gt, 233, 229, 220, 0.035)
+    ras.rect(X(0), gt, X(W) - X(0), 1, 233, 229, 220, 0.28); ras.rect(X(0), gb, X(W) - X(0), 1, 233, 229, 220, 0.28)
+    // light: each packet's intensity fringes under a Gaussian envelope, closer together inside the glass
     const L = Math.min(W, H * 1.6)
-    const lam = 0.0105 * H, env = 0.018 * H, half = 0.02 * L * k
+    const lam = 0.0105 * H, env = 0.018 * H, half = 0.02 * L * k * res
     for (const p of this.photons) {
       const x = X(p.u * W)
       for (let m = -5; m <= 5; m++) {
@@ -170,32 +172,23 @@ class Layer {
         if (a < 0.04) continue
         const path = p.path + (m * lam) / H
         const y = Y(this.y(path) * H)
-        if (y < -10 || y > H + 10) continue
-        ctx.fillStyle = `rgba(255,42,18,${(0.85 * a).toFixed(3)})`
-        const thick = Math.max(1, (lam / (path > GLASS.top && path < GLASS.top + (GLASS.bottom - GLASS.top) * GLASS.n ? GLASS.n : 1)) * 0.38 * k)
-        ctx.fillRect(x - half * (0.6 + 0.4 * a), y - thick / 2, 2 * half * (0.6 + 0.4 * a), thick)
+        const inGlass = path > GLASS.top && path < GLASS.top + (GLASS.bottom - GLASS.top) * GLASS.n
+        const thick = Math.max(1, (lam / (inGlass ? GLASS.n : 1)) * 0.38 * k * res)
+        const w = half * (0.6 + 0.4 * a)
+        ras.rect(x - w, y - thick / 2, 2 * w, thick, 255, 42, 18, 0.85 * a)
       }
     }
     // atoms: nucleus + orbital cloud, shaking with the heat they've been given
     const r = this.rand
-    ctx.fillStyle = 'rgba(138,133,124,0.55)'
-    const dot = Math.max(1, 1.3 * k)
+    const dot = Math.max(1, 1.3 * k * res)
     for (const a of this.atoms) {
       const jx = a.jitter * 1.6 * gauss(r), jy = a.jitter * 1.6 * gauss(r)
-      for (let i = 0; i < 130; i++) ctx.fillRect(X(a.x + a.cloud[2 * i] + jx), Y(a.y + a.cloud[2 * i + 1] + jy), dot, dot)
-    }
-    ctx.fillStyle = 'rgba(236,232,223,0.95)'
-    for (const a of this.atoms) {
-      const jx = a.jitter * 1.6 * gauss(r), jy = a.jitter * 1.6 * gauss(r)
-      ctx.beginPath(); ctx.arc(X(a.x + jx), Y(a.y + jy), Math.max(1.2, 2.2 * k), 0, Math.PI * 2); ctx.fill()
+      for (let i = 0; i < 130; i++) ras.rect(X(a.x + a.cloud[2 * i] + jx), Y(a.y + a.cloud[2 * i + 1] + jy), dot, dot, 138, 133, 124, 0.55)
+      ras.disc(X(a.x + jx), Y(a.y + jy), Math.max(0.8, 2.2 * k * res), 236, 232, 223, 0.95)
     }
     // heat: a ring of lattice vibration spreading from each completed hop
-    for (const g of this.rings) {
-      ctx.strokeStyle = `rgba(138,133,124,${(0.5 * (1 - g.t / 1.4)).toFixed(3)})`; ctx.lineWidth = 1
-      ctx.beginPath(); ctx.arc(X(g.x), Y(g.y), (6 + g.t * 0.07 * L) * k, 0, Math.PI * 2); ctx.stroke()
-    }
+    for (const g of this.rings) ras.ring(X(g.x), Y(g.y), (6 + g.t * 0.07 * L) * k * res, 138, 133, 124, 0.5 * (1 - g.t / 1.4))
     // conduction electrons: a denser cloud, split between two sites while it tunnels
-    ctx.fillStyle = 'rgba(236,232,223,0.8)'
     const ae = 0.016 * L
     for (const e of this.electrons) {
       const A = this.atoms[e.site]
@@ -206,8 +199,43 @@ class Layer {
         if (B && q < e.w) { cx = B.x; cy = B.y; if (e.to === -1) spread = ae * 0.5 }
         else if (B && q < e.w + 0.6 * e.w * (1 - e.w)) { const t = r(); cx = A.x + (B.x - A.x) * t; cy = A.y + (B.y - A.y) * t; spread = ae * 0.45 }
         const [dx, dy] = orbital(r, spread)
-        ctx.fillRect(X(cx + dx), Y(cy + dy), dot * 1.1, dot * 1.1)
+        ras.rect(X(cx + dx), Y(cy + dy), dot * 1.1, dot * 1.1, 236, 232, 223, 0.8)
       }
+    }
+  }
+}
+
+/** A tiny software rasteriser: straight-alpha "over" compositing into an ImageData, uploaded once per paint. Drawing
+ *  thousands of dots this way costs the same on every device, with or without GPU canvas acceleration. */
+class Raster {
+  img: ImageData
+  constructor(readonly w: number, readonly h: number) { this.img = new ImageData(Math.max(1, w), Math.max(1, h)) }
+  clear() { this.img.data.fill(0) }
+  private over(i: number, r: number, g: number, b: number, a: number) {
+    const d = this.img.data, da = d[i + 3] / 255, oa = a + da * (1 - a)
+    if (oa <= 0) return
+    const k = da * (1 - a)
+    d[i] = (r * a + d[i] * k) / oa; d[i + 1] = (g * a + d[i + 1] * k) / oa; d[i + 2] = (b * a + d[i + 2] * k) / oa; d[i + 3] = oa * 255
+  }
+  rect(x: number, y: number, w: number, h: number, r: number, g: number, b: number, a: number) {
+    const x0 = Math.max(0, Math.round(x)), y0 = Math.max(0, Math.round(y))
+    const x1 = Math.min(this.w, Math.round(x + Math.max(1, w))), y1 = Math.min(this.h, Math.round(y + Math.max(1, h)))
+    for (let yy = y0; yy < y1; yy++) for (let xx = x0; xx < x1; xx++) this.over(4 * (yy * this.w + xx), r, g, b, a)
+  }
+  disc(cx: number, cy: number, R: number, r: number, g: number, b: number, a: number) {
+    const x0 = Math.max(0, Math.floor(cx - R)), x1 = Math.min(this.w - 1, Math.ceil(cx + R))
+    const y0 = Math.max(0, Math.floor(cy - R)), y1 = Math.min(this.h - 1, Math.ceil(cy + R))
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+      const d = Math.hypot(x + 0.5 - cx, y + 0.5 - cy)
+      const cov = Math.min(1, Math.max(0, R + 0.5 - d))
+      if (cov > 0) this.over(4 * (y * this.w + x), r, g, b, a * cov)
+    }
+  }
+  ring(cx: number, cy: number, R: number, r: number, g: number, b: number, a: number) {
+    const n = Math.max(24, Math.ceil(2 * Math.PI * R))
+    for (let k = 0; k < n; k++) {
+      const x = Math.round(cx + R * Math.cos((2 * Math.PI * k) / n)), y = Math.round(cy + R * Math.sin((2 * Math.PI * k) / n))
+      if (x >= 0 && y >= 0 && x < this.w && y < this.h) this.over(4 * (y * this.w + x), r, g, b, a)
     }
   }
 }
@@ -232,11 +260,15 @@ export function Carriers() {
     const el = box.current
     if (!el) return
     const layers = LAYERS.map((c) => new Layer(c))
+    const rasters: (Raster | null)[] = LAYERS.map(() => null)
     let W = 0, H = 0, raf = 0, visible = false, last = performance.now(), odd = false
     const size = () => {
       W = el.clientWidth; H = el.clientHeight
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
-      cvs.current.forEach((c) => { if (c) { c.width = Math.round(W * dpr); c.height = Math.round(H * dpr); c.getContext('2d')!.setTransform(dpr, 0, 0, dpr, 0, 0) } })
+      cvs.current.forEach((c, i) => {
+        if (!c) return
+        c.width = Math.max(1, Math.round(W * LAYERS[i].res)); c.height = Math.max(1, Math.round(H * LAYERS[i].res))
+        rasters[i] = new Raster(c.width, c.height)
+      })
       layers.forEach((l) => l.layout(W, H))
     }
     const place = () => {
@@ -255,7 +287,7 @@ export function Carriers() {
       })
     }
     const paint = () => {
-      layers.forEach((l, i) => { const c = cvs.current[i]; if (c) l.draw(c.getContext('2d')!, W, H) })
+      layers.forEach((l, i) => { const c = cvs.current[i], ras = rasters[i]; if (c && ras) { l.draw(ras, W, H); c.getContext('2d')!.putImageData(ras.img, 0, 0) } })
       place()
     }
     size()
@@ -282,7 +314,7 @@ export function Carriers() {
       <figure className={s.fig}>
         <div className={s.scene} ref={box} role="img" aria-label="Light wave packets raining through a glass slab above; below, electrons in a lattice of atoms struggling to hop from one atom's electron cloud to the next">
           {[2, 1, 0].map((d) => (
-            <canvas key={d} ref={(c) => { cvs.current[d] = c }} className={s.layer} style={{ filter: LAYERS[d].blur ? `blur(${LAYERS[d].blur}px)` : undefined, opacity: LAYERS[d].alpha }} />
+            <canvas key={d} ref={(c) => { cvs.current[d] = c }} className={s.layer} style={{ opacity: LAYERS[d].alpha, filter: LAYERS[d].blur ? `blur(${LAYERS[d].blur}px)` : undefined }} />
           ))}
           <svg className={s.leaders} aria-hidden="true">
             {NOTES.map((n, i) => (

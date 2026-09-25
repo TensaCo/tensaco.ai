@@ -23,3 +23,4 @@
   .pair { grid-template-columns: 1fr; }
   .pair > div { grid-template-columns: 1fr; gap: 10px; }
 }
+.big :global(sup.fn) { font-size: 14px; font-variation-settings: normal; vertical-align: top; position: relative; top: 0.3em; margin-left: 0.15em; color: var(--graphite); }
