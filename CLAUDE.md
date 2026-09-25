@@ -16,7 +16,9 @@ Websites for TensaCo Inc. and its companies (see README.md for the map).
   and industry (licensed, credited in `apps/tensaco/public/media/credits.json`). No line art, 3D renders or startup tone.
   Never invent quotes, customers or endorsements. The team is Jacob (founder, human) plus TensaCo's AI agents
   (`team/`, one folder per agent: profile.yml + images); every agent carries a visible "AI agent" badge wherever a
-  profile appears, and bios never invent prior employers, degrees or awards. Traction figures on /investors are real
+  profile appears, and bios never invent prior employers, degrees or awards. Edit `team/<slug>/profile.yml`, then
+  `python3 team/sync.py` regenerates `apps/tensaco/src/data/team.ts` (don't edit it by hand). Images credited to TensaCo
+  in `credits.json` are generated (fal), not stock. Traction figures on /investors are real
   (zeros included) and dated.
 - Legal entity: TENSACO INC, a Delaware corporation (governing law Delaware). Office: San Francisco, CA — publish the
   city only, not the street address.
@@ -30,7 +32,8 @@ Websites for TensaCo Inc. and its companies (see README.md for the map).
 
 ## Cloudflare
 
-- Account `20d4becc35c40a0bbfb8803a525aaae1` (jacobfv123@gmail.com). Zones `tensaco.ai` and `tensorcode.dev`.
+- Account `20d4becc35c40a0bbfb8803a525aaae1` (jacobfv123@gmail.com). Wrangler's login sees two accounts; deploy with
+  `CLOUDFLARE_ACCOUNT_ID=20d4becc35c40a0bbfb8803a525aaae1` (or `account_id` in wrangler.jsonc). Zones `tensaco.ai` and `tensorcode.dev`.
 - Hostnames are Worker custom domains (Cloudflare manages their DNS records). Wrangler's OAuth login cannot edit DNS;
   ask the user before any DNS change.
 - D1 `tensaco-subscribers` (`888cd573-e771-4a12-9834-b7fe800eaf2a`); R2 `tensaco-careers` (résumés).

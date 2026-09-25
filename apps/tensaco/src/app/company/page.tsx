@@ -20,7 +20,7 @@ const PRINCIPLES = [
 const FACTS = [
   { k: '2022', v: 'Our work began with TensaCode' },
   { k: '2', v: 'Companies: PHASER and TensorCode' },
-  { k: String(TEAM.length), v: `People: a founder and ${AGENTS.length} AI agents` },
+  { k: String(TEAM.length), v: `Team: a founder and ${AGENTS.length} AI agents` },
   { k: 'SF', v: 'Headquartered in San Francisco' },
 ]
 
