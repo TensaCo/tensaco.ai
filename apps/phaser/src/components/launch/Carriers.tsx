@@ -13,16 +13,15 @@
  *   nuclei jitter, a graphite ring spreads): that vibration is heat. Hops into the glass never succeed: it is an insulator.
  */
 import { useEffect, useRef } from 'react'
-import X from '@/data/exp29.json'
+import { Fn } from './Close'
 import s from './Carriers.module.css'
 
-// Exp. 29 scaling model, one step of a 135,000-neuron dense layer: energy per multiply–accumulate. Edit here only.
-const N = X.N as number[]
-const I = N.findIndex((n) => n >= 135000)
-const MACS = N[I] * N[I]
+/** Energy per multiply. Edit here only. Sources: research/notes/energy-per-multiply.md (Exp. 34).
+ *  silicon: today's AI chips at chip level, 0.7–2 pJ per multiply-accumulate (H100 INT8 0.71, TPU v4 1.24, H100 BF16 ≈ 2).
+ *  light: PHASER per *equivalent* multiply, modeled at 10⁶ optical modes: 0.06–1 fJ = 0.00006–0.001 pJ (upper end shown). */
 export const CARRIER_NUMBERS = {
-  silicon: { pj: ((X.series.digital_dense_gpu as number[])[I] / MACS) * 1e12, digits: 1 },
-  light: { pj: ((X.series.optical_modeled_32 as number[])[I] / MACS) * 1e12, digits: 3 },
+  silicon: { pj: 1, digits: 0, range: '0.7–2 pJ' },
+  light: { pj: 0.001, digits: 3, range: '0.06–1 fJ' },
 }
 
 const GLASS = { top: 0.42, bottom: 0.53, n: 1.5 }
@@ -216,7 +215,7 @@ class Layer {
 interface Note { key: string; side: 'left' | 'right'; top: number; target: (W: number, H: number, l: Layer) => [number, number]; body: React.ReactNode }
 const NOTES: Note[] = [
   { key: 'light', side: 'right', top: 0.04, target: (W, H) => [W * 0.72, H * 0.2], body: <><b>Light</b>A steady rain of 650 nm wave packets. The bands are its crests.</> },
-  { key: 'glass', side: 'right', top: 0.62, target: (W, H) => [W * 0.9, H * (GLASS.top + GLASS.bottom) / 2], body: <><b>Glass</b>Light slows to c/1.5 inside and passes through; nothing here turns it into heat.</> },
+  { key: 'glass', side: 'right', top: 0.62, target: (W, H) => [W * 0.9, H * (GLASS.top + GLASS.bottom) / 2], body: <><b>Glass</b>Light slows to c/1.5 inside and passes through; the glass absorbs almost none of it.</> },
   { key: 'electron', side: 'left', top: 0.08, target: (_W, _H, l) => { const a = l.atoms[Math.min(l.atoms.length - 1, 2)]; return [a.x, a.y - 10] }, body: <><b>Electron</b>Tunnels toward the next atom, mostly falls back, and only sometimes gets through. Each hop leaves the lattice shaking: heat. The glass stops it entirely.</> },
   { key: 'atom', side: 'left', top: 0.9, target: (_W, _H, l) => { const a = l.atoms[l.cols + 1] ?? l.atoms[0]; return [a.x, a.y + 12] }, body: <><b>Atom</b>A nucleus inside its electron cloud: points sampled from the orbital&apos;s density.</> },
 ]
@@ -298,12 +297,12 @@ export function Carriers() {
       </figure>
       <div className={s.pair}>
         <div>
-          <span className={s.big}>{silicon.pj.toFixed(silicon.digits)}<small>pJ</small></span>
-          <span className={s.what}>per multiply in silicon, modeled, all of it heat.</span>
+          <span className={s.big}>~{silicon.pj.toFixed(silicon.digits)}<small>pJ</small><Fn id="pj" /></span>
+          <span className={s.what}>per multiply-accumulate on today&apos;s AI chips ({silicon.range} at chip level), almost all of it ending as heat.</span>
         </div>
         <div>
-          <span className={`${s.big} ${s.red}`}>{light.pj.toFixed(light.digits)}<small>pJ</small></span>
-          <span className={s.what}>per multiply in PHASER, modeled. The glass doesn&apos;t turn light into heat the way a wire does; the cost is keeping the light going.</span>
+          <span className={`${s.big} ${s.red}`}>≤{light.pj.toFixed(light.digits)}<small>pJ</small><Fn id="pj" /></span>
+          <span className={s.what}>per equivalent multiply in PHASER ({light.range}), modeled at a million optical modes. Light loses 10–30 % per round trip<Fn id="loss" /> and the gain replaces it every trip; the glass itself isn&apos;t where the energy goes.</span>
         </div>
       </div>
     </div>

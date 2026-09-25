@@ -1,9 +1,9 @@
 /**
  * Validate the browser port (src/lib/phaser-sim.ts) against the research simulator (TensaCo/phaser-design).
  *
- * The port's STACK_CONFIG (a linear-reciprocal cavity: input mirror/coupler + clamped gain, four transmissive LCD phase
- * planes, concave end mirror) is handed to the research simulator's CompiledSystem as is. Both run the same input stream
- * (research out/15/inputs_uniform.f64, one input per K = 10 round trips, injected as 6·u·P at the input mirror). Compared
+ * The port's STACK_CONFIG (research arch.ts stackCavity with fabricated phase plates and Exp. 33's glass slabs, 128² window,
+ * Exp. 30's gain) is handed to the research simulator's CompiledSystem as is. Both run the same input stream (research
+ * out/15/inputs_uniform.f64, one input per round trip, K = 1, injected as 6·u·P at the coupler). Compared
  * at checkpoint trips: the circulating field and the input mirror's output tap. Also compared: the compiled route, the
  * round-trip time and the passive power budget. Reports the cavity's physical sanity (gain, beam size, edge power).
  *
@@ -31,19 +31,35 @@ async function main() {
   const { AssetStore } = await import(R('src/core/physics/assets.ts'))
   const { CompiledSystem } = await import(R('src/core/physics/system.ts'))
   const { createField, sampleX } = await import(R('src/core/physics/field/grid.ts'))
-  const res15 = await import(R('research/2026-09-14/15-reservoir.ts'))
   const sys = new CompiledSystem(port.STACK_CONFIG, new AssetStore())
   const g = sys.grid
   const warnings: string[] = sys.warnings()
   const route = sys.route.steps.map((s: { kind: string; elementId?: string; side?: string; length?: number }) => (s.kind === 'element' ? `${s.elementId}:${s.side}` : `P${s.length}`))
   const mine = port.ROUTE.map((s) => (s.kind === 'element' ? `${s.id}:${s.side}` : `P${s.length}`))
   if (route.join(',') !== mine.join(',')) throw new Error(`route mismatch:\n research ${route.join(',')}\n port     ${mine.join(',')}`)
-  const budget = sys.powerBudget().reduce((p: number, s: { transmission: number }) => p * s.transmission, 1) / port.STACK_CONFIG.elements[1].smallSignalGain
+  const G0 = (port.STACK_CONFIG.elements.find((e) => e.kind === 'gain') as { smallSignalGain: number }).smallSignalGain
+  const budget = sys.powerBudget().reduce((p: number, s: { transmission: number }) => p * s.transmission, 1) / G0
+  // passive retention of the dominant mode (as research 33-loss.ts: power iteration, 1500 trips, no gain)
+  const passiveCfg = { ...port.STACK_CONFIG, elements: port.STACK_CONFIG.elements.filter((e) => e.kind !== 'gain'), topology: { ...port.STACK_CONFIG.topology, start: { elementIds: port.STACK_CONFIG.topology.start.elementIds.filter((id) => id !== 'gain') } } }
+  const passive = new CompiledSystem(passiveCfg, new AssetStore())
+  const { mulberry32, gaussian } = await import(R('src/core/common/random.ts'))
+  let retention = 0
+  {
+    const r = mulberry32(5), f = createField(g)
+    for (let i = 0; i < f.re.length; i++) { f.re[i] = gaussian(r); f.im[i] = gaussian(r) }
+    const NUL = { cycle: 0, inputs: { take: () => null }, taps: { record: () => {} } }
+    for (let t = 0; t < 1500; t++) {
+      let p0 = 0; for (let i = 0; i < f.re.length; i++) p0 += f.re[i] ** 2 + f.im[i] ** 2
+      passive.roundTrip(f, NUL)
+      let p1 = 0; for (let i = 0; i < f.re.length; i++) p1 += f.re[i] ** 2 + f.im[i] ** 2
+      retention = p1 / p0; const k = 1 / Math.sqrt(p1); for (let i = 0; i < f.re.length; i++) { f.re[i] *= k; f.im[i] *= k }
+    }
+  }
 
   const u = new Float64Array(new Uint8Array(readFileSync(R('research/2026-09-14/out/15/inputs_uniform.f64'))).buffer)
-  const Pr = res15.inputPattern(g, 101)
+  // the input pattern is the port's (research 30-run.ts pattern(101) re-implemented); both simulators get the same one
   const cav = new port.Cavity()
-  const patternErr = relL2(cav.pattern, Pr)
+  const Pr = cav.pattern
 
   const fr = createField(g), inj = createField(g)
   let pending = false
@@ -60,7 +76,7 @@ async function main() {
   const t0 = performance.now()
   for (let t = 0; t < trips; t++) {
     if (t % port.K_TRIPS === 0) {
-      const s = t / port.K_TRIPS
+      const s = (t / port.K_TRIPS) % u.length
       for (let i = 0; i < inj.re.length; i++) { inj.re[i] = port.INPUT_AMP * u[s] * Pr.re[i]; inj.im[i] = port.INPUT_AMP * u[s] * Pr.im[i] }
       pending = true
       cav.inject(u[s])
@@ -75,20 +91,20 @@ async function main() {
         const I = fr.re[j * g.nx + i] ** 2 + fr.im[j * g.nx + i] ** 2
         const rr = sampleX(g, i) ** 2 + sampleX(g, j) ** 2
         p += I; r2 += I * rr
-        if (Math.sqrt(rr) > 1.6e-3) edge += I
+        if (Math.sqrt(rr) > 0.5e-3) edge += I
       }
       rows.push({ trip: t + 1, field: e, tap: relL2(tapP!, tapR!), power: p, gain: cav.gain, rmsRadiusMm: Math.sqrt(r2 / p) * 1e3, edgeFraction: edge / p })
     }
   }
   const out = {
     date: new Date().toISOString().slice(0, 10),
-    research: 'TensaCo/phaser-design src/core/physics CompiledSystem, fed src/lib/phaser-sim.ts STACK_CONFIG (linear stack: B_4f/preset LCD parts, 4 planes, concave end mirror)',
+    research: 'TensaCo/phaser-design src/core/physics CompiledSystem, fed src/lib/phaser-sim.ts STACK_CONFIG (arch.ts stackCavity: 4 fabricated phase plates + Exp. 33 glass slabs, 128² window, Exp. 30 gain G0 1.35)',
     trips,
     route: mine.length,
     tripTime: { research: sys.timing().roundTripTime, port: port.TRIP_TIME },
-    passiveRetention: { research: budget, port: port.PASSIVE_RETENTION },
+    passiveBudget: { research: budget, port: port.PASSIVE_BUDGET },
+    passiveRetention: retention,
     researchWarnings: warnings,
-    inputPatternRelL2: patternErr,
     maxFieldRelL2: maxErr,
     checkpoints: rows,
     seconds: (performance.now() - t0) / 1000,

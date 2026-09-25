@@ -24,3 +24,4 @@
 .claim p { margin: 0 0 0.6em; display: flex; flex-direction: column; gap: 14px; font-size: clamp(22px, 2.4vw, 40px); font-variation-settings: 'wdth' 85; font-weight: 500; line-height: 1.05; letter-spacing: -0.015em; max-width: 12em; }
 .note { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--graphite-2); font-weight: 400; line-height: 1.5; }
 .links { display: flex; gap: 24px; }
+.claim :global(.num).range { font-size: clamp(64px, 12vw, 220px); white-space: nowrap; }

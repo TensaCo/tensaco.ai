@@ -50,7 +50,14 @@ export default function StackView({ framing, tripSeconds, annotations, onStatus,
       if (!scene) return
       const W = st.clientWidth
       const H = st.clientHeight
-      const items = notes.current.map((a, i) => ({ a, i, p: scene!.project(a.at) }))
+      const all = notes.current.map((a, i) => ({ a, i, p: scene!.project(a.at) }))
+      // a part outside the frame gets no label
+      const onScreen = (p: { x: number; y: number }) => p.x >= 0 && p.x <= W && p.y >= 8 && p.y <= H - 8
+      all.forEach(({ i, p }) => {
+        const show = onScreen(p)
+        for (const el of [labels.current[i], lines.current[i], dots.current[i]]) if (el) (el as HTMLElement | SVGElement).style.visibility = show ? '' : 'hidden'
+      })
+      const items = all.filter(({ p }) => onScreen(p))
       for (const side of ['left', 'right'] as const) {
         // stack each side's labels top to bottom in the order of the points they name, without overlaps; if the stack runs
         // past the bottom, lift the whole side

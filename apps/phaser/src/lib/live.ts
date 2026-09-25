@@ -1,14 +1,14 @@
 /**
  * A live run of the linear-stack cavity for the page: a random input u ∈ [0, 0.5] injected at the input mirror once every
  * K = 10 round trips, and captures of the field where the page draws it: the angular spectrum at the start of every
- * free-space gap (to draw |E|² at any plane), the light landing on each LCD plane, and the output tap.
+ * free-space gap (to draw |E|² at any plane), the light crossing each phase plate, and the output tap.
  */
 import { Cavity, GAPS, PLANES, ROUTE, K_TRIPS, INPUT_AMP, N, createField, mulberry32, type Field, type Observer } from './phaser-sim'
 
 const NN = N * N
 const PLANE_OF: (number | -1)[] = ROUTE.map((_, i) => {
   const next = ROUTE[i + 1]
-  return next && next.kind === 'element' && next.id.startsWith('lcd') ? Number(next.id.slice(3)) - 1 : -1
+  return next && next.kind === 'element' && /^p\d+$/.test(next.id) ? Number(next.id.slice(1)) : -1
 })
 
 export class LiveStack {
@@ -19,9 +19,9 @@ export class LiveStack {
   readonly spectra: Field[][] = [GAPS.map(() => createField()), GAPS.map(() => createField())]
   /** which trip each spectra slot holds (-1: none) */
   readonly spectraTrip = [-1, -1]
-  /** |E|² arriving at each LCD plane this trip (forward + return pass) */
+  /** |E|² arriving at each phase plate this trip (forward + return pass) */
   readonly planeI = Array.from({ length: PLANES }, () => new Float64Array(NN))
-  /** |E|² of the output tap (8 % through the input mirror) and of the injected light */
+  /** |E|² of the output tap (5 % through the coupler) and of the injected light */
   readonly tapI = new Float64Array(NN)
   readonly inputI = new Float64Array(NN)
   private slot = 0
@@ -43,7 +43,7 @@ export class LiveStack {
     if (c.tripInStep === 0 || c.tripInStep >= K_TRIPS) {
       c.inject(0.5 * this.rand())
       this.step++
-      const a2 = 0.08 * INPUT_AMP * INPUT_AMP * c.u * c.u
+      const a2 = 0.05 * INPUT_AMP * INPUT_AMP * c.u * c.u
       for (let i = 0; i < NN; i++) this.inputI[i] = a2 * (c.pattern.re[i] ** 2 + c.pattern.im[i] ** 2)
     }
     if (observe) {

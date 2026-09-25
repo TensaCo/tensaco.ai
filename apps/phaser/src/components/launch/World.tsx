@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import CLIPS from '@/data/broll.json'
+import { Fn } from './Close'
 import s from './World.module.css'
 
 const HOLD = 6500
@@ -44,9 +45,9 @@ export function World() {
             <h2 id="world-h" className={s.h}>AI is running out of electricity.</h2>
           </div>
           <div className={s.friction}>
-            <div><span className="num">128<small>weeks</small></span><p>to get a large power transformer.</p></div>
-            <div><span className="num">5<small>years+</small></span><p>typical wait to connect a new power plant to the US grid.</p></div>
-            <div><span className="num">$400<small>B+</small></span><p>spent on AI infrastructure by five companies in 2025 alone.</p></div>
+            <div><span className="num">128<small>weeks</small><Fn id="weeks" /></span><p>to get a large power transformer.</p></div>
+            <div><span className="num">5<small>years+</small><Fn id="years" /></span><p>typical wait to connect a new power plant to the US grid.</p></div>
+            <div><span className="num">$400<small>B+</small><Fn id="capex" /></span><p>spent on AI infrastructure by five companies in 2025 alone.</p></div>
           </div>
         </div>
       </div>

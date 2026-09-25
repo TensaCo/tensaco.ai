@@ -1,4 +1,5 @@
 import { Carriers } from './Carriers'
+import { Fn } from './Close'
 import s from './Close.module.css'
 
 export function Light() {
@@ -11,9 +12,9 @@ export function Light() {
           <span className={s.red}>PHASER runs it on light.</span>
         </h2>
         <div className={s.claim}>
-          <span className="num">1,000×</span>
+          <span className={`num ${s.range}`}>200–3,000×<Fn id="energy" /></span>
           <p>
-            <span>less energy per step than a GPU.</span>
+            <span>less energy per step than an equally capable dense recurrent network, modeled at a million optical modes.</span>
           </p>
         </div>
         <Carriers />

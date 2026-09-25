@@ -1,67 +1,71 @@
 /**
  * A minimal port of the PHASER research simulator (TensaCo/phaser-design, src/core/physics) for exactly one
- * configuration: a linear, back-and-forth cavity with a stack of four programmable transmissive LCD phase planes.
+ * configuration: the research's linear stack of fabricated phase plates (research/2026-09-14/arch.ts `stackCavity`,
+ * Experiments 30 and 33).
  *
- * The configuration (STACK_CONFIG below) is written in the research simulator's own config language, derived from its
- * "B_4f" linear cavity (research/2026-09-14/arch.ts) and the preset "Transmissive LCD linear cavity"
- * (src/core/runtime/presets.ts): the same realistic LCD, coupler and mirror parameters, the preset's programs (random,
- * seeds 20…23, depth 0.1), and B_4f's grid (2 samples per 63.5 µm pixel). Instead of B_4f's two relay lenses the light is
- * held in by a concave end mirror (R = 400 mm, a stable flat–concave resonator), so the planes can sit evenly along a
- * 24 mm cavity. scripts/validate-sim.ts feeds STACK_CONFIG to the research simulator and compares every trip with this
- * port.
+ * STACK_CONFIG below is that configuration in the research simulator's own config language, as Exp. 33 builds its
+ * "fabricated plates (IBS AR)" case, on Exp. 30's 64² grid: an input/output coupler (5 %) with a clamped global gain and
+ * its 10 mm host crystal at the start reflector; four static phase plates (fused silica, 64 × 64 pixels at 20 µm, random
+ * programs seeds 3…6, depth 0.1) 5 mm apart, each with its 1 mm substrate as a `slab` (bulk absorption, 0.1 % IBS AR per
+ * face, group delay); and a concave end mirror (R = 120 mm, 99.9 %). The gain is Exp. 30's operating point for this stack
+ * (global saturation, G0 1.35, I_s 0.05), one round trip per input. scripts/validate-sim.ts hands STACK_CONFIG to the
+ * research simulator and compares every round trip with this port.
  *
- * Physics, as in the research model: a scalar, monochromatic complex field E(x, y) on a 128 × 128 grid at 31.75 µm
- * (4.06 mm window). The linear-reciprocal route applies the start assembly (input mirror/coupler, gain), goes forward
- * through the planes (front faces), reflects off the end assembly (curved mirror), and comes back through the planes
- * (back faces). Every free-space gap is the angular-spectrum method (exact k_z, carrier removed, air) followed by the
- * absorbing cosine taper. Operation order, constants and the radix-2 FFT are copied from the research code.
+ * Physics, as in the research model: a scalar, monochromatic complex field E(x, y) on a 64 × 64 grid at 20 µm (1.28 mm
+ * window; the 128² window would alias the end mirror's 60 mm lens phase at its edge). The linear-reciprocal route applies the start assembly, goes forward through the plates, reflects off the end
+ * assembly, and comes back. Every free-space gap is the angular-spectrum method (exact k_z, carrier removed, air) followed
+ * by the absorbing cosine taper. Operation order, constants and the radix-2 FFT are copied from the research code.
  *
  * No DOM here: the page and the validation script both import this file.
  */
 
 // ── configuration ───────────────────────────────────────────────────────────────────────────────────────────────────
-export const N = 128 // samples per axis
-export const PITCH = 63.5e-6 // LCD pixel pitch
-export const DX = PITCH / 2 // 2 samples per pixel
+export const N = 64 // samples per axis
+export const PITCH = 20e-6 // plate pixel pitch
+export const DX = PITCH // 1 sample per pixel (Exps. 30, 33)
 export const LAMBDA = 650e-9
 export const PLANES = 4
-export const LENGTH = 24e-3 // input mirror → end mirror
-export const PLANE_Z = Array.from({ length: PLANES }, (_, i) => ((i + 1) * LENGTH) / (PLANES + 1)) // 4.8 mm apart
-export const MIRROR_R = 0.4 // concave end mirror radius of curvature (m): a thin lens f = R/2 in front of a flat mirror
-export const K_TRIPS = 10 // round trips per input
+export const SPACING = 5e-3
+export const LENGTH = (PLANES + 1) * SPACING // input mirror → end mirror, 25 mm
+export const PLANE_Z = Array.from({ length: PLANES }, (_, k) => (k + 1) * SPACING)
+export const MIRROR_R = 0.12 // end mirror radius of curvature: a thin lens f = R/2 = 60 mm on a flat mirror
+export const K_TRIPS = 1 // round trips per input (Exp. 30)
 export const INPUT_AMP = 6
 const AIR_SPEC = { kind: 'air', pressurePa: 101_325, temperatureK: 288.15, attenuationPerM: -Math.log(0.998) } as const
-const LCD_PX = { resolution: { x: 64, y: 64 }, pitch: { x: PITCH, y: PITCH }, fillFactor: 0.85, offset: { x: 0, y: 0 } }
-const lcd = (i: number) => ({
-  kind: 'transmissive-lcd' as const, id: `lcd${i + 1}`, label: `LCD phase plane ${i + 1}`,
-  pixels: LCD_PX,
-  modulation: { kind: 'phase' as const, phaseRange: 1.8 * Math.PI, levels: 256, response: { kind: 'gamma' as const, gamma: 1.1 } },
-  clearTransmission: 0.92,
-  surfaces: { front: { transmission: 0.98, reflection: 0.02 }, back: { transmission: 0.96, reflection: 0.04 } },
-  polarizerTransmission: 0.95,
-  deadZoneTransmission: 0,
-  switchingTime: 0.008,
-  designWavelength: 650e-9,
-  program: { kind: 'random' as const, seed: 20 + i, depth: 0.1 },
+const PX = { resolution: { x: 64, y: 64 }, pitch: { x: PITCH, y: PITCH }, fillFactor: 1, offset: { x: 0, y: 0 } }
+const plate = (k: number) => ({
+  kind: 'phase-plate' as const, id: `p${k}`, pixels: PX,
+  transmission: { front: 1, back: 1 }, designWavelength: 650e-9,
+  program: { kind: 'random' as const, seed: 3 + k, depth: 0.1 },
 })
+const slab = (id: string, t: number, alpha: number, R: number, n: number, ng: number) => ({
+  kind: 'slab' as const, id, thickness: t,
+  medium: { kind: 'custom' as const, label: 'glass', refractiveIndex: n, groupIndex: ng, attenuationPerM: alpha },
+  surfaceReflectance: { front: R, back: R },
+})
+const AR_IBS = 0.001 // ion-beam-sputtered V-coat, per surface (Exp. 33)
 
-/** the research-simulator PhysicsConfig this file implements */
+/** the research-simulator PhysicsConfig this file implements (arch.ts stackCavity, as Exp. 33 calls it, + Exp. 30 gain) */
 export const STACK_CONFIG = {
   field: { grid: { nx: N, ny: N, dx: DX, dy: DX }, wavelength: LAMBDA, boundary: { kind: 'absorbing' as const, widthFraction: 0.08 } },
   elements: [
-    { kind: 'coupler' as const, id: 'in', label: 'input mirror / coupler', retained: { front: 0.92, back: 0.92 }, inputPort: 'in', outputTap: 'readout' },
-    { kind: 'gain' as const, id: 'gain', smallSignalGain: 6, saturation: { kind: 'global' as const, saturationIntensity: 0.5 }, noise: { kind: 'none' as const } },
-    ...Array.from({ length: PLANES }, (_, i) => lcd(i)),
-    { kind: 'lens' as const, id: 'curve', label: 'end-mirror curvature (R = 400 mm)', focalLength: MIRROR_R / 2, apertureDiameter: 4e-3, transmission: { front: 1, back: 1 } },
-    { kind: 'mirror' as const, id: 'end', label: 'end mirror', reflectivity: { front: 0.97, back: 0.97 }, parity: 'none' as const },
+    { kind: 'coupler' as const, id: 'in', retained: { front: 0.95, back: 0.95 }, inputPort: 'in', outputTap: 'readout' },
+    ...Array.from({ length: PLANES }, (_, k) => plate(k)),
+    ...Array.from({ length: PLANES }, (_, k) => slab(`g${k}`, 1e-3, 0.01, AR_IBS, 1.457, 1.47)), // fused-silica substrates
+    { kind: 'lens' as const, id: 'Lend', focalLength: MIRROR_R / 2, apertureDiameter: N * PITCH, transmission: { front: 1, back: 1 } },
+    { kind: 'mirror' as const, id: 'end', reflectivity: { front: 0.999, back: 0.999 }, parity: 'none' as const },
+    { kind: 'gain' as const, id: 'gain', smallSignalGain: 1.35, saturation: { kind: 'global' as const, saturationIntensity: 0.05 }, noise: { kind: 'none' as const } },
+    slab('gGain', 10e-3, 0.3, 1 - (1 - AR_IBS) ** 2, 1.45, 1.47), // gain-crystal host, passed once per round trip
   ],
   topology: {
     kind: 'linear-reciprocal' as const, length: LENGTH, medium: AIR_SPEC,
-    start: { elementIds: ['in', 'gain'] }, end: { elementIds: ['curve', 'end'] },
-    items: PLANE_Z.map((z, i) => ({ elementId: `lcd${i + 1}`, position: z })),
+    start: { elementIds: ['in', 'gain', 'gGain'] }, end: { elementIds: ['Lend', 'end'] },
+    items: Array.from({ length: PLANES }, (_, k) => [{ elementId: `p${k}`, position: (k + 1) * SPACING }, { elementId: `g${k}`, position: (k + 1) * SPACING + 1e-6 }]).flat(),
   },
   readouts: [],
 }
+type Spec = (typeof STACK_CONFIG.elements)[number]
+const EL = Object.fromEntries(STACK_CONFIG.elements.map((e) => [e.id, e])) as Record<string, Spec>
 
 const NN = N * N
 const TAU = 2 * Math.PI
@@ -173,16 +177,15 @@ const AIR_NG = (() => { const h = LAMBDA * 1e-3; return AIR_N - LAMBDA * ((nAt(L
 const ALPHA = AIR_SPEC.attenuationPerM
 
 // ── route (src/core/physics/topology/topology.ts, linear-reciprocal) ────────────────────────────────────────────────
-type ElementId = 'in' | 'gain' | 'curve' | 'end' | `lcd${number}`
 export type RouteStep =
-  | { kind: 'element'; id: ElementId; side: 'front' | 'back'; distance: number }
+  | { kind: 'element'; id: string; side: 'front' | 'back'; distance: number }
   | { kind: 'propagate'; length: number; distance: number }
 export const ROUTE: RouteStep[] = (() => {
   const t = STACK_CONFIG.topology
   const steps: RouteStep[] = []
   let d = 0
   const prop = (length: number) => { if (length <= 1e-12) return; steps.push({ kind: 'propagate', length, distance: d }); d += length }
-  const el = (id: string, side: 'front' | 'back') => steps.push({ kind: 'element', id: id as ElementId, side, distance: d })
+  const el = (id: string, side: 'front' | 'back') => steps.push({ kind: 'element', id, side, distance: d })
   const items = t.items.map((it, k) => ({ it, k })).sort((a, b) => a.it.position - b.it.position || a.k - b.k).map((x) => x.it)
   for (const id of t.start.elementIds) el(id, 'front')
   let cursor = 0
@@ -194,9 +197,14 @@ export const ROUTE: RouteStep[] = (() => {
   prop(cursor)
   return steps
 })()
-/** geometric round-trip length (m) and time Σ n_g L / c (s) */
+/** geometric round-trip length in air (m) */
 export const ROUTE_LENGTH = ROUTE.reduce((s, r) => s + (r.kind === 'propagate' ? r.length : 0), 0)
-export const TRIP_TIME = ROUTE.reduce((s, r) => s + (r.kind === 'propagate' ? AIR_NG * r.length : 0), 0) / 299_792_458
+/** round-trip time Σ n_g L / c over the air gaps plus every glass slab's internal path, as CompiledSystem.timing() */
+export const TRIP_TIME = ROUTE.reduce((s, r) => {
+  if (r.kind === 'propagate') return s + AIR_NG * r.length
+  const e = EL[r.id]
+  return e.kind === 'slab' ? s + e.medium.groupIndex * e.thickness : s
+}, 0) / 299_792_458
 /** propagation steps in route order: the i-th free-space gap of a round trip */
 export const GAPS = ROUTE.filter((r): r is Extract<RouteStep, { kind: 'propagate' }> => r.kind === 'propagate')
 
@@ -274,25 +282,17 @@ function multiplyComplex(f: Field, tr: Float64Array, ti: Float64Array) {
   }
 }
 
-type Lcd = ReturnType<typeof lcd>
-/** commanded → achieved phase (wrap, 1.8π stroke, clip, 256 levels, γ calibration, λ_design/λ) */
-function achievedPhase(cmd: number, s: Lcd): number {
-  const range = s.modulation.phaseRange
-  let u = (((cmd % TAU) + TAU) % TAU) / range
-  u = Math.min(1, Math.max(0, u))
-  u = Math.round(u * (s.modulation.levels - 1)) / (s.modulation.levels - 1)
-  return Math.pow(u, s.modulation.response.gamma) * range * (s.designWavelength / LAMBDA)
-}
-
-export interface Plane { id: string; command: Float64Array; phase: Float64Array; tr: Float64Array; ti: Float64Array; amp: Record<'front' | 'back', number> }
-/** the four LCD planes: per-pixel commanded and achieved phase (64 × 64), and per-sample transmission */
-export const PLANE_DATA: Plane[] = STACK_CONFIG.elements.filter((e): e is Lcd => e.kind === 'transmissive-lcd').map((s) => {
+type PlateSpec = ReturnType<typeof plate>
+export interface Plane { id: string; phase: Float64Array; tr: Float64Array; ti: Float64Array; amp: Record<'front' | 'back', number> }
+/** the four phase plates: per-pixel phase (64 × 64; etched depth fixed at fabrication, scaled by λ_design/λ) and the
+ *  per-sample transmission (PhasePlate: fill(1, phase·scale, dead 1)) */
+export const PLANE_DATA: Plane[] = STACK_CONFIG.elements.filter((e): e is PlateSpec => e.kind === 'phase-plate').map((s) => {
   const { x: RX, y: RY } = s.pixels.resolution
   const rand = mulberry32(s.program.seed)
   const command = new Float64Array(RX * RY)
   for (let i = 0; i < command.length; i++) command[i] = TAU * s.program.depth * rand()
-  const phase = command.map((c) => achievedPhase(c, s))
-  const amp = Math.sqrt(s.clearTransmission)
+  const sc = s.designWavelength / LAMBDA
+  const phase = command.map((v) => v * sc)
   const tr = new Float64Array(NN), ti = new Float64Array(NN)
   const fx = Math.sqrt(s.pixels.fillFactor)
   for (let j = 0; j < N; j++) {
@@ -305,45 +305,47 @@ export const PLANE_DATA: Plane[] = STACK_CONFIG.elements.filter((e): e is Lcd =>
       const pxi = Math.floor(u)
       const idx = j * N + i
       if (!inY || pxi < 0 || pxi >= RX) { tr[idx] = 0; ti[idx] = 0 }
-      else if (!fracY || Math.abs(u - pxi - 0.5) > fx / 2) { tr[idx] = Math.sqrt(s.deadZoneTransmission); ti[idx] = 0 }
-      else { const ph = phase[py * RX + pxi]; tr[idx] = amp * Math.cos(ph); ti[idx] = amp * Math.sin(ph) }
+      else if (!fracY || Math.abs(u - pxi - 0.5) > fx / 2) { tr[idx] = 1; ti[idx] = 0 }
+      else { const ph = phase[py * RX + pxi]; tr[idx] = Math.cos(ph); ti[idx] = Math.sin(ph) }
     }
   }
-  const side = (k: 'front' | 'back') => Math.sqrt(s.surfaces[k].transmission * s.polarizerTransmission)
-  return { id: s.id, command, phase, tr, ti, amp: { front: side('front'), back: side('back') } }
+  return { id: s.id, phase, tr, ti, amp: { front: Math.sqrt(s.transmission.front), back: Math.sqrt(s.transmission.back) } }
 })
 const PLANE_BY_ID = Object.fromEntries(PLANE_DATA.map((p) => [p.id, p]))
 
-const CURVE = STACK_CONFIG.elements.find((e) => e.id === 'curve') as Extract<(typeof STACK_CONFIG.elements)[number], { kind: 'lens' }>
-const curveT = (() => {
+/** slab: a pass crosses both faces; amplitude √((1 − R_f)(1 − R_b)·e^{−αt}) */
+const slabAmp = (s: ReturnType<typeof slab>) => Math.sqrt((1 - s.surfaceReflectance.front) * (1 - s.surfaceReflectance.back) * Math.exp(-s.medium.attenuationPerM * s.thickness))
+
+const LEND = EL.Lend as Extract<Spec, { kind: 'lens' }>
+const lensT = (() => {
   const k = (2 * Math.PI) / LAMBDA
   const tr = new Float64Array(NN), ti = new Float64Array(NN)
-  const R = CURVE.apertureDiameter / 2
+  const R = LEND.apertureDiameter / 2
   for (let j = 0; j < N; j++)
     for (let i = 0; i < N; i++) {
       const x = sampleX(i), y = sampleX(j)
       const r2 = x * x + y * y
       if (r2 > R * R) continue
-      const ph = (-k * r2) / (2 * CURVE.focalLength)
+      const ph = (-k * r2) / (2 * LEND.focalLength)
       tr[j * N + i] = Math.cos(ph)
       ti[j * N + i] = Math.sin(ph)
     }
   return { tr, ti }
 })()
-const IN = STACK_CONFIG.elements[0] as { retained: { front: number; back: number } }
-const GAIN = STACK_CONFIG.elements[1] as { smallSignalGain: number; saturation: { saturationIntensity: number } }
-const END = STACK_CONFIG.elements.find((e) => e.id === 'end') as { reflectivity: { front: number } }
+const IN = EL.in as Extract<Spec, { kind: 'coupler' }>
+const GAIN = EL.gain as Extract<Spec, { kind: 'gain' }>
+const END = EL.end as Extract<Spec, { kind: 'mirror' }>
 /** passive power retained per round trip (uniform illumination, small signal), as CompiledSystem.powerBudget() reports */
-export const PASSIVE_RETENTION = (() => {
+export const PASSIVE_BUDGET = (() => {
   let c = 0
-  for (let i = 0; i < NN; i++) c += curveT.tr[i] ** 2 + curveT.ti[i] ** 2
-  let p = IN.retained.front * END.reflectivity.front * (c / NN) * CURVE.transmission.front
-  for (const pl of PLANE_DATA) {
-    let m = 0, n = 0
-    for (let i = 0; i < NN; i++) { m += pl.tr[i] ** 2 + pl.ti[i] ** 2; n++ }
-    p *= (m / n) ** 2 * pl.amp.front ** 2 * pl.amp.back ** 2
+  for (let i = 0; i < NN; i++) c += lensT.tr[i] ** 2 + lensT.ti[i] ** 2
+  let p = IN.retained.front * END.reflectivity.front * (c / NN) * LEND.transmission.front
+  for (const r of ROUTE) {
+    if (r.kind === 'propagate') { p *= Math.exp(-ALPHA * r.length); continue }
+    const e = EL[r.id]
+    if (e.kind === 'slab') p *= slabAmp(e) ** 2
+    else if (e.kind === 'phase-plate') p *= e.transmission[r.side]
   }
-  for (const g of GAPS) p *= Math.exp(-ALPHA * g.length)
   return p
 })()
 
@@ -352,7 +354,7 @@ export interface Observer {
   after?(index: number, f: Field): void
   /** the angular spectrum at the start of free-space gap `gap` (index into GAPS) */
   spectrum?(gap: number, spec: Field): void
-  /** the input mirror's output tap (8 %), as an amplitude-scaled view of the incident field */
+  /** the coupler's output tap (5 %), as an amplitude-scaled view of the incident field */
   tap?(f: Field, amplitude: number): void
 }
 
@@ -366,27 +368,30 @@ export function roundTrip(f: Field, input: Field | null, obs?: Observer): number
       applyKernel(f, kernelFor(step.length))
       fft2(f, true)
       for (let i = 0; i < NN; i++) { f.re[i] *= WINDOW[i]; f.im[i] *= WINDOW[i] }
-    } else if (step.id === 'in') {
-      obs?.tap?.(f, Math.sqrt(1 - IN.retained.front))
-      scale(f, Math.sqrt(IN.retained.front))
-      if (input) {
-        const a = Math.sqrt(1 - IN.retained.front)
-        for (let i = 0; i < NN; i++) { f.re[i] += a * input.re[i]; f.im[i] += a * input.im[i] }
-      }
-    } else if (step.id === 'gain') {
-      let s = 0
-      for (let i = 0; i < NN; i++) s += f.re[i] * f.re[i] + f.im[i] * f.im[i]
-      gain = 1 + (GAIN.smallSignalGain - 1) / (1 + s / NN / GAIN.saturation.saturationIntensity)
-      scale(f, Math.sqrt(Math.max(0, gain)))
-    } else if (step.id === 'curve') {
-      multiplyComplex(f, curveT.tr, curveT.ti)
-      scale(f, Math.sqrt(CURVE.transmission.front))
-    } else if (step.id === 'end') {
-      scale(f, Math.sqrt(END.reflectivity.front))
     } else {
-      const p = PLANE_BY_ID[step.id]
-      multiplyComplex(f, p.tr, p.ti)
-      scale(f, p.amp[step.side])
+      const e = EL[step.id]
+      switch (e.kind) {
+        case 'coupler': {
+          obs?.tap?.(f, Math.sqrt(1 - e.retained[step.side]))
+          scale(f, Math.sqrt(e.retained[step.side]))
+          if (input && step.side === 'front') {
+            const a = Math.sqrt(1 - e.retained.front)
+            for (let i = 0; i < NN; i++) { f.re[i] += a * input.re[i]; f.im[i] += a * input.im[i] }
+          }
+          break
+        }
+        case 'gain': {
+          let s = 0
+          for (let i = 0; i < NN; i++) s += f.re[i] * f.re[i] + f.im[i] * f.im[i]
+          gain = 1 + (e.smallSignalGain - 1) / (1 + s / NN / e.saturation.saturationIntensity)
+          scale(f, Math.sqrt(Math.max(0, gain)))
+          break
+        }
+        case 'slab': scale(f, slabAmp(e)); break
+        case 'lens': multiplyComplex(f, lensT.tr, lensT.ti); scale(f, Math.sqrt(e.transmission[step.side])); break
+        case 'mirror': scale(f, Math.sqrt(e.reflectivity[step.side])); break
+        case 'phase-plate': { const p = PLANE_BY_ID[e.id]; multiplyComplex(f, p.tr, p.ti); scale(f, p.amp[step.side]); break }
+      }
     }
     obs?.after?.(index, f)
   })
@@ -408,15 +413,17 @@ export function slice(spec: Field, z: number, work: Field, out: Float32Array | F
   for (let i = 0; i < NN; i++) out[i] = work.re[i] * work.re[i] + work.im[i] * work.im[i]
 }
 
+
 // ── input ───────────────────────────────────────────────────────────────────────────────────────────────────────────
-/** the static input pattern (research 15-reservoir.ts inputPattern): 40 random complex Gaussians over the central 60 % */
+/** the static input pattern (research 30-run.ts pattern(101)): smooth complex random, 40 Gaussians per 64² window, correlation 3 samples, over the central 60 % of the window */
 export function inputPattern(seed = 101, corr = 3): Field {
-  const r = mulberry32(seed)
-  const f = createField()
-  const L = N * DX * 0.3
-  for (let k = 0; k < 40; k++) {
+  const r = mulberry32(seed), f = createField(), L = N * DX * 0.3
+  const count = Math.round(40 * (N / 64) ** 2)
+  for (let k = 0; k < count; k++) {
     const cx = (r() * 2 - 1) * L, cy = (r() * 2 - 1) * L, a = gaussian(r), b = gaussian(r)
-    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+    const R = 4 * corr * DX, i0 = Math.max(0, Math.floor(cx / DX + N / 2 - R / DX)), i1 = Math.min(N - 1, Math.ceil(cx / DX + N / 2 + R / DX))
+    const j0 = Math.max(0, Math.floor(cy / DX + N / 2 - R / DX)), j1 = Math.min(N - 1, Math.ceil(cy / DX + N / 2 + R / DX))
+    for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
       const e = Math.exp(-((sampleX(i) - cx) ** 2 + (sampleX(j) - cy) ** 2) / (2 * (corr * DX) ** 2))
       f.re[j * N + i] += a * e; f.im[j * N + i] += b * e
     }
@@ -427,7 +434,7 @@ export function inputPattern(seed = 101, corr = 3): Field {
   return f
 }
 
-/** The cavity with an input stream: each input u is injected once (6·u·P at the input mirror), then K = 10 trips. */
+/** The cavity with an input stream: each input u is injected once (6·u·P at the coupler), then K round trips (K = 1). */
 export class Cavity {
   readonly field = createField()
   readonly pattern = inputPattern()

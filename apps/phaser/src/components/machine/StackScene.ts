@@ -1,39 +1,39 @@
 /**
  * The machine: the linear-stack cavity at true proportions (mm), drawn from the live simulation.
  *
- * The cavity axis is vertical: input mirror/coupler at y = 0, four LCD phase planes 4.8 mm apart, concave end mirror at
- * y = 24 mm; the output tap leaves through the input mirror to a detector below it. Light goes up through the planes,
+ * The cavity axis is vertical: input mirror/coupler at y = 0, four fabricated phase plates 5 mm apart, concave end mirror
+ * at y = 25 mm; the output tap leaves through the input mirror to a detector below it. Light goes up through the planes,
  * reflects, and comes back down: route position s (mm) runs 0 → 24 up and 24 → 48 down.
  *
  * Wavefronts: dozens of short packets travel the route at once (time-multiplexed, nearly overlapping), each drawn as a handful of crest sheets (stylised: true 650 nm crests cannot
  * be drawn at this scale). Every sheet's cross-section is the simulated |E|² at its plane on the trip it belongs to,
  * computed from the model's own angular spectrum for that gap, so the pattern changes as a packet passes each plane and
  * reflects. The model itself is continuous-wave; the packets show where along the round trip we are looking.
- * Each LCD panel shows its phase program (graphite, per pixel) and the light landing on it (red, per sample).
+ * Each plate shows its etched phase pattern (graphite, per pixel) and the light crossing it (red).
  */
 import * as THREE from 'three'
-import { GAPS, LENGTH, N, PITCH, PLANES, PLANE_DATA, PLANE_Z, ROUTE_LENGTH, slice, createField } from '@/lib/phaser-sim'
+import { DX, GAPS, LENGTH, N, PLANES, PLANE_DATA, PLANE_Z, slice, createField } from '@/lib/phaser-sim'
 import { LiveStack } from '@/lib/live'
 
 const RED = new THREE.Vector3(1.0, 0.165, 0.07)
 const L_MM = LENGTH * 1e3 // 24
-const ROUTE_MM = ROUTE_LENGTH * 1e3 // 48
-const W = N * PITCH * 1e3 / 2 // window / panel width, mm (4.064)
+const ROUTE_MM = 2 * L_MM // the route in air, up and back (the glass is drawn thin)
+const W = N * DX * 1e3 // window / plate width, mm (2.56)
 const SLICE = 0.6 // mm between precomputed cross-sections along the route
 const LAYERS = Math.round(ROUTE_MM / SLICE) // per trip
-const PACKETS = 36 // time-multiplexed wavefronts in flight at once, 1.33 mm apart along the 48 mm round trip
+const PACKETS = 36 // time-multiplexed wavefronts in flight at once, 1.4 mm apart along the 50 mm round trip
 const CRESTS = 3
 const CREST_GAP = 0.3 // mm between drawn crests (stylised)
 const ENVELOPE = [0.5, 1, 0.5]
-export const DETECTOR_Y = -7
+export const DETECTOR_Y = -6
 
 export type V3 = [number, number, number]
 type View = { pos: V3; target: V3; shift: [number, number] }
 export type Framing = 'hero' | 'section'
 const FRAMING: Record<Framing, { landscape: View; portrait: View }> = {
   hero: {
-    landscape: { pos: [47, 46, 92], target: [0, 8.5, 0], shift: [-0.2, 0] },
-    portrait: { pos: [62, 64, 124], target: [0, 8.5, 0], shift: [0.03, 0.02] },
+    landscape: { pos: [16, 26, 20], target: [0, 11, 0], shift: [-0.2, 0] },
+    portrait: { pos: [18, 28, 24], target: [0, 11.5, 0], shift: [0, 0.04] },
   },
   section: {
     landscape: { pos: [46, 40, 92], target: [0, 8.5, 0], shift: [0, 0] },
@@ -132,20 +132,14 @@ export class StackScene {
     this.crests.renderOrder = 3
     this.scene.add(this.crests)
 
-    // ── LCD panels: phase program in graphite (per pixel), light landing on them in red (per sample) ──
+    // ── phase plates: etched pattern in graphite (per pixel), light crossing them in red ──
     const panelMat = (tex: THREE.DataTexture) => new THREE.ShaderMaterial({
       uniforms: { uMap: { value: tex } },
       vertexShader: /* glsl */ `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
       fragmentShader: /* glsl */ `
         uniform sampler2D uMap; varying vec2 vUv;
         void main() {
-          vec3 c = texture2D(uMap, vUv).rgb;
-          // black matrix between pixels: fill factor 0.85 → 3.9 % of the pitch per edge; fades when pixels get small on screen
-          vec2 g = vUv * 64.0; vec2 f = abs(fract(g) - 0.5); vec2 w = fwidth(g);
-          float line = max(step(0.461, f.x), step(0.461, f.y));
-          float vis = 1.0 - smoothstep(0.25, 0.5, max(w.x, w.y));
-          c *= 1.0 - 0.7 * line * vis;
-          gl_FragColor = vec4(c, 1.0);
+          gl_FragColor = vec4(texture2D(uMap, vUv).rgb, 1.0); // fabricated plates have no dead zone between pixels
         }`,
       side: THREE.DoubleSide, transparent: true, depthWrite: false,
     })
@@ -190,12 +184,12 @@ export class StackScene {
       g.add(m)
     }
     // input mirror / coupler (reflecting face at y = 0) and the end mirror (face at y = 24)
-    box(7, 1.6, 7, -0.8, 0.5); fill(7, 1.6, 7, -0.8, 0xe9e5dc, 0.035)
-    box(7, 2.4, 7, L_MM + 1.2, 0.5); fill(7, 2.4, 7, L_MM + 1.2, 0xe9e5dc, 0.035)
-    // LCD glass around each active area
-    for (const z of PLANE_Z) box(5.6, 0.7, 5.6, z * 1e3, 0.22)
+    box(3.2, 1.6, 3.2, -0.8, 0.5); fill(3.2, 1.6, 3.2, -0.8, 0xe9e5dc, 0.035)
+    box(3.2, 2.4, 3.2, L_MM + 1.2, 0.5); fill(3.2, 2.4, 3.2, L_MM + 1.2, 0xe9e5dc, 0.035)
+    // fused-silica substrate (1 mm) of each phase plate, etched face at the plate's plane
+    for (const z of PLANE_Z) box(2.2, 1, 2.2, z * 1e3 + 0.5, 0.24)
     // detector below the input mirror, and its package
-    box(5.2, 0.8, 5.2, DETECTOR_Y - 0.45, 0.3)
+    box(2.2, 0.8, 2.2, DETECTOR_Y - 0.45, 0.3)
     // the optical axis
     const axis = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, DETECTOR_Y, 0), new THREE.Vector3(0, L_MM + 2.4, 0)])
     g.add(new THREE.Line(axis, mat(0.08)))
@@ -224,7 +218,7 @@ export class StackScene {
     for (let i = 0; i < GAPS.length; i++) if (sc * 1e-3 < GAPS[i].distance + GAPS[i].length) { gi = i; break }
     slice(this.live.spectra[slot][gi], sc * 1e-3 - GAPS[gi].distance, this.work, this.sliceI)
     const off = layer * N * N
-    for (let i = 0; i < N * N; i++) this.texData[off + i] = Math.round(255 * (1 - Math.exp(-this.sliceI[i] / 3.5)))
+    for (let i = 0; i < N * N; i++) this.texData[off + i] = Math.round(255 * (1 - Math.exp(-this.sliceI[i] / 0.5)))
     this.tex.addLayerUpdate(layer)
     this.tex.needsUpdate = true
     this.layerTrip[layer] = trip
@@ -239,8 +233,8 @@ export class StackScene {
       for (const x of ph) pmax = Math.max(pmax, x)
       for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
         const k = j * N + i
-        const gph = 0.08 + 0.16 * (ph[(j >> 1) * 64 + (i >> 1)] / pmax)
-        const t = 1 - Math.exp(-I[k] / 7)
+        const gph = 0.08 + 0.16 * (ph[k] / pmax)
+        const t = 1 - Math.exp(-I[k] / 1.0)
         data[4 * k] = 255 * (gph * (1 - t) + t); data[4 * k + 1] = 255 * (gph * (1 - t) + 0.165 * t)
         data[4 * k + 2] = 255 * (gph * 0.95 * (1 - t) + 0.07 * t); data[4 * k + 3] = 255
       }
@@ -248,7 +242,7 @@ export class StackScene {
     }
     const { data, tex } = this.detector
     for (let k = 0; k < N * N; k++) {
-      const t = 1 - Math.exp(-this.live.tapI[k] / 0.15)
+      const t = 1 - Math.exp(-this.live.tapI[k] / 0.03)
       data[4 * k] = 255 * (0.05 * (1 - t) + t); data[4 * k + 1] = 255 * (0.05 * (1 - t) + 0.165 * t); data[4 * k + 2] = 255 * (0.048 * (1 - t) + 0.07 * t); data[4 * k + 3] = 255
     }
     tex.needsUpdate = true
