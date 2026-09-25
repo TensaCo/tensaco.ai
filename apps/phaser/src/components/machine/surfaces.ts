@@ -103,6 +103,35 @@ function normalMap(hgt: Float32Array, w: number, h: number, strength: number, wr
   return texOf(cv, false)
 }
 
+/**
+ * handling smudges: soft oily smears, some with faint print ridges, added to a roughness field (`amount` < 0: oil makes a
+ * matte surface glossier; > 0: it hazes a polished one)
+ */
+function smudges(dr: Float32Array, w: number, h: number, count: number, amount: number, seed: number, wrap: boolean) {
+  const r = rng(seed)
+  for (let k = 0; k < count; k++) {
+    const cx = r() * w, cy = r() * h, rx = (0.04 + 0.08 * r()) * Math.min(w, h), ry = rx * (0.5 + 0.4 * r()), a = r() * Math.PI
+    const ridged = r() < 0.6, freq = (Math.PI * 2) / (2.2 + 1.5 * r()), amt = amount * (0.5 + 0.5 * r())
+    const ca = Math.cos(a), sa = Math.sin(a), R = Math.ceil(rx * 1.6)
+    for (let j = -R; j <= R; j++) for (let i = -R; i <= R; i++) {
+      let x = Math.round(cx + i), y = Math.round(cy + j)
+      if (wrap) { x = ((x % w) + w) % w; y = ((y % h) + h) % h } else if (x < 0 || y < 0 || x >= w || y >= h) continue
+      const u = (i * ca + j * sa) / rx, v = (-i * sa + j * ca) / ry, d = Math.sqrt(u * u + v * v)
+      if (d >= 1.5) continue
+      const fall = Math.exp(-2.2 * d * d) * (1 - d / 1.5)
+      const ridge = ridged ? 0.55 + 0.45 * Math.sin(Math.sqrt(u * u * rx * rx + v * v * ry * ry * 1.4) * freq) : 1
+      dr[y * w + x] += amt * fall * ridge
+    }
+  }
+}
+
+/** a polished surface's roughness with a few slight smudges on it (glass, coatings); G = roughness */
+export function smudgeTex(seed: number, base: number, count = 4, amount = 0.14) {
+  const S = 256, dr = new Float32Array(S * S).fill(base)
+  smudges(dr, S, S, count, amount, seed, true)
+  return tile(fromPixels(S, S, (i, d) => { d[4 * i] = 0; d[4 * i + 1] = 255 * Math.min(1, dr[i]); d[4 * i + 2] = 255 }, false))
+}
+
 export interface WearOptions {
   seed: number
   size?: number
@@ -113,6 +142,8 @@ export interface WearOptions {
   /** base roughness, and how much smudges (fingerprints, handling) change it */
   rough: number
   smudge: number
+  /** handling smudges (default 3) */
+  prints?: number
   /** a colour map: base colour, what patches drift to (tarnish), what shows inside a nick (bare metal) */
   tint?: { base: THREE.ColorRepresentation; patch: THREE.ColorRepresentation; bare: THREE.ColorRepresentation; patchAmount: number }
 }
@@ -149,6 +180,7 @@ export function wear(o: WearOptions): Wear {
     }
   }
   const smooth = blur(hgt, S, S, true)
+  smudges(dr, S, S, o.prints ?? 3, o.rough > 0.35 ? -0.12 : 0.1, o.seed + 3, true)
   const sm = rolled(fbm(S, S, 4, 7, 4), S, S, (o.seed * 97) % S, (o.seed * 57) % S)
   const rough = fromPixels(S, S, (i, d) => {
     const v = Math.max(0.04, Math.min(1, o.rough + o.smudge * (sm[i] - 0.5) * 2 + dr[i]))
@@ -241,6 +273,10 @@ export function pcb(w: number, l: number, px: number, seed: number, draw: (p: Pc
     rd.data[4 * i + 1] = rd.data[4 * i + 1] * (1 - a) + 230 * a + (onMetal ? 0 : 40 * (blot[i] - 0.5))
     rd.data[4 * i + 2] *= 1 - a
   }
+  // a few smudges where the board was handled (oil on the mask makes it glossier), heaviest near the edges
+  const oil = new Float32Array(n)
+  smudges(oil, W, H, 7, -0.16, seed + 9, false)
+  for (let i = 0; i < n; i++) if (oil[i]) rd.data[4 * i + 1] = Math.max(8, rd.data[4 * i + 1] + 255 * oil[i])
   col.c.putImageData(cd, 0, 0); rm.c.putImageData(rd, 0, 0)
   return { map: texOf(col.cv, true), normal: normalMap(hgt, W, H, 1.1, false), rm: texOf(rm.cv, false) }
 }

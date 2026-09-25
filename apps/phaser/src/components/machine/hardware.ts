@@ -24,7 +24,7 @@ import * as THREE from 'three'
 import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js'
 import { LENGTH, PLANE_Z } from '@/lib/phaser-sim'
-import { canvasTex, icMark, pcb, rng, wear, type PcbPainter } from './surfaces'
+import { canvasTex, icMark, pcb, rng, smudgeTex, wear, type PcbPainter } from './surfaces'
 
 const L = LENGTH * 1e3 // 25
 export const PART_Y = {
@@ -71,6 +71,10 @@ const canRough = () => canvasTex(512, 512, (c) => {
   for (let k = 0; k < 26; k++) { // fingerprint ridges: concentric loops, broken
     c.strokeStyle = `rgba(0,150,255,${0.1 + 0.12 * r()})`
     c.beginPath(); c.ellipse(360, 150, 8 + k * 4.2, 11 + k * 5.4, 0.5, r() * 0.8, Math.PI * 2 - r() * 0.8); c.stroke()
+  }
+  for (let k = 0; k < 4; k++) { // soft smears where it was picked up
+    const x = r() * 512, y = r() * 512, rad = 30 + 50 * r(), g = c.createRadialGradient(x, y, 0, x, y, rad)
+    g.addColorStop(0, 'rgba(0,150,255,0.22)'); g.addColorStop(1, 'rgba(0,150,255,0)'); c.fillStyle = g; c.fillRect(x - rad, y - rad, 2 * rad, 2 * rad)
   }
   for (let k = 0; k < 9; k++) { c.strokeStyle = `rgba(0,${r() < 0.5 ? 30 : 170},255,0.7)`; c.lineWidth = 1; c.beginPath(); const x = r() * 512, y = r() * 512, a = r() * Math.PI; c.moveTo(x, y); c.lineTo(x + Math.cos(a) * 140 * r(), y + Math.sin(a) * 140 * r()); c.stroke() }
 }, false)
@@ -237,7 +241,7 @@ const mats = () => {
   const plastic = wear({ seed: 61, size: 256, nicks: 1, scratches: 5, rough: 0.62, smudge: 0.16 })
   const boardM = boardMaps(), modM = moduleMaps(), drvM = driverMaps()
   const pcbMat = (q: ReturnType<typeof pcb>) => new THREE.MeshStandardMaterial({ map: q.map, normalMap: q.normal, roughnessMap: q.rm, metalnessMap: q.rm, roughness: 1, metalness: 1 })
-  const cr = canRough()
+  const cr = canRough(), glassSmudge = smudgeTex(81, 0.03, 4, 0.12)
   return {
     anodised: worn(16, ano, { metalness: 0.55 }, 0.7),
     anodisedEdge: worn(14, anoEdge, { metalness: 0.8 }, 0.7),
@@ -249,15 +253,15 @@ const mats = () => {
     steel: new THREE.MeshStandardMaterial({ color: 0xa19d95, roughness: 1, roughnessMap: turnedTex(), metalness: 1 }),
     spring: new THREE.MeshStandardMaterial({ color: 0x8f8b84, roughness: 0.3, metalness: 1 }),
     glass: new THREE.MeshPhysicalMaterial({
-      color: 0xe6ecea, roughness: 0.03, metalness: 0, transparent: true, opacity: 0.2, depthWrite: false,
+      color: 0xe6ecea, roughness: 1, roughnessMap: glassSmudge, metalness: 0, transparent: true, opacity: 0.2, depthWrite: false,
       iridescence: 0.65, iridescenceIOR: 1.38, iridescenceThicknessRange: [120, 260], // AR coating: a faint violet-green sheen
-      clearcoat: 1, clearcoatRoughness: 0.02, side: THREE.DoubleSide,
+      clearcoat: 1, clearcoatRoughness: 1, clearcoatRoughnessMap: glassSmudge, side: THREE.DoubleSide,
     }),
     crystal: new THREE.MeshPhysicalMaterial({
-      color: 0xd9dcd6, roughness: 0.05, metalness: 0, transparent: true, opacity: 0.3, depthWrite: false, clearcoat: 1,
+      color: 0xd9dcd6, roughness: 1, roughnessMap: smudgeTex(82, 0.05, 3), metalness: 0, transparent: true, opacity: 0.3, depthWrite: false, clearcoat: 1,
       iridescence: 0.5, iridescenceIOR: 1.4, iridescenceThicknessRange: [150, 300], side: THREE.DoubleSide,
     }),
-    mirror: new THREE.MeshPhysicalMaterial({ color: 0xd8d5ce, roughness: 0.04, metalness: 0.95, iridescence: 0.8, iridescenceIOR: 1.6, iridescenceThicknessRange: [200, 420] }),
+    mirror: new THREE.MeshPhysicalMaterial({ color: 0xd8d5ce, roughness: 1, roughnessMap: smudgeTex(83, 0.04, 2, 0.1), metalness: 0.95, iridescence: 0.8, iridescenceIOR: 1.6, iridescenceThicknessRange: [200, 420] }),
     coating: new THREE.MeshPhysicalMaterial({ color: 0xd8d5ce, roughness: 0.05, metalness: 0.9, transparent: true, opacity: 0.55, iridescence: 0.8, iridescenceThicknessRange: [200, 420] }),
     fr4: new THREE.MeshStandardMaterial({ color: 0x151614, roughness: 0.7, metalness: 0 }),
     fr4Edge: new THREE.MeshStandardMaterial({ color: 0x2a2a24, roughness: 0.85, metalness: 0 }), // routed edge: glass weave shows
@@ -266,8 +270,8 @@ const mats = () => {
     driverTop: pcbMat(drvM),
     can: new THREE.MeshStandardMaterial({ map: brushedTex(), roughness: 1, roughnessMap: cr, metalness: 1 }),
     canMark: new THREE.MeshStandardMaterial({ map: brushedTex(['ESP32-S3-WROOM-1', 'N16R8', 'FCC ID 2AC7Z-ESPS3WROOM1']), roughness: 1, roughnessMap: cr, metalness: 1 }),
-    gold: new THREE.MeshStandardMaterial({ color: 0xbfa062, roughness: 0.28, metalness: 1 }),
-    pin: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3, metalness: 1 }), // header pins: gold, tinted per pin
+    gold: new THREE.MeshStandardMaterial({ color: 0xbfa062, roughness: 1, roughnessMap: smudgeTex(85, 0.28, 4, 0.12), metalness: 1 }),
+    pin: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, roughnessMap: smudgeTex(86, 0.3, 6, 0.15), metalness: 1 }), // header pins: gold, tinted per pin
     tin: new THREE.MeshStandardMaterial({ color: 0xc9c7c1, roughness: 0.3, metalness: 1 }),
     solder: new THREE.MeshStandardMaterial({ color: 0xb9b7b0, roughness: 0.22, metalness: 1 }),
     shell: worn(4, wear({ seed: 71, size: 256, nicks: 2, scratches: 9, rough: 0.28, smudge: 0.15, tint: { base: 0xbdbab3, patch: 0xa9a59c, bare: 0xd2cfc8, patchAmount: 0.5 } }), { metalness: 1 }, 0.5),
@@ -285,7 +289,7 @@ const mats = () => {
     wireC: new THREE.MeshStandardMaterial({ color: 0x4a4844, roughness: 0.5, metalness: 0 }),
     cable: new THREE.MeshStandardMaterial({ color: 0x1b1b1b, roughness: 0.72, metalness: 0 }),
     lint: new THREE.MeshStandardMaterial({ color: 0x77736b, roughness: 1, metalness: 0 }),
-    lensGlass: new THREE.MeshPhysicalMaterial({ color: 0x15181c, roughness: 0.04, metalness: 0.2, clearcoat: 1, iridescence: 0.8, iridescenceThicknessRange: [200, 400] }),
+    lensGlass: new THREE.MeshPhysicalMaterial({ color: 0x15181c, roughness: 1, roughnessMap: smudgeTex(84, 0.04, 2), metalness: 0.2, clearcoat: 1, iridescence: 0.8, iridescenceThicknessRange: [200, 400] }),
     markBridge: new THREE.MeshStandardMaterial({ map: icMark(['CP2102N', 'A01 2231'], 4, 4), roughness: 0.5, metalness: 0.05 }),
     markLdo: new THREE.MeshStandardMaterial({ map: icMark(['SGM2212', '3.3 22K'], 6.5, 3.5, false), roughness: 0.5, metalness: 0.05 }),
     markReg: new THREE.MeshStandardMaterial({ map: icMark(['LBMY'], 2.9, 1.6), roughness: 0.5, metalness: 0.05 }),
