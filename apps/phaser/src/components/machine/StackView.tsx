@@ -91,7 +91,8 @@ export default function StackView({ framing, tripSeconds, annotations, onStatus,
       const small = Math.min(box.width, box.height) < 600
       try {
         scene = new StackScene({ canvas, width: box.width, height: box.height, dpr: Math.min(window.devicePixelRatio || 1, small ? 1.5 : 1.75), tripSeconds, framing, live })
-      } catch {
+      } catch (e) {
+        console.error('machine view unavailable: ' + (e instanceof Error ? e.stack : String(e)))
         st.setAttribute('data-fallback', '')
         canvas.style.display = 'none'
         return

@@ -14,7 +14,7 @@ const StackView = dynamic(() => import('../machine/StackView'), { ssr: false, lo
 
 const TRIP_SECONDS = 2.4
 const TOP = LENGTH * 1e3
-const PLATE = 1 // which phase plate Fig. 3 shows (0-based)
+const PLATE = 1 // which phase plate the pixel plate shows (0-based)
 const PMAX = Math.max(...PLANE_DATA[PLATE].phase)
 const EXPOSURE = 1 // |E|² (field units) at 63 % red
 const mm = (z: number) => (z * 1e3).toFixed(1)
@@ -74,13 +74,13 @@ export function MachineSection() {
               <StackView framing="section" tripSeconds={TRIP_SECONDS} annotations={NOTES} onStatus={onStatus} live={live} />
             </div>
             <figcaption>
-              <b>Fig. 2</b><span>The cavity at true scale: {(N * DX * 1e3).toFixed(2)} mm wide, {TOP} mm between the mirrors. Each wavefront carries the simulated intensity |E|² at its plane.<Fn id="figure" /></span>
+              <span>The cavity at true scale: {(N * DX * 1e3).toFixed(2)} mm wide, {TOP} mm between the mirrors. Each wavefront carries the simulated intensity |E|² at its plane.<Fn id="figure" /></span>
               <span className={s.live}>round trip <i ref={(el) => { txt.current.trip = el }}>000000</i></span>
             </figcaption>
           </figure>
           <figure className={s.fig}>
             <canvas ref={plate} className={s.slm} aria-label="One phase plate's 64 by 64 pixels with the light crossing them" />
-            <figcaption><b>Fig. 3</b> Phase plate 2, all 64 × 64 pixels. Graphite: its etched phase program. Red: the light crossing it this round trip, up and back.</figcaption>
+            <figcaption><span>Phase plate 2, all 64 × 64 pixels. Graphite: its etched phase program. Red: the light crossing it this round trip, up and back.</span></figcaption>
           </figure>
         </div>
 

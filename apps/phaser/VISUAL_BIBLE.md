@@ -58,7 +58,7 @@ No blue, no gradients, no glass, no glow outside the beam itself.
   not drawn: the research found a stack of them keeps ~0.5 % per trip. `scripts/validate-sim.ts` hands the same config to
   the research simulator and compares every round trip; rerun it whenever the port changes. Nothing on the page may
   pretend to compute what the model didn't.
-- The hero and Fig. 2 show the real bench assembly at true scale (`hardware.ts`, mm): two stainless cage rods; the four
+- The hero and the machine figure show the real bench assembly at true scale (`hardware.ts`, mm): two stainless cage rods; the four
   etched fused-silica plates (5 × 5 × 1 mm, AR-coated, the etch's pixel relief visible up close) in slim anodised cells on
   cantilever arms; the concave end mirror in a kinematic mount; the gain crystal whose top face is the input-mirror coating;
   an OV3660 camera module on its polyimide flex to an ESP32-S3 dev board. Physically based materials (anodised aluminium,
@@ -68,7 +68,8 @@ No blue, no gradients, no glass, no glow outside the beam itself.
   stack (time-multiplexed, nearly overlapping), each drawn as a few crest sheets. The crests are stylised (true 650 nm crests
   can't be drawn at this scale), but every sheet's cross-section is the simulated |E|² at its plane on its round trip. Don't
   label the crest spacing.
-- Fig. 2's annotations are hairline leaders to mono labels, stacked so they never overlap. Fig. 3 is one plate’s 64 × 64 pixels.
+- The machine figure's annotations are hairline leaders to mono labels, stacked so they never overlap. Beside it, one plate's 64 × 64 pixels.
+- Figures are never numbered (no "Fig. 1/2/3"): each gets a plain caption below it, with its footnote marker inline at the end.
 - The electrons-and-light figure is one illustration with a shallow depth of field (front layer sharp, layers behind
   blurred): light rains down onto one region of a glass slab above (red wave packets whose fringes close up by n = 1.5 inside), and
   below, atoms drawn as points sampled from orbital densities, with electrons struggling to tunnel from cloud to cloud (most
@@ -83,7 +84,7 @@ No blue, no gradients, no glass, no glow outside the beam itself.
 
 1. At least 60 % of every viewport is black or paper.
 2. Each section has exactly one hero element: the machine, the chart, the photograph, or the closing line.
-3. Hairline spec plates (fig. no., λ = 650 nm, scale) replace labels on imagery.
+3. Hairline spec plates (λ = 650 nm, scale) and leader-line annotations replace labels on imagery; figures are not numbered.
 4. Every number sits next to a footnote marker (`<Fn id=…>`, anchors in `Close.tsx` FN); the receipts live on /notes, not inline.
 5. Every frame must hold up as a screenshot on its own.
 
