@@ -2,55 +2,74 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useUser } from '@/lib/api'
+import { Logo } from './Logo'
 import s from './Header.module.css'
 
 /** pages without a full-bleed photo/video hero get a solid header from the start */
-const NO_HERO = ['/privacy/']
+const SOLID = ['/legal/', '/login/', '/signup/', '/account/', '/careers/', '/investors/', '/newsroom/']
 
-const MENU = [
-  { label: 'Solutions', href: '/solutions/', items: [
-    { label: 'PHASER', sub: 'Optical AI acceleration', href: '/solutions/phaser/' },
-    { label: 'TensorCode', sub: 'Accountable AI software', href: '/solutions/tensorcode/' },
+const MENU: { label: string; href: string; items?: { label: string; href: string; external?: boolean }[] }[] = [
+  { label: 'Solutions', href: '/#solutions', items: [
+    { label: 'PHASER', href: 'https://phaser.tensaco.ai', external: true },
+    { label: 'TensorCode', href: 'https://tensorcode.dev', external: true },
   ] },
   { label: 'Company', href: '/company/', items: [
-    { label: 'About TensaCo', sub: 'Mission and values', href: '/company/' },
-    { label: 'Leadership', sub: 'The people leading TensaCo', href: '/company/leadership/' },
-    { label: 'Careers', sub: 'Work with us', href: '/careers/' },
+    { label: 'About us', href: '/company/' },
+    { label: 'Leadership', href: '/company/leadership/' },
+    { label: 'Careers', href: '/careers/' },
+    { label: 'Newsroom', href: '/newsroom/' },
   ] },
   { label: 'Investors', href: '/investors/' },
-  { label: 'Newsroom', href: '/newsroom/' },
+  { label: 'Contact', href: '/contact/' },
 ]
 
 export function Header() {
-  const [solid, setSolid] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
-  const plain = NO_HERO.includes(usePathname())
+  const path = usePathname()
+  const solidPage = SOLID.some((p) => path.startsWith(p)) && path !== '/careers/'
+  const user = useUser()
   useEffect(() => {
-    const on = () => setSolid(window.scrollY > 40)
+    const on = () => setScrolled(window.scrollY > 40)
     on()
     window.addEventListener('scroll', on, { passive: true })
     return () => window.removeEventListener('scroll', on)
   }, [])
+  const close = () => setOpen(false)
   return (
-    <header className={`${s.header} ${solid || open || plain ? s.solid : ''}`}>
+    <header className={`${s.header} ${scrolled || open || solidPage ? s.solid : ''}`}>
       <div className={s.bar}>
-        <Link href="/" className={s.logo} aria-label="TensaCo home">Tensa<span>Co</span></Link>
+        <Logo className={s.logo} />
         <nav className={`${s.nav} ${open ? s.open : ''}`} aria-label="Main">
-          {MENU.map((m) => (
-            <div key={m.label} className={s.item}>
-              <Link href={m.href} className={s.top} onClick={() => setOpen(false)}>{m.label}{m.items && <i aria-hidden="true" />}</Link>
-              {m.items && (
-                <div className={s.drop}>
-                  {m.items.map((it) => (
-                    <Link key={it.href + it.label} href={it.href} onClick={() => setOpen(false)}>
-                      <b>{it.label}</b><span>{it.sub}</span>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-          <Link href="/contact/" className={s.cta} onClick={() => setOpen(false)}>Contact us</Link>
+          <ul className={s.menu}>
+            {MENU.map((m) => (
+              <li key={m.label} className={s.item}>
+                <Link href={m.href} className={s.top} onClick={close}>{m.label}{m.items && <i aria-hidden="true" />}</Link>
+                {m.items && (
+                  <ul className={s.drop}>
+                    {m.items.map((it) => (
+                      <li key={it.label}>
+                        {it.external
+                          ? <a href={it.href} onClick={close}>{it.label}<span aria-hidden="true">↗</span></a>
+                          : <Link href={it.href} onClick={close}>{it.label}</Link>}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+          <div className={s.account}>
+            {user ? (
+              <Link href="/account/" className={s.signup} onClick={close}>My account</Link>
+            ) : (
+              <>
+                <Link href="/login/" className={s.login} onClick={close}>Log in</Link>
+                <Link href="/signup/" className={s.signup} onClick={close}>Create account</Link>
+              </>
+            )}
+          </div>
         </nav>
         <button className={s.burger} aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open} onClick={() => setOpen((o) => !o)}>
           <span /><span /><span />

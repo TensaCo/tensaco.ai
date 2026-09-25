@@ -36,8 +36,9 @@
     ".next-dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
+    "scripts",
     "out",
-    "scripts"
+    "worker",
+    "node_modules"
   ]
 }

@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://tensaco.ai/'),
   title: { default: 'TensaCo — Intelligence infrastructure for the enterprise', template: '%s — TensaCo' },
   description: 'TensaCo builds the compute and software that make AI faster, more efficient and accountable: PHASER optical AI acceleration and TensorCode accountable AI software.',
+  icons: { icon: '/favicon.ico', apple: '/apple-touch-icon.png' },
   openGraph: { siteName: 'TensaCo', images: ['og.jpg'] },
   twitter: { card: 'summary_large_image', site: '@TensacoInc', images: ['og.jpg'] },
 }

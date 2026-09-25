@@ -15,7 +15,7 @@ export default function Home() {
         lead="TensaCo builds the compute and the software that make AI faster, more efficient and accountable, so organizations can adopt it at scale with confidence."
       >
         <div className="btn-row">
-          <Link href="/solutions/" className="btn btn-primary">Explore our solutions</Link>
+          <a href="#solutions" className="btn btn-primary">Explore our solutions</a>
           <Link href="/contact/" className="btn btn-ghost">Talk to our team</Link>
         </div>
       </Hero>
@@ -33,20 +33,19 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section mist">
+      <section className="section mist" id="solutions">
         <div className="wrap">
           <div className={s.head}>
             <div>
               <p className="eyebrow">Solutions</p>
               <h2 className="h2">Built for practical deployment.</h2>
             </div>
-            <Link href="/solutions/" className="link-arrow">All solutions →</Link>
           </div>
           <div className="grid-2">
-            <Card media={MEDIA.labOptics} title="PHASER: optical AI acceleration" href="/solutions/phaser/">
+            <Card media={MEDIA.labOptics} title="PHASER: optical AI acceleration" href="https://phaser.tensaco.ai" cta="Visit phaser.tensaco.ai">
               <p>Neural-network computation performed by light, for AI infrastructure where energy and latency set the limits.</p>
             </Card>
-            <Card media={MEDIA.screens} title="TensorCode: accountable AI software" href="/solutions/tensorcode/">
+            <Card media={MEDIA.screens} title="TensorCode: accountable AI software" href="https://tensorcode.dev" cta="Visit tensorcode.dev">
               <p>AI your team can check, correct and own: trainable programs with reviewed feedback, reproducible artifacts and full provenance.</p>
             </Card>
           </div>
@@ -73,7 +72,7 @@ export default function Home() {
           Governments, utilities and enterprises are planning for a decade of AI growth. TensaCo works on the technology that
           determines what that growth costs.
         </p>
-        <div className="btn-row"><Link href="/investors/" className="btn btn-ghost">Investor relations</Link></div>
+        <div className="btn-row"><Link href="/contact/" className="btn btn-ghost">Talk to our team</Link></div>
       </Band>
 
       <section className="section">
@@ -87,7 +86,7 @@ export default function Home() {
           </div>
           <div className="grid-3">
             {NEWS.slice(0, 3).map((n) => (
-              <a key={n.title} href={n.href} className={s.news}>
+              <a key={n.slug} href={`/newsroom/${n.slug}/`} className={s.news}>
                 <span className={s.newsMeta}>{n.tag} · {formatDate(n.date)}</span>
                 <span className={s.newsTitle}>{n.title}</span>
                 <span className="link-arrow">Read more →</span>

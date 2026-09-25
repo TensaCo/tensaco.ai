@@ -32,7 +32,7 @@ export function Subscribe({ source }: { source: string }) {
       <input name="company" type="text" tabIndex={-1} autoComplete="off" className={s.trap} aria-hidden="true" />
       <button type="submit" className={s.button} disabled={state === 'busy'}>{state === 'busy' ? 'Subscribing…' : 'Subscribe'}</button>
       {state === 'error' && <p className={s.error} role="alert">{error}</p>}
-      <p className={s.fine}>News from TensaCo. See our <a href="/privacy/">privacy notice</a>. Unsubscribe any time.</p>
+      <p className={s.fine}>News from TensaCo. See our <a href="/legal/privacy/">Privacy Policy</a>. Unsubscribe any time.</p>
     </form>
   )
 }

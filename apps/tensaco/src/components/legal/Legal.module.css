@@ -1,0 +1,22 @@
+.page { padding: 112px 0 96px; }
+.grid { display: grid; grid-template-columns: 260px 1fr; gap: clamp(32px, 5vw, 72px); align-items: start; }
+.toc { position: sticky; top: 96px; display: grid; gap: 28px; font-size: 14px; max-height: calc(100vh - 120px); overflow-y: auto; }
+.toc nav { display: grid; gap: 6px; }
+.toc p { margin: 0 0 4px; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.toc a { color: var(--ink-2); text-decoration: none; }
+.toc a:hover { color: var(--blue); }
+.body { max-width: 780px; font-size: 15.5px; line-height: 1.7; color: var(--ink-2); }
+.body h1 { font-size: clamp(32px, 3.6vw, 44px); letter-spacing: -0.02em; color: var(--ink); }
+.updated { color: var(--muted); font-size: 14px; margin: 8px 0 28px; }
+.intro { font-size: 16.5px; }
+.body section { scroll-margin-top: 90px; }
+.body h2 { font-size: 20px; color: var(--ink); margin: 40px 0 12px; }
+.body h3 { font-size: 16px; color: var(--ink); margin: 22px 0 8px; }
+.body ul { padding-left: 22px; }
+.body li { margin: 4px 0; }
+.body table { width: 100%; border-collapse: collapse; font-size: 14.5px; margin: 12px 0; }
+.body th, .body td { text-align: left; vertical-align: top; padding: 10px 12px; border: 1px solid var(--line); }
+.body th { background: var(--mist); color: var(--ink); }
+.body strong { color: var(--ink); }
+.contact { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 14px; }
+@media (max-width: 900px) { .grid { grid-template-columns: 1fr; } .toc { position: static; max-height: none; } }

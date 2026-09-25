@@ -1,0 +1,14 @@
+{
+  "name": "tensaco-web",
+  "private": true,
+  "workspaces": ["apps/phaser", "apps/tensaco", "packages/*"],
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:local": "npm run db:migrate:local -w apps/tensaco",
+    "db:migrate:remote": "npm run db:migrate:remote -w apps/tensaco",
+    "db:studio": "drizzle-kit studio"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.0"
+  }
+}

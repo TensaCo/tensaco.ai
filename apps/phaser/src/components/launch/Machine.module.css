@@ -1,4 +1,4 @@
-.sec { color: var(--fg); padding: clamp(40px, 6vw, 96px) 0 clamp(72px, 9vw, 140px); }
+.sec { color: var(--fg); padding: clamp(40px, 6vw, 96px) 0 0; }
 .h { margin: 0; font-variation-settings: 'wdth' 70; font-weight: 700; font-size: clamp(40px, 6.4vw, 104px); line-height: 0.92; letter-spacing: -0.03em; }
 .h span { display: block; }
 .red { color: var(--red); }
@@ -33,8 +33,12 @@
   .leaders { display: none; }
 }
 
-.close { display: grid; grid-template-columns: 1fr auto; gap: 32px 64px; align-items: end; margin-top: clamp(80px, 10vw, 150px); }
-.body { margin: 0; font-size: 19px; line-height: 1.5; max-width: 44ch; color: var(--graphite); }
+.bench { position: relative; margin-top: clamp(80px, 10vw, 150px); overflow: hidden; }
+.benchVideo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.42) saturate(0.85); }
+.bench::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, var(--ink), rgba(10, 9, 8, 0.15) 22%, rgba(10, 9, 8, 0.15) 78%, var(--ink)); pointer-events: none; }
+.benchBody { position: relative; z-index: 1; padding-top: clamp(120px, 16vw, 220px); padding-bottom: clamp(120px, 16vw, 220px); }
+.close { display: grid; grid-template-columns: 1fr auto; gap: 32px 64px; align-items: end; }
+.body { margin: 0; font-size: clamp(20px, 1.8vw, 26px); line-height: 1.45; max-width: 40ch; color: var(--fg); text-shadow: 0 2px 24px rgba(0,0,0,0.5); }
 .cta { display: flex; gap: 12px; flex-wrap: wrap; }
 .cta a { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; border: 1px solid var(--rule); padding: 14px 18px; color: var(--fg); transition: border-color .2s, color .2s; }
 .cta a:hover { border-color: var(--red); color: var(--red); }

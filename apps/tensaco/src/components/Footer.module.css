@@ -1,14 +1,12 @@
-.footer { background: var(--ink); color: rgba(255, 255, 255, 0.78); padding-top: 72px; font-size: 15px; }
-.cols { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; padding-bottom: 56px; }
-.cols div { display: flex; flex-direction: column; gap: 10px; }
-.cols a { text-decoration: none; }
-.cols a:hover { color: var(--white); }
-.cols h4 { margin: 0 0 6px; color: var(--white); font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; }
-.brand p { margin: 8px 0 4px; max-width: 26ch; }
-.logo { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; color: var(--white); }
-.logo span { color: #60a5fa; }
-.legal { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding-top: 24px; padding-bottom: 32px; border-top: 1px solid rgba(255, 255, 255, 0.12); font-size: 13.5px; }
-.legalLinks { display: flex; gap: 22px; }
-.legal a { text-decoration: none; }
-.legal a:hover { color: var(--white); }
-@media (max-width: 900px) { .cols { grid-template-columns: 1fr 1fr; } }
+.footer { background: var(--ink); color: rgba(255, 255, 255, 0.72); font-size: 14px; }
+.top { display: flex; justify-content: space-between; gap: 48px; flex-wrap: wrap; padding-top: 48px; padding-bottom: 36px; }
+.brand { display: flex; flex-direction: column; gap: 14px; color: var(--white); }
+.brand a:last-child { color: rgba(255, 255, 255, 0.72); text-decoration: none; }
+.cols { display: flex; gap: clamp(32px, 6vw, 88px); flex-wrap: wrap; }
+.cols div { display: flex; flex-direction: column; gap: 8px; }
+.cols h4 { margin: 0 0 4px; color: var(--white); font-size: 12.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.cols a, .legal a { text-decoration: none; }
+.cols a:hover, .legal a:hover, .brand a:hover { color: var(--white); }
+.legal { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; padding-top: 18px; padding-bottom: 22px; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 13px; }
+.social { margin-left: auto; display: flex; gap: 18px; }
+@media (max-width: 700px) { .social { margin-left: 0; } }

@@ -45,7 +45,8 @@ export function Card({ media, title, children, href, cta = 'Learn more' }: { med
       </div>
     </>
   )
-  return href ? <Link href={href} className={s.card}>{inner}</Link> : <div className={s.card}>{inner}</div>
+  if (!href) return <div className={s.card}>{inner}</div>
+  return href.startsWith('http') ? <a href={href} className={s.card}>{inner}</a> : <Link href={href} className={s.card}>{inner}</Link>
 }
 
 /** Full-width band over a photo or video with a call to action. */

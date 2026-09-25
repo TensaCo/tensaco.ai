@@ -99,8 +99,11 @@ export function MachineSection() {
             ))}
           </svg>
         </div>
-
-        <div className={s.close}>
+      </div>
+      <div className={s.bench}>
+        <video className={s.benchVideo} src="/video/broll/lab-oscilloscope.mp4" poster="/video/broll/lab-oscilloscope.jpg" autoPlay muted loop playsInline aria-hidden="true" />
+        <div className={`wrap ${s.benchBody}`}>
+          <div className={s.close}>
           <p className={s.body}>
             Pushing charge through a wire costs energy every time. Light passing through glass doesn’t: it interferes with itself on the
             way through, and that interference is the arithmetic. PHASER only pays to keep the light going.
@@ -108,6 +111,7 @@ export function MachineSection() {
           <div className={s.cta}>
             <a href={`${REPO}/blob/main/research/2026-09-14/REPORT.md`}>Read the research <span>↗</span></a>
             <a href={`${REPO}/tree/main/research/2026-09-14/out/29`}>See the energy model <span>↗</span></a>
+          </div>
           </div>
         </div>
       </div>

@@ -1,0 +1,11 @@
+{
+  "name": "@tensaco/subscribe",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "handler.ts",
+  "dependencies": {
+    "@tensaco/db": "*",
+    "drizzle-orm": "^0.44.0"
+  }
+}

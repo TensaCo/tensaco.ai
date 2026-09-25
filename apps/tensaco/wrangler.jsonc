@@ -4,7 +4,7 @@
 {
   "name": "tensaco-site",
   "compatibility_date": "2026-09-01",
-  "main": "worker/index.js",
+  "main": "worker/index.ts",
   "assets": {
     "directory": "./out",
     "binding": "ASSETS",
@@ -12,6 +12,7 @@
     "html_handling": "auto-trailing-slash",
     "run_worker_first": true
   },
+  "r2_buckets": [{ "binding": "RESUMES", "bucket_name": "tensaco-careers" }],
   "d1_databases": [{ "binding": "DB", "database_name": "tensaco-subscribers", "database_id": "888cd573-e771-4a12-9834-b7fe800eaf2a", "migrations_dir": "../../migrations" }],
   "routes": [
     { "pattern": "tensaco.ai", "custom_domain": true },

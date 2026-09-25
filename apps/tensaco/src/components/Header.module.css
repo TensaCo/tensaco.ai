@@ -1,30 +1,36 @@
 .header { position: fixed; top: 0; left: 0; right: 0; z-index: 50; color: var(--white); transition: background .25s, color .25s, box-shadow .25s; }
 .header.solid { background: var(--white); color: var(--ink); box-shadow: 0 1px 0 var(--line); }
-.bar { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gutter); height: 76px; display: flex; align-items: center; justify-content: space-between; }
-.logo { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; text-decoration: none; }
-.logo span { color: #60a5fa; }
-.solid .logo span { color: var(--blue); }
-.nav { display: flex; align-items: center; gap: 6px; }
+.bar { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gutter); height: 72px; display: flex; align-items: center; gap: 40px; }
+.logo { flex: none; }
+.nav { flex: 1; display: flex; align-items: center; justify-content: space-between; }
+.menu { display: flex; list-style: none; margin: 0; padding: 0; }
 .item { position: relative; }
-.top { display: inline-flex; align-items: center; gap: 8px; padding: 26px 14px; font-weight: 500; font-size: 15.5px; text-decoration: none; }
-.top i { width: 7px; height: 7px; border-right: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor; transform: rotate(45deg) translateY(-3px); }
-.top:hover { opacity: 0.8; }
-.drop { position: absolute; top: 100%; left: 0; min-width: 300px; background: var(--white); color: var(--ink); border-top: 3px solid var(--blue); box-shadow: 0 18px 40px rgba(10, 31, 68, 0.16); padding: 10px; opacity: 0; visibility: hidden; transform: translateY(6px); transition: opacity .18s, transform .18s, visibility .18s; }
-.item:hover .drop, .item:focus-within .drop { opacity: 1; visibility: visible; transform: none; }
-.drop a { display: flex; flex-direction: column; padding: 12px 14px; text-decoration: none; border-radius: var(--radius); }
-.drop a:hover { background: var(--mist); }
-.drop b { font-weight: 600; }
-.drop span { font-size: 14px; color: var(--muted); }
-.cta { margin-left: 12px; padding: 11px 20px; background: var(--blue); color: var(--white); border-radius: var(--radius); font-weight: 600; font-size: 15px; text-decoration: none; }
-.cta:hover { background: var(--navy-2); }
-.burger { display: none; background: none; border: 0; padding: 10px; cursor: pointer; color: inherit; }
-.burger span { display: block; width: 24px; height: 2px; background: currentColor; margin: 5px 0; }
-@media (max-width: 960px) {
+.top { display: inline-flex; align-items: center; gap: 7px; padding: 25px 14px; font-weight: 500; font-size: 15px; text-decoration: none; }
+.top i { width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg) translateY(-2px); opacity: 0.7; }
+.top:hover { opacity: 0.75; }
+.drop { list-style: none; margin: 0; position: absolute; top: calc(100% - 8px); left: 4px; min-width: 200px; background: var(--white); color: var(--ink); border: 1px solid var(--line); box-shadow: 0 12px 28px rgba(10, 31, 68, 0.12); padding: 6px 0; opacity: 0; visibility: hidden; transition: opacity .15s, visibility .15s; }
+.item:hover .drop, .item:focus-within .drop { opacity: 1; visibility: visible; }
+.drop a { display: flex; justify-content: space-between; gap: 16px; padding: 9px 18px; font-size: 14.5px; text-decoration: none; }
+.drop a:hover { background: var(--mist); color: var(--blue); }
+.drop a span { color: var(--muted); font-size: 12px; }
+.account { display: flex; align-items: center; gap: 8px; }
+.login { padding: 9px 14px; font-weight: 500; font-size: 14.5px; text-decoration: none; }
+.login:hover { opacity: 0.75; }
+.signup { padding: 9px 16px; border: 1.5px solid currentColor; border-radius: var(--radius); font-weight: 600; font-size: 14.5px; text-decoration: none; }
+.solid .signup { background: var(--navy); border-color: var(--navy); color: var(--white); }
+.signup:hover { background: var(--white); color: var(--navy); border-color: var(--white); }
+.solid .signup:hover { background: var(--navy-2); border-color: var(--navy-2); color: var(--white); }
+.burger { display: none; margin-left: auto; background: none; border: 0; padding: 10px; cursor: pointer; color: inherit; }
+.burger span { display: block; width: 22px; height: 2px; background: currentColor; margin: 5px 0; }
+@media (max-width: 980px) {
   .burger { display: block; }
-  .nav { position: fixed; top: 76px; left: 0; right: 0; bottom: 0; background: var(--white); color: var(--ink); flex-direction: column; align-items: stretch; gap: 0; padding: 12px var(--gutter) 40px; overflow-y: auto; display: none; }
+  .nav { position: fixed; top: 72px; left: 0; right: 0; bottom: 0; background: var(--white); color: var(--ink); flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 8px var(--gutter) 40px; overflow-y: auto; display: none; }
   .nav.open { display: flex; }
-  .top { padding: 16px 0; font-size: 18px; border-bottom: 1px solid var(--line); width: 100%; }
+  .menu { flex-direction: column; }
+  .top { padding: 15px 0; font-size: 17px; width: 100%; border-bottom: 1px solid var(--line); }
   .top i { display: none; }
-  .drop { position: static; opacity: 1; visibility: visible; transform: none; box-shadow: none; border: 0; padding: 0 0 8px 12px; min-width: 0; }
-  .cta { margin: 20px 0 0; text-align: center; justify-content: center; padding: 14px; }
+  .drop { position: static; opacity: 1; visibility: visible; box-shadow: none; border: 0; padding: 4px 0 8px 12px; }
+  .account { flex-direction: column; align-items: stretch; margin-top: 24px; }
+  .login, .signup { text-align: center; padding: 13px; }
+  .signup { background: var(--navy); border-color: var(--navy); color: var(--white); }
 }

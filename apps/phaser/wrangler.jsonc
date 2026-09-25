@@ -4,7 +4,7 @@
 {
   "name": "phaser-site",
   "compatibility_date": "2026-09-01",
-  "main": "worker/index.js",
+  "main": "worker/index.ts",
   "assets": {
     "directory": "./out",
     "binding": "ASSETS",

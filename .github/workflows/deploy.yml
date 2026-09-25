@@ -4,10 +4,11 @@ name: Deploy
 #   apps/tensaco           -> https://tensaco.ai
 #   apps/phaser            -> https://phaser.tensaco.ai
 #   apps/tensorcode-alias  -> https://tensorcode.tensaco.ai (301 to tensorcode.dev)
-# Shared code (packages/subscribe) and D1 migrations redeploy the apps that use them.
+# Shared code (packages/*) and D1 migrations (Drizzle, migrations/) redeploy the apps that use them; migrations run first.
 #
 # Needs one repository secret, CLOUDFLARE_API_TOKEN: a token from the "Edit Cloudflare Workers" template, scoped to
-# account 20d4becc… and zone tensaco.ai, plus "Account · D1 · Edit" for migrations.
+# account 20d4becc… and zone tensaco.ai, plus "Account · D1 · Edit" (migrations) and "Account · Workers R2 Storage · Edit"
+# (the résumé bucket binding).
 
 on:
   push:
@@ -50,8 +51,8 @@ jobs:
         id: f
         with:
           filters: |
-            tensaco: ['apps/tensaco/**', 'packages/subscribe/**', 'migrations/**']
-            phaser: ['apps/phaser/**', 'packages/subscribe/**', 'migrations/**']
+            tensaco: ['apps/tensaco/**', 'packages/**', 'migrations/**', 'package-lock.json']
+            phaser: ['apps/phaser/**', 'packages/**', 'migrations/**', 'package-lock.json']
             alias: ['apps/tensorcode-alias/**']
             migrations: ['migrations/**']
 
@@ -59,13 +60,12 @@ jobs:
     needs: changes
     if: needs.changes.outputs.ready == 'true' && needs.changes.outputs.migrations == 'true'
     runs-on: ubuntu-latest
-    defaults: { run: { working-directory: apps/phaser } }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: npm, cache-dependency-path: apps/phaser/package-lock.json }
+        with: { node-version: 22, cache: npm }
       - run: npm ci
-      - run: npx wrangler d1 migrations apply tensaco-subscribers --remote
+      - run: npm run db:migrate:remote
 
   deploy:
     needs: [changes, migrate]
@@ -80,14 +80,13 @@ jobs:
         if: needs.changes.outputs[matrix.app] == 'true'
       - uses: actions/setup-node@v4
         if: needs.changes.outputs[matrix.app] == 'true'
-        with: { node-version: 22, cache: npm, cache-dependency-path: 'apps/${{ matrix.app }}/package-lock.json' }
+        with: { node-version: 22, cache: npm }
       - name: Build and deploy apps/${{ matrix.app }}
         if: needs.changes.outputs[matrix.app] == 'true'
-        working-directory: apps/${{ matrix.app }}
         run: |
           npm ci
-          npm run typecheck
-          npm run deploy
+          npm run typecheck -w apps/${{ matrix.app }}
+          npm run deploy -w apps/${{ matrix.app }}
 
   alias:
     needs: changes

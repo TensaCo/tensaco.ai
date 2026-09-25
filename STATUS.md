@@ -1,4 +1,4 @@
-# Status — where we left off (2026-09-24)
+# Status — where we left off (2026-09-25)
 
 ## Live
 - https://tensaco.ai (www → apex) — `apps/tensaco`: corporate site (home, solutions ×3, company, leadership, careers,
@@ -26,6 +26,11 @@
    2026-09-24. Nothing to do unless a resolver still misses it (flush at developers.google.com/speed/public-dns/cache).
 
 ## Also open
+- Make Jacob’s account staff after he signs up (README: “tensaco.ai accounts”).
+- Job locations in `apps/tensaco/src/data/jobs.ts` are placeholders (“Remote (United States)”, “On-site / hybrid
+  (United States)”); set real ones.
+- Legal pages: have counsel review; Terms say governing law is the state of incorporation, fill in once confirmed.
+- Password reset needs email sending (item 2).
 - Leadership page uses Jacob’s jvboid.dev photo (casual, cap); replace `apps/tensaco/public/media/people/jacob-valdez.jpg`
   with a professional headshot (4:5).
 - Stock gaps: no licensed video of an engineer in a data center or of an optics lab; photos cover both.

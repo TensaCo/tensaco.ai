@@ -1,32 +1,52 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { MEDIA } from '@/data/media'
-import { Card, Hero, Split } from '@/components/Blocks'
+import { JOBS } from '@/data/jobs'
+import { Hero, Split, Stats } from '@/components/Blocks'
+import { JobBoard } from '@/components/JobBoard'
 
-export const metadata: Metadata = { title: 'Careers', description: 'Build the foundations of advanced AI with TensaCo.' }
+export const metadata: Metadata = { title: 'Careers', description: 'Open positions at TensaCo across optics, hardware, research and software.' }
 
 export default function Careers() {
   return (
     <>
-      <Hero media={MEDIA.coding} tall={false} eyebrow="Careers" title="Do the most important work of your career."
-        lead="We are building a small, senior team across optics, machine learning and software." />
+      <Hero media={MEDIA.atrium} tall={false} eyebrow="Careers" title="Build the infrastructure of advanced AI."
+        lead="Join a team working on optical computing and accountable AI, from the physics up.">
+        <div className="btn-row"><a href="#openings" className="btn btn-primary">View open positions</a><Link href="/careers/apply/" className="btn btn-ghost">General application</Link></div>
+      </Hero>
       <section className="section">
         <div className="wrap">
-          <Split media={MEDIA.whiteboard} eyebrow="Working at TensaCo" title="Hard problems, real ownership.">
-            <p>At TensaCo you work from first principles on problems that matter to the future of AI, with the ownership and pace of a small team.</p>
-            <p>We do not have open listings posted at the moment. If your work belongs here, write to us.</p>
-            <a href="mailto:hello@tensaco.ai?subject=Careers" className="btn btn-primary" style={{ marginTop: 12 }}>Introduce yourself</a>
+          <Stats items={[
+            { value: String(JOBS.length), label: 'open positions' },
+            { value: '6', label: 'departments hiring' },
+            { value: '2', label: 'products in development' },
+            { value: 'Remote', label: 'first, with lab roles on site' },
+          ]} />
+        </div>
+      </section>
+      <section className="section mist" id="openings">
+        <div className="wrap">
+          <p className="eyebrow">Open positions</p>
+          <h2 className="h2" style={{ marginBottom: 32 }}>Find your role.</h2>
+          <JobBoard />
+        </div>
+      </section>
+      <section className="section">
+        <div className="wrap">
+          <Split media={MEDIA.engineeringLab} eyebrow="Working at TensaCo" title="Ownership, rigor and pace.">
+            <p>Small teams own whole problems, from first-principles modeling to a working system. We value careful measurement, clear writing, and shipping.</p>
+            <p>Compensation includes competitive salary and equity. Details for each role are shared early in the process.</p>
           </Split>
         </div>
       </section>
       <section className="section mist">
         <div className="wrap">
-          <p className="eyebrow">Areas we hire in</p>
-          <h2 className="h2" style={{ marginBottom: 48 }}>Where you could contribute.</h2>
-          <div className="grid-3">
-            <Card media={MEDIA.labOptics} title="Optics and photonics"><p>Optical systems, spatial light modulators, gain media and precision alignment for PHASER.</p></Card>
-            <Card media={MEDIA.electronics} title="Hardware and systems"><p>High-speed electronics, detection and control for optical computing prototypes.</p></Card>
-            <Card media={MEDIA.screens} title="Machine learning and software"><p>TensorCode’s Python and TypeScript implementations, training systems and developer experience.</p></Card>
-          </div>
+          <Split media={MEDIA.networking} reverse eyebrow="Hiring process" title="What to expect.">
+            <p><b>1. Application review.</b> A member of the hiring team reads every application.</p>
+            <p><b>2. Introductory conversation.</b> A 30-minute call about your work and the role.</p>
+            <p><b>3. Technical conversations.</b> Deep dives with the team, grounded in real problems.</p>
+            <p><b>4. Decision.</b> We move quickly and tell you where you stand at each step.</p>
+          </Split>
         </div>
       </section>
     </>
