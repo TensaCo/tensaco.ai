@@ -1,0 +1,26 @@
+/* TensaCo account console: navy and white, Inter, calm and dense. */
+:root {
+  --navy: #0a1f44;
+  --navy-2: #13306a;
+  --navy-3: #1c3d7a;
+  --ink: #0b1220;
+  --ink-2: #334155;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --line-2: #cbd5e1;
+  --mist: #f4f6fa;
+  --hover: #f8fafc;
+  --white: #ffffff;
+  --blue: #1d4ed8;
+  --blue-2: #2563eb;
+  --blue-bg: #eff6ff;
+  --radius: 6px;
+}
+* { box-sizing: border-box; }
+html { color: var(--ink); background: var(--mist); -webkit-font-smoothing: antialiased; }
+body { margin: 0; font-family: var(--f-sans), system-ui, sans-serif; font-size: 14px; line-height: 1.5; background: var(--mist); }
+a { color: var(--blue); }
+img { display: block; max-width: 100%; }
+h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+:focus-visible { outline: 2px solid var(--blue-2); outline-offset: 2px; }
+button { font: inherit; }

@@ -31,9 +31,21 @@ export const users = sqliteTable('users', {
   passwordHash: text('password_hash').notNull(), // base64
   passwordSalt: text('password_salt').notNull(), // base64, 16 bytes
   passwordIterations: integer('password_iterations').notNull(),
+  emailVerifiedAt: text('email_verified_at'), // null until the emailed verification link is used
+  notifyUpdates: integer('notify_updates', { mode: 'boolean' }).notNull().default(true), // email me about my tickets, requests, applications
   createdAt: createdAt(),
   lastLoginAt: text('last_login_at'),
 })
+
+/** Single-use emailed tokens (email verification, password reset); only the SHA-256 of the token is stored. */
+export const authTokens = sqliteTable('auth_tokens', {
+  tokenHash: text('token_hash').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  purpose: text('purpose').notNull(), // 'verify' | 'reset'
+  createdAt: createdAt(),
+  expiresAt: text('expires_at').notNull(),
+  usedAt: text('used_at'),
+}, (t) => [index('auth_tokens_user').on(t.userId, t.purpose, t.createdAt)])
 
 /** Sessions; only the SHA-256 of the cookie token is stored. */
 export const sessions = sqliteTable('sessions', {
@@ -112,3 +124,14 @@ export const serviceRequests = sqliteTable('service_requests', {
   createdAt: createdAt(),
   updatedAt: text('updated_at').notNull().default(now),
 }, (t) => [index('service_requests_user').on(t.userId, t.createdAt)])
+
+/** Every email the Workers hand to Resend (packages/email): what, to whom, and Resend's id or the error. */
+export const emailLog = sqliteTable('email_log', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  kind: text('kind').notNull(), // 'verify' | 'reset' | 'password_changed' | 'ticket_reply' | 'staff_ticket' | ...
+  to: text('to').notNull(),
+  subject: text('subject').notNull(),
+  providerId: text('provider_id'), // Resend email id
+  error: text('error'),
+  createdAt: createdAt(),
+}, (t) => [index('email_log_recent').on(t.createdAt)])

@@ -1,0 +1,30 @@
+{
+  "name": "tensaco-account",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "next dev -p 3219",
+    "build": "next build",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p worker",
+    "preview": "next build && wrangler dev --port 8788",
+    "deploy": "next build && wrangler deploy",
+    "db:migrate:local": "wrangler d1 migrations apply tensaco-subscribers --local",
+    "db:migrate:remote": "wrangler d1 migrations apply tensaco-subscribers --remote"
+  },
+  "dependencies": {
+    "next": "^15.5.26",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "@tensaco/db": "*",
+    "@tensaco/email": "*",
+    "drizzle-orm": "^0.44.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "5.8",
+    "wrangler": "^4.139.0",
+    "@cloudflare/workers-types": "^5.20260925.1"
+  }
+}

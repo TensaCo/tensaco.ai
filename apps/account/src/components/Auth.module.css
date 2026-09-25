@@ -1,0 +1,17 @@
+.page { min-height: 100svh; display: flex; flex-direction: column; align-items: center; padding: 56px 16px 24px; background: var(--mist); }
+.brand { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; text-decoration: none; color: var(--navy); }
+.brand img { width: 36px; height: 36px; border-radius: 7px; }
+.brand span { font-size: 22px; font-weight: 700; letter-spacing: -0.03em; }
+.card { width: 100%; max-width: 420px; background: var(--white); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 1px 2px rgba(10, 31, 68, 0.04), 0 8px 24px rgba(10, 31, 68, 0.06); padding: 32px; }
+.card h1 { font-size: 22px; margin: 0 0 6px; color: var(--ink); }
+.lede { color: var(--muted); margin: 0 0 24px; font-size: 14px; }
+.below { margin-top: 20px; font-size: 14px; color: var(--ink-2); text-align: center; }
+.below a { font-weight: 600; text-decoration: none; }
+.below a:hover { text-decoration: underline; }
+.foot { margin-top: auto; padding-top: 48px; display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; font-size: 12.5px; color: var(--muted); }
+.foot a { color: var(--muted); text-decoration: none; }
+.foot a:hover { color: var(--ink); text-decoration: underline; }
+.icon { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; margin-bottom: 16px; background: var(--blue-bg); color: var(--blue); }
+.icon.ok { background: #dcfce7; color: #166534; }
+.icon.bad { background: #fee2e2; color: #991b1b; }
+@media (max-width: 480px) { .page { padding-top: 32px; } .card { padding: 24px 20px; } }

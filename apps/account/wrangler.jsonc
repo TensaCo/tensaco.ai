@@ -1,0 +1,30 @@
+// TensaCo account console — https://account.tensaco.ai (Cloudflare account 20d4becc…, zone tensaco.ai).
+// Sign-up, sign-in, password reset, the customer portal and staff views. Shares D1 with tensaco.ai.
+// Build:   npm run build          (Next.js static export to out/)
+// Deploy:  npm run deploy
+// Secret:  RESEND_API_KEY         (npx wrangler secret put RESEND_API_KEY; locally from .dev.vars)
+{
+  "name": "tensaco-account",
+  "compatibility_date": "2026-09-01",
+  "main": "worker/index.ts",
+  "assets": {
+    "directory": "./out",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash",
+    "run_worker_first": true
+  },
+  "r2_buckets": [{ "binding": "RESUMES", "bucket_name": "tensaco-careers" }],
+  "d1_databases": [{ "binding": "DB", "database_name": "tensaco-subscribers", "database_id": "888cd573-e771-4a12-9834-b7fe800eaf2a", "migrations_dir": "../../migrations" }],
+  "vars": {
+    "EMAIL_FROM": "TensaCo <no-reply@tensaco.ai>",
+    "EMAIL_REPLY_TO": "hello@tensaco.ai",
+    "STAFF_EMAIL": "hello@tensaco.ai",
+    "ACCOUNT_URL": "https://account.tensaco.ai",
+    "SITE_URL": "https://tensaco.ai",
+    "COOKIE_DOMAIN": ".tensaco.ai"
+  },
+  "routes": [{ "pattern": "account.tensaco.ai", "custom_domain": true }],
+  "observability": { "enabled": true },
+  "workers_dev": true
+}
