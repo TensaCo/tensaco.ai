@@ -18,6 +18,7 @@
     "react-dom": "^19.3.0",
     "@tensaco/subscribe": "*",
     "@tensaco/db": "*",
+    "@tensaco/email": "*",
     "drizzle-orm": "^0.44.0"
   },
   "devDependencies": {

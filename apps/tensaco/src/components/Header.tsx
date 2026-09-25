@@ -2,12 +2,15 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { useUser } from '@/lib/api'
 import { Logo } from './Logo'
 import s from './Header.module.css'
 
 /** pages without a full-bleed photo/video hero get a solid header from the start */
-const SOLID = ['/legal/', '/login/', '/signup/', '/account/', '/careers/', '/investors/', '/newsroom/']
+const SOLID = ['/legal/', '/careers/', '/investors/', '/newsroom/']
+
+/** Accounts live at account.tensaco.ai; its non-HttpOnly presence cookie (Domain=.tensaco.ai) says someone is signed in. */
+const ACCOUNT = 'https://account.tensaco.ai'
+const signedIn = () => /(?:^|;\s*)tensaco_signed_in=1(?:;|$)/.test(document.cookie)
 
 const MENU: { label: string; href: string; items?: { label: string; href: string; external?: boolean }[] }[] = [
   { label: 'Solutions', href: '/#solutions', items: [
@@ -20,7 +23,6 @@ const MENU: { label: string; href: string; items?: { label: string; href: string
     { label: 'Careers', href: '/careers/' },
     { label: 'Newsroom', href: '/newsroom/' },
   ] },
-  { label: 'Investors', href: '/investors/' },
   { label: 'Contact', href: '/contact/' },
 ]
 
@@ -29,7 +31,8 @@ export function Header() {
   const [open, setOpen] = useState(false)
   const path = usePathname()
   const solidPage = SOLID.some((p) => path.startsWith(p)) && path !== '/careers/'
-  const user = useUser()
+  const [user, setUser] = useState(false)
+  useEffect(() => setUser(signedIn()), [])
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 40)
     on()
@@ -61,14 +64,9 @@ export function Header() {
             ))}
           </ul>
           <div className={s.account}>
-            {user ? (
-              <Link href="/account/" className={s.signup} onClick={close}>My account</Link>
-            ) : (
-              <>
-                <Link href="/login/" className={s.login} onClick={close}>Log in</Link>
-                <Link href="/signup/" className={s.signup} onClick={close}>Create account</Link>
-              </>
-            )}
+            {user
+              ? <a href={`${ACCOUNT}/`} className={s.signup} onClick={close}>My account</a>
+              : <a href={`${ACCOUNT}/login/`} className={s.signup} onClick={close}>Sign in</a>}
           </div>
         </nav>
         <button className={s.burger} aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open} onClick={() => setOpen((o) => !o)}>

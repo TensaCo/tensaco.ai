@@ -2,6 +2,7 @@ name: Deploy
 
 # Deploys each site to Cloudflare Workers when its files change on main.
 #   apps/tensaco           -> https://tensaco.ai
+#   apps/account           -> https://account.tensaco.ai (sign-in, portal, staff views)
 #   apps/phaser            -> https://phaser.tensaco.ai
 #   apps/tensorcode-alias  -> https://tensorcode.tensaco.ai (301 to tensorcode.dev)
 # Shared code (packages/*) and D1 migrations (Drizzle, migrations/) redeploy the apps that use them; migrations run first.
@@ -9,6 +10,8 @@ name: Deploy
 # Needs one repository secret, CLOUDFLARE_API_TOKEN: a token from the "Edit Cloudflare Workers" template, scoped to
 # account 20d4becc… and zone tensaco.ai, plus "Account · D1 · Edit" (migrations) and "Account · Workers R2 Storage · Edit"
 # (the résumé bucket binding).
+# Worker secrets (RESEND_API_KEY on tensaco-account and tensaco-site) persist across deploys; set them with
+# `npx wrangler secret put RESEND_API_KEY` in the app folder. The GitHub secret RESEND_API_KEY is not needed by deploys.
 
 on:
   push:
@@ -36,6 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tensaco: ${{ steps.f.outputs.tensaco == 'true' || inputs.all == true }}
+      account: ${{ steps.f.outputs.account == 'true' || inputs.all == true }}
       phaser: ${{ steps.f.outputs.phaser == 'true' || inputs.all == true }}
       alias: ${{ steps.f.outputs.alias == 'true' || inputs.all == true }}
       migrations: ${{ steps.f.outputs.migrations }}
@@ -52,6 +56,7 @@ jobs:
         with:
           filters: |
             tensaco: ['apps/tensaco/**', 'packages/**', 'migrations/**', 'package-lock.json']
+            account: ['apps/account/**', 'packages/**', 'migrations/**', 'package-lock.json']
             phaser: ['apps/phaser/**', 'packages/**', 'migrations/**', 'package-lock.json']
             alias: ['apps/tensorcode-alias/**']
             migrations: ['migrations/**']
@@ -74,7 +79,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: [tensaco, phaser]
+        app: [tensaco, account, phaser]
     steps:
       - uses: actions/checkout@v4
         if: needs.changes.outputs[matrix.app] == 'true'

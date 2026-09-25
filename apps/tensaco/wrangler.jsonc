@@ -1,6 +1,8 @@
 // TensaCo parent site — https://tensaco.ai (Cloudflare account 20d4becc…, zone tensaco.ai).
 // Build:   npm run build          (Next.js static export to out/)
 // Deploy:  npm run deploy
+// Secret:  RESEND_API_KEY         (careers emails; npx wrangler secret put RESEND_API_KEY)
+// Accounts and the portal are account.tensaco.ai (apps/account); /login, /signup and /account/* redirect there.
 {
   "name": "tensaco-site",
   "compatibility_date": "2026-09-01",
@@ -14,6 +16,12 @@
   },
   "r2_buckets": [{ "binding": "RESUMES", "bucket_name": "tensaco-careers" }],
   "d1_databases": [{ "binding": "DB", "database_name": "tensaco-subscribers", "database_id": "888cd573-e771-4a12-9834-b7fe800eaf2a", "migrations_dir": "../../migrations" }],
+  "vars": {
+    "EMAIL_FROM": "TensaCo <no-reply@tensaco.ai>",
+    "EMAIL_REPLY_TO": "hello@tensaco.ai",
+    "STAFF_EMAIL": "hello@tensaco.ai",
+    "ACCOUNT_URL": "https://account.tensaco.ai"
+  },
   "routes": [
     { "pattern": "tensaco.ai", "custom_domain": true },
     { "pattern": "www.tensaco.ai", "custom_domain": true }

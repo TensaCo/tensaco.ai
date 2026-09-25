@@ -23,7 +23,7 @@ export function ApplyForm({ jobId, jobTitle }: { jobId: string; jobTitle: string
   if (state === 'done') {
     return (
       <p className={f.success} role="status">
-        Thank you for applying for {jobTitle}. We review every application and will be in touch. Create an account with the same email to <Link href="/signup/">track your application</Link>.
+        Thank you for applying for {jobTitle}. We review every application and will be in touch. We emailed you a confirmation. To follow its status, <a href="https://account.tensaco.ai/signup/">create a TensaCo account</a> with the same email (or <a href="https://account.tensaco.ai/applications/">sign in</a>).
       </p>
     )
   }

@@ -26,5 +26,5 @@
   },
   "routes": [{ "pattern": "account.tensaco.ai", "custom_domain": true }],
   "observability": { "enabled": true },
-  "workers_dev": true
+  "workers_dev": false
 }

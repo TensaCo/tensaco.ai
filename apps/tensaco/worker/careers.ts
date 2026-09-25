@@ -1,9 +1,11 @@
 // POST /api/careers/apply — multipart form. The application goes to D1 (applications), the résumé to R2
 // (bucket tensaco-careers, binding RESUMES). Honeypot field `company`; limited per client per hour.
+// Emails: a confirmation to the applicant and a notification to staff (STAFF_EMAIL), via packages/email.
 import { applications, db } from '@tensaco/db'
+import { deliver, templates } from '@tensaco/email'
 import { JOBS } from '../src/data/jobs'
 import { currentUser } from './auth'
-import type { Env } from './env'
+import { accountUrl, type Env } from './env'
 import { allow, clean, country, EMAIL, ipHash, json, sameOrigin } from './lib'
 
 const MAX_RESUME = 10 * 1024 * 1024
@@ -15,7 +17,7 @@ const TYPES: Record<string, string> = {
 }
 const TITLES: Record<string, string> = Object.fromEntries([...JOBS.map((j) => [j.id, j.title]), ['general', 'General application']])
 
-export async function apply(request: Request, env: Env) {
+export async function apply(request: Request, env: Env, ctx: ExecutionContext) {
   if (request.method !== 'POST') return json({ ok: false, error: 'Use POST.' }, 405)
   if (!sameOrigin(request)) return json({ ok: false, error: 'Forbidden.' }, 403)
   let form: FormData
@@ -46,12 +48,17 @@ export async function apply(request: Request, env: Env) {
   })
   const user = await currentUser(request, env)
   const opt = (k: string, max: number) => clean(form.get(k), max) || null
-  await db(env.DB).insert(applications).values({
+  const [row] = await db(env.DB).insert(applications).values({
     jobId, jobTitle, name, email,
     phone: opt('phone', 40), location: opt('location', 120), linkedin: opt('linkedin', 300), website: opt('website', 300),
     workAuthorization: opt('work_authorization', 60), coverLetter: opt('cover_letter', 8000),
     resumeKey: key, resumeName: clean(resume.name, 200), resumeType: resume.type || null, resumeSize: resume.size,
     userId: user?.id ?? null, source: opt('source', 80), country: country(request), ipHash: hash,
-  })
+  }).returning({ id: applications.id })
+  const account = accountUrl(env)
+  deliver(env, ctx, 'application_received', email, templates.applicationReceived({ name, job: jobTitle, account }))
+  deliver(env, ctx, 'staff_application', env.STAFF_EMAIL || 'hello@tensaco.ai', templates.staffApplication({
+    id: row.id, job: jobTitle, name, email, location: opt('location', 120), linkedin: opt('linkedin', 300), url: `${account}/applications/view/?id=${row.id}`,
+  }), email)
   return json({ ok: true })
 }
