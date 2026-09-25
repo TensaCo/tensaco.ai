@@ -3,6 +3,7 @@
 // Deploy:  npm run deploy
 {
   "name": "phaser-site",
+  "account_id": "20d4becc35c40a0bbfb8803a525aaae1",
   "compatibility_date": "2026-09-01",
   "main": "worker/index.ts",
   "assets": {

@@ -28,6 +28,32 @@ export default {
     if (path === '/api/subscribe') return subscribe(request, env, 'tensaco')
     if (path === '/api/careers/apply') return apply(request, env, ctx)
     if (path.startsWith('/api/')) return new Response('Not found', { status: 404 })
+    if (/\.(mp4|webm)$/.test(path)) return media(request, env)
     return env.ASSETS.fetch(request)
   },
+}
+
+/** Video with byte ranges (206): Safari and iOS won't play a <video> whose server ignores Range. The assets binding
+ *  always answers 200 with the whole file, so slice it here. */
+async function media(request: Request, env: Env): Promise<Response> {
+  const range = request.headers.get('Range')
+  const res = await env.ASSETS.fetch(request.url, { method: request.method === 'HEAD' ? 'HEAD' : 'GET' })
+  const m = range?.match(/^bytes=(\d*)-(\d*)$/)
+  if (!res.ok || !m || (!m[1] && !m[2])) {
+    const out = new Response(res.body, res)
+    out.headers.set('Accept-Ranges', 'bytes')
+    return out
+  }
+  const buf = await res.arrayBuffer()
+  const size = buf.byteLength
+  let start = m[1] ? Number(m[1]) : Math.max(0, size - Number(m[2]))
+  let end = m[1] && m[2] ? Math.min(Number(m[2]), size - 1) : size - 1
+  if (start >= size || start > end) {
+    return new Response(null, { status: 416, headers: { 'Content-Range': `bytes */${size}`, 'Accept-Ranges': 'bytes' } })
+  }
+  const headers = new Headers(res.headers)
+  headers.set('Accept-Ranges', 'bytes')
+  headers.set('Content-Range', `bytes ${start}-${end}/${size}`)
+  headers.set('Content-Length', String(end - start + 1))
+  return new Response(request.method === 'HEAD' ? null : buf.slice(start, end + 1), { status: 206, headers })
 }
