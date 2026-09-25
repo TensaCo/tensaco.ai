@@ -85,6 +85,8 @@ export class StackScene {
   private aspect = 1
   private pointer = new THREE.Vector2()
   view: View | null = null
+  /** true when WebGL runs on a software rasteriser */
+  software = false
   onTrip?: (s: StackStatus) => void
 
   constructor(opts: StackOptions) {
@@ -92,6 +94,10 @@ export class StackScene {
     this.live = opts.live ?? new LiveStack(1234)
     const r = new THREE.WebGLRenderer({ canvas: opts.canvas, antialias: true, alpha: false, powerPreference: 'high-performance' })
     if (!r.capabilities.isWebGL2) throw new Error('WebGL2 required')
+    // no GPU (software rasteriser): render at reduced resolution, it is fill-rate bound
+    const gl = r.getContext(), dbg = gl.getExtension('WEBGL_debug_renderer_info')
+    const name = String(dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER))
+    this.software = /swiftshader|llvmpipe|software/i.test(name)
     r.setClearColor(0x0a0908, 1)
     r.toneMapping = THREE.ACESFilmicToneMapping
     r.toneMappingExposure = 1.0
@@ -257,7 +263,7 @@ export class StackScene {
   setPointer(x: number, y: number) { this.pointer.set(x, y) }
 
   resize(w: number, h: number, dpr: number) {
-    this.renderer.setPixelRatio(dpr)
+    this.renderer.setPixelRatio(this.software ? Math.min(dpr, 0.7) : dpr)
     this.renderer.setSize(w, h, false)
     this.aspect = w / Math.max(1, h)
     this.camera.aspect = this.aspect

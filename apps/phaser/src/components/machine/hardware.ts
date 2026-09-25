@@ -50,6 +50,15 @@ const grainTex = () => {
   t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(4, 4)
   return t
 }
+/** turning marks: fine bands (roughness), repeated along a rod's length */
+const turnedTex = () => {
+  const t = canvasTex(64, 256, (c) => {
+    const r = rng(9)
+    for (let y = 0; y < 256; y++) { const v = 45 + 30 * r(); c.fillStyle = `rgb(${v},${v},${v})`; c.fillRect(0, y, 64, 1) }
+  }, false)
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1, 6)
+  return t
+}
 /** brushed finish: horizontal streaks (for the shield can), as colour and roughness */
 const brushedTex = (label?: string[]) => canvasTex(512, 512, (c) => {
   const r = rng(5)
@@ -178,7 +187,8 @@ const mats = () => {
   return {
     anodised: new THREE.MeshStandardMaterial({ color: 0x292725, roughness: 0.62, roughnessMap: grain, metalness: 0.55, bumpMap: grain, bumpScale: 0.02 }),
     anodisedEdge: new THREE.MeshStandardMaterial({ color: 0x3a3734, roughness: 0.4, roughnessMap: grain, metalness: 0.8 }),
-    steel: new THREE.MeshPhysicalMaterial({ color: 0xa19d95, roughness: 0.22, metalness: 1, anisotropy: 0.85, anisotropyRotation: Math.PI / 2 }),
+    // machined steel: fine turning marks around the rod, as a roughness map stretched along it (cheaper than true anisotropy)
+    steel: new THREE.MeshStandardMaterial({ color: 0xa19d95, roughness: 1, roughnessMap: turnedTex(), metalness: 1 }),
     brass: new THREE.MeshStandardMaterial({ color: 0x8a8272, roughness: 0.35, metalness: 1 }),
     glass: new THREE.MeshPhysicalMaterial({
       color: 0xe6ecea, roughness: 0.03, metalness: 0, transparent: true, opacity: 0.2, depthWrite: false,
