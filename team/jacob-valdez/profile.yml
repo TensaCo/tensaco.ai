@@ -1,0 +1,35 @@
+# TensaCo team profile. Public fields feed apps/tensaco/src/data/team.ts (run team/sync.py).
+kind: human
+name: Jacob Valdez
+slug: jacob-valdez
+pronouns: he/him
+title: Founder and Chief Executive Officer
+short_title: Founder & CEO
+department: Office of the CEO
+reports_to: null
+direct_reports:
+- diane-kowalski
+- arjun-raghavan
+- mei-lin-zhou
+- thomas-brennan
+- theo-nakamura
+- andre-whitfield
+- priya-natarajan
+location: San Francisco, CA
+timezone: America/Los_Angeles
+email: hello@tensaco.ai
+website: https://jvboid.dev
+public:
+  order: 0
+  show_on_site: true
+  badge: null
+  card_line: Founded TensaCo and leads its technology and strategy.
+  bio: Jacob Valdez founded TensaCo and leads its technology and strategy, from TensorCode’s trainable-program framework to
+    PHASER’s optical computing research.
+images:
+  style: real photograph (not generated)
+  headshot: ../../apps/tensaco/public/media/people/jacob-valdez.jpg
+  site: apps/tensaco/public/media/people/jacob-valdez.jpg
+  group_photos:
+  - executive-team
+  notes: His likeness in _group/executive-team.jpg is generated from this photo as a reference.

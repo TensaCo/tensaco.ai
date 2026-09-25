@@ -98,10 +98,10 @@
   {
     "slug": "executive-team",
     "kind": "photo",
-    "subject": "Executive team group portrait in an office lobby",
-    "source_page": "https://unsplash.com/photos/four-professionals-in-business-attire-stand-together-gItonyvrdUA",
-    "author": "Vitaly Gariev",
-    "license": "Unsplash License (https://unsplash.com/license)"
+    "subject": "TensaCo leadership team in the San Francisco office",
+    "source_page": null,
+    "author": "TensaCo Inc.",
+    "license": "Owned by TensaCo Inc. Generated for TensaCo with fal (nano-banana-pro) from the team headshots; not stock. See team/_group/ in TensaCo/tensaco.ai."
   },
   {
     "slug": "boardroom-meeting",
@@ -202,10 +202,10 @@
   {
     "slug": "engineers-reviewing-screens",
     "kind": "photo",
-    "subject": "Engineers reviewing work on a monitor",
-    "source_page": "https://unsplash.com/photos/man-in-maroon-long-sleeve-shirt-holding-a-book-lr5RHwBmrbs",
-    "author": "ThisisEngineering",
-    "license": "Unsplash License (https://unsplash.com/license)"
+    "subject": "TensaCo engineers reviewing PHASER optics data and code",
+    "source_page": null,
+    "author": "TensaCo Inc.",
+    "license": "Owned by TensaCo Inc. Generated for TensaCo with fal (nano-banana-pro) from the team headshots; not stock. See team/_group/ in TensaCo/tensaco.ai."
   },
   {
     "slug": "engineering-team-lab",

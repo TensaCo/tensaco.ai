@@ -1,0 +1,145 @@
+# Index of everyone in team/ and the org chart. Regenerate the site data with: python3 team/sync.py
+company: TensaCo Inc. (TENSACO INC, Delaware), San Francisco, CA
+updated: '2026-09-24'
+people:
+- slug: jacob-valdez
+  name: Jacob Valdez
+  kind: human
+  title: Founder and Chief Executive Officer
+  reports_to: null
+- slug: diane-kowalski
+  name: Diane Kowalski
+  kind: ai-agent
+  title: President and Chief Operating Officer
+  reports_to: jacob-valdez
+  email: diane@tensaco.ai
+  headshot_style: casual phone snapshot
+- slug: arjun-raghavan
+  name: Arjun Raghavan
+  kind: ai-agent
+  title: Chief Technology Officer
+  reports_to: jacob-valdez
+  email: arjun@tensaco.ai
+  headshot_style: blurry iPhone photo
+- slug: mei-lin-zhou
+  name: Mei-Lin Zhou
+  kind: ai-agent
+  title: Chief Scientist, PHASER
+  reports_to: jacob-valdez
+  email: meilin@tensaco.ai
+  headshot_style: casual phone snapshot
+- slug: thomas-brennan
+  name: Thomas Brennan
+  kind: ai-agent
+  title: Chief Financial Officer
+  reports_to: jacob-valdez
+  email: thomas@tensaco.ai
+  headshot_style: casual phone snapshot
+- slug: theo-nakamura
+  name: Theo Nakamura
+  kind: ai-agent
+  title: Chief Product Officer and General Manager, TensorCode
+  reports_to: jacob-valdez
+  email: theo@tensaco.ai
+  headshot_style: anime-style avatar
+- slug: andre-whitfield
+  name: Andre Whitfield
+  kind: ai-agent
+  title: Chief Revenue Officer
+  reports_to: jacob-valdez
+  email: andre@tensaco.ai
+  headshot_style: phone flash snapshot at night
+- slug: priya-natarajan
+  name: Priya Natarajan
+  kind: ai-agent
+  title: General Counsel and Corporate Secretary
+  reports_to: jacob-valdez
+  email: priya@tensaco.ai
+  headshot_style: soft-focus phone snapshot
+- slug: grace-adeyemi
+  name: Grace Adeyemi
+  kind: ai-agent
+  title: Chief People Officer
+  reports_to: diane-kowalski
+  email: grace@tensaco.ai
+  headshot_style: blurry iPhone photo
+- slug: lena-fischer
+  name: Lena Fischer
+  kind: ai-agent
+  title: Vice President, Communications
+  reports_to: diane-kowalski
+  email: lena@tensaco.ai
+  headshot_style: illustrated avatar
+- slug: joon-park
+  name: Joon Park
+  kind: ai-agent
+  title: Vice President, Customer Success
+  reports_to: andre-whitfield
+  email: joon@tensaco.ai
+  headshot_style: car selfie
+- slug: kwame-asante
+  name: Kwame Asante
+  kind: ai-agent
+  title: Vice President, Hardware Engineering (PHASER)
+  reports_to: arjun-raghavan
+  email: kwame@tensaco.ai
+  headshot_style: casual phone snapshot
+- slug: nadia-haddad
+  name: Nadia Haddad
+  kind: ai-agent
+  title: Head of Developer Relations, TensorCode
+  reports_to: theo-nakamura
+  email: nadia@tensaco.ai
+  headshot_style: logo avatar
+org_chart:
+  slug: jacob-valdez
+  title: Founder and Chief Executive Officer
+  reports:
+  - slug: diane-kowalski
+    title: President and Chief Operating Officer
+    reports:
+    - slug: grace-adeyemi
+      title: Chief People Officer
+    - slug: lena-fischer
+      title: Vice President, Communications
+  - slug: arjun-raghavan
+    title: Chief Technology Officer
+    reports:
+    - slug: kwame-asante
+      title: Vice President, Hardware Engineering (PHASER)
+  - slug: mei-lin-zhou
+    title: Chief Scientist, PHASER
+  - slug: thomas-brennan
+    title: Chief Financial Officer
+  - slug: theo-nakamura
+    title: Chief Product Officer and General Manager, TensorCode
+    reports:
+    - slug: nadia-haddad
+      title: Head of Developer Relations, TensorCode
+  - slug: andre-whitfield
+    title: Chief Revenue Officer
+    reports:
+    - slug: joon-park
+      title: Vice President, Customer Success
+  - slug: priya-natarajan
+    title: General Counsel and Corporate Secretary
+group_photos:
+  executive-team:
+    file: _group/executive-team.jpg
+    used_as: apps/tensaco/public/media/photo/executive-team.jpg
+    people:
+    - jacob-valdez
+    - diane-kowalski
+    - arjun-raghavan
+    - mei-lin-zhou
+    - thomas-brennan
+    - andre-whitfield
+    - priya-natarajan
+    - grace-adeyemi
+  engineers-reviewing-screens:
+    file: _group/engineers-reviewing-screens.jpg
+    used_as: apps/tensaco/public/media/photo/engineers-reviewing-screens.jpg
+    people:
+    - mei-lin-zhou
+    - kwame-asante
+    - arjun-raghavan

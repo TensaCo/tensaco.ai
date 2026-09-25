@@ -21,7 +21,7 @@ export const MEDIA = {
   control: v('operations-control-room', 'Operators in front of a wall of displays'),
   lobby: v('office-lobby-walking', 'People walking through a corporate atrium'),
 
-  execTeam: p('executive-team', 'An executive team in a meeting'),
+  execTeam: p('executive-team', 'The TensaCo leadership team talking around a table in the San Francisco office'),
   boardroomPhoto: p('boardroom-meeting', 'A boardroom meeting'),
   conference: p('conference-audience', 'A conference audience'),
   speaker: p('speaker-audience', 'A speaker at a podium'),
@@ -31,7 +31,7 @@ export const MEDIA = {
   datacenterPhoto: p('datacenter-engineer', 'Server racks in a data center'),
   labOptics: p('lab-laser-optics', 'Laser optics on a laboratory bench'),
   electronics: p('electronics-bench', 'An electronics test bench'),
-  screens: p('engineers-reviewing-screens', 'Engineers reviewing work on screens'),
+  screens: p('engineers-reviewing-screens', 'TensaCo engineers reviewing optics data and code on monitors'),
   energyPhoto: p('transmission-lines', 'Energy infrastructure'),
   hq: p('glass-headquarters', 'A glass office building'),
   executive: p('woman-executive-desk', 'An executive at her desk'),
