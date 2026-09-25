@@ -47,22 +47,26 @@ No blue, no gradients, no glass, no glow outside the beam itself.
 
 ## Motion
 
-- The machine carries the motion, and it is never an animation of an idea. It is the research model running live in the
-  browser (`src/lib/phaser-sim.ts`): a port of the TensaCo/phaser-design simulator for the Exp. 15/29 reservoir ("Apre_lin":
-  the preset reflective SLM ring, 650 nm, LCOS 64 × 64 px at 20 µm with its random program, f = 40 mm relay, global gain
-  clamp, K = 10 round trips per input). `scripts/validate-sim.ts` checks it against the research simulator (bit-identical
-  over 32,000 trips); rerun it whenever the port changes. Nothing on the page may pretend to compute what the model didn't.
-- The hero is the ring at true proportions (mm), seen with a long lens (22°) from inside the ring, 16 mm from the SLM. The SLM
-  shows its phase program in graphite and the light on it in red, one texel per pixel. The beam is the simulated |E|²: a
-  cross-section every 1 mm (2 mm on small screens) plus a faint ray-marched volume through the same sections, exposed as
-  1 − exp(−I/I₀). A front sweeps the route once per round trip (1.6 s, ≈ 2.4 × 10⁹× slower than the device): sections behind
-  it show the new trip. Slow 15-second drift and faint pointer parallax; no cuts.
-- The machine section explains the computation with plates drawn from the same live run: the whole ring (Fig. 2), the
-  64 × 64 SLM (Fig. 3), one input's ten laps (input, on the SLM, after the relay, detector), the 256 detector bins against the
-  readout's weights, and a trace of target vs prediction with a live score. Red = light (plates, bins); graphite = phase and
-  inputs; paper white = the digital readout. The readout is always labelled digital and trained offline.
-- Page motion is discrete: numbers count once, rules draw once, and nothing floats. The simulations pause offscreen. Reduced
-  motion shows one still frame of a warmed-up state.
+- The machine carries the motion, and it is never an animation of an idea. It is a live simulation in the browser
+  (`src/lib/phaser-sim.ts`) of a linear-stack cavity built with the research simulator (TensaCo/phaser-design): input
+  mirror/coupler (8 % in and out) with a clamped gain, four transmissive LCD phase planes (64 × 64 px at 63.5 µm, the
+  research's realistic LCD parameters and preset programs) 4.8 mm apart, and a concave end mirror (R 400 mm) 24 mm away;
+  128² field at 31.75 µm, angular-spectrum propagation. `scripts/validate-sim.ts` hands the same config to the research
+  simulator and compares every round trip (bit-identical over 4,000); rerun it whenever the port changes. Nothing on the page
+  may pretend to compute what the model didn't.
+- The hero and Fig. 2 show the cavity at true proportions (mm), axis vertical, long lens (22°). Wavefronts bounce up and
+  down the stack, three in flight, each drawn as a few crest sheets. The crests are stylised (true 650 nm crests can't be
+  drawn at this scale), but every sheet's cross-section is the simulated |E|² at its plane on its round trip, from the model's
+  own angular spectrum, so the pattern changes as it passes each plane and reflects. Don't label the crest spacing; the time
+  plate states the slow-down. The LCD panels show their phase programs in graphite (per pixel, with the black matrix) and the
+  light crossing them in red (per sample); the detector under the input mirror shows the 8 % tap in red.
+- Fig. 2's annotations are hairline leaders to mono labels, stacked so they never overlap. Fig. 3 is one plane's 64 × 64 pixels.
+- The carriers figures are small live simulations, not device models: an electron wave packet (2-D Schrödinger, split-step)
+  crossing a lattice of vibrating ions that push back (Ehrenfest), drawn in paper and graphite; a light packet (2-D wave
+  equation) crossing glass, in red. Their pJ numbers live in one object (`CARRIER_NUMBERS`) and always say "modeled".
+- Slow 15-second drift and faint pointer parallax; no cuts. Page motion is discrete: numbers count once, rules draw once,
+  and nothing floats. Simulations pause offscreen. Reduced motion shows one still frame of a warmed-up state.
+- The oscilloscope bench at the end of 02 butts directly against the 03 reel: no black gap, no fade between them.
 
 ## Composition rules
 

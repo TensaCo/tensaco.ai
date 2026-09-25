@@ -1,37 +1,67 @@
 /**
  * A minimal port of the PHASER research simulator (TensaCo/phaser-design, src/core/physics) for exactly one
- * configuration: the reservoir of research Experiments 15 and 29, "Apre_lin" (research/2026-09-14/15-reservoir.ts).
+ * configuration: a linear, back-and-forth cavity with a stack of four programmable transmissive LCD phase planes.
  *
- * Physics, as in the research model: a scalar, monochromatic complex field E(x, y) on a 64 × 64 grid at 20 µm (one sample
- * per SLM pixel, a 1.28 mm window). One round trip applies the route
+ * The configuration (STACK_CONFIG below) is written in the research simulator's own config language, derived from its
+ * "B_4f" linear cavity (research/2026-09-14/arch.ts) and the preset "Transmissive LCD linear cavity"
+ * (src/core/runtime/presets.ts): the same realistic LCD, coupler and mirror parameters, the preset's programs (random,
+ * seeds 20…23, depth 0.1), and B_4f's grid (2 samples per 63.5 µm pixel). Instead of B_4f's two relay lenses the light is
+ * held in by a concave end mirror (R = 400 mm, a stable flat–concave resonator), so the planes can sit evenly along a
+ * 24 mm cavity. scripts/validate-sim.ts feeds STACK_CONFIG to the research simulator and compares every trip with this
+ * port.
  *
- *   in-coupler · LCOS SLM · global gain · 40 mm · lens R · fold · roof · out-coupler · 100 mm · lens L · 60 mm
+ * Physics, as in the research model: a scalar, monochromatic complex field E(x, y) on a 128 × 128 grid at 31.75 µm
+ * (4.06 mm window). The linear-reciprocal route applies the start assembly (input mirror/coupler, gain), goes forward
+ * through the planes (front faces), reflects off the end assembly (curved mirror), and comes back through the planes
+ * (back faces). Every free-space gap is the angular-spectrum method (exact k_z, carrier removed, air) followed by the
+ * absorbing cosine taper. Operation order, constants and the radix-2 FFT are copied from the research code.
  *
- * where every propagation is the angular-spectrum method (exact k_z, carrier removed, air at 15 °C with 0.2 %/m loss)
- * followed by the absorbing cosine taper. The operation order, constants and the radix-2 FFT are copied from the research
- * code so the two agree to rounding error (scripts/validate-sim.ts checks it against the research simulator itself).
- *
- * No DOM here: the page, the validation script and the readout trainer all import this file.
+ * No DOM here: the page and the validation script both import this file.
  */
 
-// ── configuration (research/2026-09-14/arch.ts slmRing + 15-reservoir.ts OPS.Apre_lin) ─────────────────────────────
-export const N = 64 // samples per axis
-export const DX = 20e-6 // m; = SLM pixel pitch (1 sample per pixel)
+// ── configuration ───────────────────────────────────────────────────────────────────────────────────────────────────
+export const N = 128 // samples per axis
+export const PITCH = 63.5e-6 // LCD pixel pitch
+export const DX = PITCH / 2 // 2 samples per pixel
 export const LAMBDA = 650e-9
-export const K_TRIPS = 10 // round trips per input step
+export const PLANES = 4
+export const LENGTH = 24e-3 // input mirror → end mirror
+export const PLANE_Z = Array.from({ length: PLANES }, (_, i) => ((i + 1) * LENGTH) / (PLANES + 1)) // 4.8 mm apart
+export const MIRROR_R = 0.4 // concave end mirror radius of curvature (m): a thin lens f = R/2 in front of a flat mirror
+export const K_TRIPS = 10 // round trips per input
 export const INPUT_AMP = 6
-export const BINS = 16 // detector: 16 × 16 bins of 4 × 4 samples
-export const SLM = { pixels: 64, pitch: 20e-6, fill: 0.93, reflectivity: 0.75, deadZone: 0.2, levels: 256, gamma: 1.05, designLambda: 633e-9, seed: 3, depth: 0.1 }
-export const LENS = { focal: 40e-3, aperture: 1.2e-3, transmission: 0.995 }
-export const GAIN = { G0: 1.6, Isat: 0.05 }
-export const COUPLER_IN = 0.98 // power retained; the input enters with amplitude √(1 − 0.98)
-export const COUPLER_OUT = 0.95 // 5 % tap
-export const MIRROR = 0.995
-export const BOUNDARY = 0.08
-/** the compact route's three free-space segments (m), and where the physical ring puts things along them */
-export const SEGMENTS = [40e-3, 100e-3, 60e-3] as const
-export const ROUTE_LENGTH = 200e-3
-const AIR = { pressurePa: 101_325, temperatureK: 288.15, alpha: -Math.log(0.998) }
+const AIR_SPEC = { kind: 'air', pressurePa: 101_325, temperatureK: 288.15, attenuationPerM: -Math.log(0.998) } as const
+const LCD_PX = { resolution: { x: 64, y: 64 }, pitch: { x: PITCH, y: PITCH }, fillFactor: 0.85, offset: { x: 0, y: 0 } }
+const lcd = (i: number) => ({
+  kind: 'transmissive-lcd' as const, id: `lcd${i + 1}`, label: `LCD phase plane ${i + 1}`,
+  pixels: LCD_PX,
+  modulation: { kind: 'phase' as const, phaseRange: 1.8 * Math.PI, levels: 256, response: { kind: 'gamma' as const, gamma: 1.1 } },
+  clearTransmission: 0.92,
+  surfaces: { front: { transmission: 0.98, reflection: 0.02 }, back: { transmission: 0.96, reflection: 0.04 } },
+  polarizerTransmission: 0.95,
+  deadZoneTransmission: 0,
+  switchingTime: 0.008,
+  designWavelength: 650e-9,
+  program: { kind: 'random' as const, seed: 20 + i, depth: 0.1 },
+})
+
+/** the research-simulator PhysicsConfig this file implements */
+export const STACK_CONFIG = {
+  field: { grid: { nx: N, ny: N, dx: DX, dy: DX }, wavelength: LAMBDA, boundary: { kind: 'absorbing' as const, widthFraction: 0.08 } },
+  elements: [
+    { kind: 'coupler' as const, id: 'in', label: 'input mirror / coupler', retained: { front: 0.92, back: 0.92 }, inputPort: 'in', outputTap: 'readout' },
+    { kind: 'gain' as const, id: 'gain', smallSignalGain: 6, saturation: { kind: 'global' as const, saturationIntensity: 0.5 }, noise: { kind: 'none' as const } },
+    ...Array.from({ length: PLANES }, (_, i) => lcd(i)),
+    { kind: 'lens' as const, id: 'curve', label: 'end-mirror curvature (R = 400 mm)', focalLength: MIRROR_R / 2, apertureDiameter: 4e-3, transmission: { front: 1, back: 1 } },
+    { kind: 'mirror' as const, id: 'end', label: 'end mirror', reflectivity: { front: 0.97, back: 0.97 }, parity: 'none' as const },
+  ],
+  topology: {
+    kind: 'linear-reciprocal' as const, length: LENGTH, medium: AIR_SPEC,
+    start: { elementIds: ['in', 'gain'] }, end: { elementIds: ['curve', 'end'] },
+    items: PLANE_Z.map((z, i) => ({ elementId: `lcd${i + 1}`, position: z })),
+  },
+  readouts: [],
+}
 
 const NN = N * N
 const TAU = 2 * Math.PI
@@ -136,23 +166,61 @@ function airRefractivityStd(lambda: number): number {
   const s2 = (1 / (lambda * 1e6)) ** 2
   return (8342.54 + 2406147 / (130 - s2) + 15998 / (38.9 - s2)) * 1e-8
 }
-const AIR_N = 1 + airRefractivityStd(LAMBDA) * ((AIR.pressurePa / 101_325) * (288.15 / AIR.temperatureK))
-export const AIR_INDEX = AIR_N
-const airGroupIndex = (() => {
-  const density = (AIR.pressurePa / 101_325) * (288.15 / AIR.temperatureK)
-  const nAt = (l: number) => 1 + airRefractivityStd(l) * density
-  const h = LAMBDA * 1e-3
-  return nAt(LAMBDA) - LAMBDA * ((nAt(LAMBDA + h) - nAt(LAMBDA - h)) / (2 * h))
+const density = (AIR_SPEC.pressurePa / 101_325) * (288.15 / AIR_SPEC.temperatureK)
+const nAt = (l: number) => 1 + airRefractivityStd(l) * density
+const AIR_N = nAt(LAMBDA)
+const AIR_NG = (() => { const h = LAMBDA * 1e-3; return AIR_N - LAMBDA * ((nAt(LAMBDA + h) - nAt(LAMBDA - h)) / (2 * h)) })()
+const ALPHA = AIR_SPEC.attenuationPerM
+
+// ── route (src/core/physics/topology/topology.ts, linear-reciprocal) ────────────────────────────────────────────────
+type ElementId = 'in' | 'gain' | 'curve' | 'end' | `lcd${number}`
+export type RouteStep =
+  | { kind: 'element'; id: ElementId; side: 'front' | 'back'; distance: number }
+  | { kind: 'propagate'; length: number; distance: number }
+export const ROUTE: RouteStep[] = (() => {
+  const t = STACK_CONFIG.topology
+  const steps: RouteStep[] = []
+  let d = 0
+  const prop = (length: number) => { if (length <= 1e-12) return; steps.push({ kind: 'propagate', length, distance: d }); d += length }
+  const el = (id: string, side: 'front' | 'back') => steps.push({ kind: 'element', id: id as ElementId, side, distance: d })
+  const items = t.items.map((it, k) => ({ it, k })).sort((a, b) => a.it.position - b.it.position || a.k - b.k).map((x) => x.it)
+  for (const id of t.start.elementIds) el(id, 'front')
+  let cursor = 0
+  for (const it of items) { prop(it.position - cursor); el(it.elementId, 'front'); cursor = it.position }
+  prop(t.length - cursor)
+  for (const id of t.end.elementIds) el(id, 'front')
+  cursor = t.length
+  for (const it of [...items].reverse()) { prop(cursor - it.position); el(it.elementId, 'back'); cursor = it.position }
+  prop(cursor)
+  return steps
 })()
-/** round-trip time Σ n_g L / c (research: 0.6673 ns) */
-export const TRIP_TIME = (airGroupIndex * ROUTE_LENGTH) / 299_792_458
+/** geometric round-trip length (m) and time Σ n_g L / c (s) */
+export const ROUTE_LENGTH = ROUTE.reduce((s, r) => s + (r.kind === 'propagate' ? r.length : 0), 0)
+export const TRIP_TIME = ROUTE.reduce((s, r) => s + (r.kind === 'propagate' ? AIR_NG * r.length : 0), 0) / 299_792_458
+/** propagation steps in route order: the i-th free-space gap of a round trip */
+export const GAPS = ROUTE.filter((r): r is Extract<RouteStep, { kind: 'propagate' }> => r.kind === 'propagate')
 
 // ── propagation (src/core/physics/propagation) ──────────────────────────────────────────────────────────────────────
 export interface Kernel { re: Float64Array; im: Float64Array }
+/** (k_z − k) per sample, and the evanescent decay rate (for the page's intermediate planes) */
+const KZ = (() => {
+  const phase = new Float64Array(NN), decay = new Float64Array(NN)
+  const k = (2 * Math.PI * AIR_N) / LAMBDA
+  for (let j = 0; j < N; j++) {
+    const ky = angularFrequency(j)
+    for (let i = 0; i < N; i++) {
+      const kx = angularFrequency(i)
+      const kz2 = k * k - kx * kx - ky * ky
+      if (kz2 > 0) phase[j * N + i] = Math.sqrt(kz2) - k
+      else decay[j * N + i] = Math.sqrt(-kz2)
+    }
+  }
+  return { phase, decay }
+})()
 export function buildKernel(length: number): Kernel {
   const re = new Float64Array(NN), im = new Float64Array(NN)
   const k = (2 * Math.PI * AIR_N) / LAMBDA
-  const decay = Math.exp((-AIR.alpha * length) / 2)
+  const decay = Math.exp((-ALPHA * length) / 2)
   for (let j = 0; j < N; j++) {
     const ky = angularFrequency(j)
     for (let i = 0; i < N; i++) {
@@ -170,6 +238,9 @@ export function buildKernel(length: number): Kernel {
   }
   return { re, im }
 }
+const kernelCache = new Map<number, Kernel>()
+const kernelFor = (L: number) => { let k = kernelCache.get(L); if (!k) kernelCache.set(L, (k = buildKernel(L))); return k }
+
 function applyKernel(f: Field, kern: Kernel): void {
   const { re, im } = f
   for (let i = 0; i < NN; i++) {
@@ -180,7 +251,7 @@ function applyKernel(f: Field, kern: Kernel): void {
 }
 const WINDOW = (() => {
   const axis = new Float64Array(N)
-  const edge = Math.max(1, Math.round(N * BOUNDARY))
+  const edge = Math.max(1, Math.round(N * STACK_CONFIG.field.boundary.widthFraction))
   for (let i = 0; i < N; i++) {
     const d = Math.min(i, N - 1 - i)
     axis[i] = d >= edge ? 1 : 0.5 - 0.5 * Math.cos((Math.PI * d) / edge)
@@ -203,145 +274,142 @@ function multiplyComplex(f: Field, tr: Float64Array, ti: Float64Array) {
   }
 }
 
-/** commanded → achieved phase (wrap, stroke, 256-level quantisation, γ calibration, λ_design/λ) */
-function achievedPhase(cmd: number): number {
-  let u = (((cmd % TAU) + TAU) % TAU) / TAU
+type Lcd = ReturnType<typeof lcd>
+/** commanded → achieved phase (wrap, 1.8π stroke, clip, 256 levels, γ calibration, λ_design/λ) */
+function achievedPhase(cmd: number, s: Lcd): number {
+  const range = s.modulation.phaseRange
+  let u = (((cmd % TAU) + TAU) % TAU) / range
   u = Math.min(1, Math.max(0, u))
-  u = Math.round(u * (SLM.levels - 1)) / (SLM.levels - 1)
-  return Math.pow(u, SLM.gamma) * TAU * (SLM.designLambda / LAMBDA)
+  u = Math.round(u * (s.modulation.levels - 1)) / (s.modulation.levels - 1)
+  return Math.pow(u, s.modulation.response.gamma) * range * (s.designWavelength / LAMBDA)
 }
 
-/** the SLM's program: commanded phase per pixel (preset "random", seed 3, depth 0.1) and the achieved phase */
-export const SLM_COMMAND = (() => {
-  const rand = mulberry32(SLM.seed)
-  const out = new Float64Array(SLM.pixels * SLM.pixels)
-  for (let i = 0; i < out.length; i++) out[i] = TAU * SLM.depth * rand()
-  return out
-})()
-export const SLM_PHASE = SLM_COMMAND.map(achievedPhase)
-
-/** per-sample complex reflection of the SLM (pixel map: with 1 sample per pixel every sample is inside a pixel) */
-const slmT = (() => {
+export interface Plane { id: string; command: Float64Array; phase: Float64Array; tr: Float64Array; ti: Float64Array; amp: Record<'front' | 'back', number> }
+/** the four LCD planes: per-pixel commanded and achieved phase (64 × 64), and per-sample transmission */
+export const PLANE_DATA: Plane[] = STACK_CONFIG.elements.filter((e): e is Lcd => e.kind === 'transmissive-lcd').map((s) => {
+  const { x: RX, y: RY } = s.pixels.resolution
+  const rand = mulberry32(s.program.seed)
+  const command = new Float64Array(RX * RY)
+  for (let i = 0; i < command.length; i++) command[i] = TAU * s.program.depth * rand()
+  const phase = command.map((c) => achievedPhase(c, s))
+  const amp = Math.sqrt(s.clearTransmission)
   const tr = new Float64Array(NN), ti = new Float64Array(NN)
-  const fx = Math.sqrt(SLM.fill)
-  const amp = Math.sqrt(SLM.reflectivity), dead = Math.sqrt(SLM.deadZone)
+  const fx = Math.sqrt(s.pixels.fillFactor)
   for (let j = 0; j < N; j++) {
-    const v = sampleX(j) / SLM.pitch + SLM.pixels / 2
+    const v = sampleX(j) / s.pixels.pitch.y + RY / 2
     const py = Math.floor(v)
-    const inY = py >= 0 && py < SLM.pixels
+    const inY = py >= 0 && py < RY
     const fracY = Math.abs(v - py - 0.5) <= fx / 2
     for (let i = 0; i < N; i++) {
-      const u = sampleX(i) / SLM.pitch + SLM.pixels / 2
+      const u = sampleX(i) / s.pixels.pitch.x + RX / 2
       const pxi = Math.floor(u)
       const idx = j * N + i
-      if (!inY || pxi < 0 || pxi >= SLM.pixels) { tr[idx] = 0; ti[idx] = 0 }
-      else if (!fracY || Math.abs(u - pxi - 0.5) > fx / 2) { tr[idx] = dead; ti[idx] = 0 }
-      else {
-        const ph = SLM_PHASE[py * SLM.pixels + pxi]
-        tr[idx] = amp * Math.cos(ph)
-        ti[idx] = amp * Math.sin(ph)
-      }
+      if (!inY || pxi < 0 || pxi >= RX) { tr[idx] = 0; ti[idx] = 0 }
+      else if (!fracY || Math.abs(u - pxi - 0.5) > fx / 2) { tr[idx] = Math.sqrt(s.deadZoneTransmission); ti[idx] = 0 }
+      else { const ph = phase[py * RX + pxi]; tr[idx] = amp * Math.cos(ph); ti[idx] = amp * Math.sin(ph) }
     }
   }
-  return { tr, ti }
-})()
+  const side = (k: 'front' | 'back') => Math.sqrt(s.surfaces[k].transmission * s.polarizerTransmission)
+  return { id: s.id, command, phase, tr, ti, amp: { front: side('front'), back: side('back') } }
+})
+const PLANE_BY_ID = Object.fromEntries(PLANE_DATA.map((p) => [p.id, p]))
 
-const lensT = (() => {
+const CURVE = STACK_CONFIG.elements.find((e) => e.id === 'curve') as Extract<(typeof STACK_CONFIG.elements)[number], { kind: 'lens' }>
+const curveT = (() => {
   const k = (2 * Math.PI) / LAMBDA
   const tr = new Float64Array(NN), ti = new Float64Array(NN)
-  const R = LENS.aperture / 2
+  const R = CURVE.apertureDiameter / 2
   for (let j = 0; j < N; j++)
     for (let i = 0; i < N; i++) {
       const x = sampleX(i), y = sampleX(j)
       const r2 = x * x + y * y
       if (r2 > R * R) continue
-      const ph = (-k * r2) / (2 * LENS.focal)
+      const ph = (-k * r2) / (2 * CURVE.focalLength)
       tr[j * N + i] = Math.cos(ph)
       ti[j * N + i] = Math.sin(ph)
     }
   return { tr, ti }
 })()
-
-// ── the route ───────────────────────────────────────────────────────────────────────────────────────────────────────
-export type StepName = 'in' | 'slm' | 'gain' | 'P40' | 'lensR' | 'fold' | 'roof' | 'out' | 'P100' | 'lensL' | 'P60'
-export const ROUTE: StepName[] = ['in', 'slm', 'gain', 'P40', 'lensR', 'fold', 'roof', 'out', 'P100', 'lensL', 'P60']
-const KERNELS: Partial<Record<StepName, Kernel>> = { P40: buildKernel(SEGMENTS[0]), P100: buildKernel(SEGMENTS[1]), P60: buildKernel(SEGMENTS[2]) }
-const SEGMENT_OF: Partial<Record<StepName, number>> = { P40: 0, P100: 1, P60: 2 }
+const IN = STACK_CONFIG.elements[0] as { retained: { front: number; back: number } }
+const GAIN = STACK_CONFIG.elements[1] as { smallSignalGain: number; saturation: { saturationIntensity: number } }
+const END = STACK_CONFIG.elements.find((e) => e.id === 'end') as { reflectivity: { front: number } }
+/** passive power retained per round trip (uniform illumination, small signal), as CompiledSystem.powerBudget() reports */
+export const PASSIVE_RETENTION = (() => {
+  let c = 0
+  for (let i = 0; i < NN; i++) c += curveT.tr[i] ** 2 + curveT.ti[i] ** 2
+  let p = IN.retained.front * END.reflectivity.front * (c / NN) * CURVE.transmission.front
+  for (const pl of PLANE_DATA) {
+    let m = 0, n = 0
+    for (let i = 0; i < NN; i++) { m += pl.tr[i] ** 2 + pl.ti[i] ** 2; n++ }
+    p *= (m / n) ** 2 * pl.amp.front ** 2 * pl.amp.back ** 2
+  }
+  for (const g of GAPS) p *= Math.exp(-ALPHA * g.length)
+  return p
+})()
 
 export interface Observer {
-  /** the field right after a route step */
-  after?(step: StepName, f: Field): void
-  /** the angular spectrum at the start of free-space segment `seg` (0: SLM→lens R, 1: lens R→lens L, 2: lens L→SLM) */
-  spectrum?(seg: number, spec: Field): void
-  /** the out-coupler's 5 % tap, as an amplitude-scaled copy of the incident field */
+  /** the field right after route step `index` */
+  after?(index: number, f: Field): void
+  /** the angular spectrum at the start of free-space gap `gap` (index into GAPS) */
+  spectrum?(gap: number, spec: Field): void
+  /** the input mirror's output tap (8 %), as an amplitude-scaled view of the incident field */
   tap?(f: Field, amplitude: number): void
 }
 
-/**
- * One round trip, in place. `input` (if given) is added at the input coupler, like the research RunContext's
- * `inputs.take('in')`. Returns the global gain applied this trip.
- */
+/** One round trip, in place. `input` (if given) is added at the input coupler. Returns the global gain applied. */
 export function roundTrip(f: Field, input: Field | null, obs?: Observer): number {
-  let gain = GAIN.G0
-  for (const step of ROUTE) {
-    switch (step) {
-      case 'in':
-        scale(f, Math.sqrt(COUPLER_IN))
-        if (input) {
-          const a = Math.sqrt(1 - COUPLER_IN)
-          for (let i = 0; i < NN; i++) { f.re[i] += a * input.re[i]; f.im[i] += a * input.im[i] }
-        }
-        break
-      case 'slm':
-        multiplyComplex(f, slmT.tr, slmT.ti)
-        break
-      case 'gain': {
-        let s = 0
-        for (let i = 0; i < NN; i++) s += f.re[i] * f.re[i] + f.im[i] * f.im[i]
-        gain = 1 + (GAIN.G0 - 1) / (1 + s / NN / GAIN.Isat)
-        scale(f, Math.sqrt(Math.max(0, gain)))
-        break
+  let gain = GAIN.smallSignalGain, gap = 0
+  ROUTE.forEach((step, index) => {
+    if (step.kind === 'propagate') {
+      fft2(f)
+      obs?.spectrum?.(gap++, f)
+      applyKernel(f, kernelFor(step.length))
+      fft2(f, true)
+      for (let i = 0; i < NN; i++) { f.re[i] *= WINDOW[i]; f.im[i] *= WINDOW[i] }
+    } else if (step.id === 'in') {
+      obs?.tap?.(f, Math.sqrt(1 - IN.retained.front))
+      scale(f, Math.sqrt(IN.retained.front))
+      if (input) {
+        const a = Math.sqrt(1 - IN.retained.front)
+        for (let i = 0; i < NN; i++) { f.re[i] += a * input.re[i]; f.im[i] += a * input.im[i] }
       }
-      case 'lensR':
-      case 'lensL':
-        multiplyComplex(f, lensT.tr, lensT.ti)
-        scale(f, Math.sqrt(LENS.transmission))
-        break
-      case 'fold':
-      case 'roof':
-        scale(f, Math.sqrt(MIRROR))
-        break
-      case 'out':
-        obs?.tap?.(f, Math.sqrt(1 - COUPLER_OUT))
-        scale(f, Math.sqrt(COUPLER_OUT))
-        break
-      default: {
-        fft2(f)
-        obs?.spectrum?.(SEGMENT_OF[step]!, f)
-        applyKernel(f, KERNELS[step]!)
-        fft2(f, true)
-        for (let i = 0; i < NN; i++) { f.re[i] *= WINDOW[i]; f.im[i] *= WINDOW[i] }
-      }
+    } else if (step.id === 'gain') {
+      let s = 0
+      for (let i = 0; i < NN; i++) s += f.re[i] * f.re[i] + f.im[i] * f.im[i]
+      gain = 1 + (GAIN.smallSignalGain - 1) / (1 + s / NN / GAIN.saturation.saturationIntensity)
+      scale(f, Math.sqrt(Math.max(0, gain)))
+    } else if (step.id === 'curve') {
+      multiplyComplex(f, curveT.tr, curveT.ti)
+      scale(f, Math.sqrt(CURVE.transmission.front))
+    } else if (step.id === 'end') {
+      scale(f, Math.sqrt(END.reflectivity.front))
+    } else {
+      const p = PLANE_BY_ID[step.id]
+      multiplyComplex(f, p.tr, p.ti)
+      scale(f, p.amp[step.side])
     }
-    obs?.after?.(step, f)
-  }
+    obs?.after?.(index, f)
+  })
   return gain
 }
 
-/** intensity at distance z into a free-space segment, from that segment's starting spectrum (no taper: the model applies
- *  it once, at the end of the segment). `out` receives |E|². */
-export function slice(spec: Field, kern: Kernel, work: Field, out: Float32Array | Float64Array): void {
+/** |E|² at distance z into a free-space gap, from that gap's starting spectrum (no taper: the model applies it once,
+ *  at the end of the gap). `work` is scratch; `out` receives |E|². */
+export function slice(spec: Field, z: number, work: Field, out: Float32Array | Float64Array): void {
   const { re, im } = spec
+  const d = Math.exp((-ALPHA * z) / 2)
   for (let i = 0; i < NN; i++) {
-    work.re[i] = re[i] * kern.re[i] - im[i] * kern.im[i]
-    work.im[i] = re[i] * kern.im[i] + im[i] * kern.re[i]
+    let hr: number, hi: number
+    if (KZ.decay[i] === 0) { const ph = KZ.phase[i] * z; hr = Math.cos(ph) * d; hi = Math.sin(ph) * d } else { hr = Math.exp(-KZ.decay[i] * z) * d; hi = 0 }
+    work.re[i] = re[i] * hr - im[i] * hi
+    work.im[i] = re[i] * hi + im[i] * hr
   }
   fft2(work, true)
   for (let i = 0; i < NN; i++) out[i] = work.re[i] * work.re[i] + work.im[i] * work.im[i]
 }
 
-// ── the reservoir (15-reservoir.ts run(), 29-noise.ts with N_c = ∞) ─────────────────────────────────────────────────
-/** the static input pattern: 40 random complex Gaussians (60 µm) over the central 60 % of the window, seed 101 */
+// ── input ───────────────────────────────────────────────────────────────────────────────────────────────────────────
+/** the static input pattern (research 15-reservoir.ts inputPattern): 40 random complex Gaussians over the central 60 % */
 export function inputPattern(seed = 101, corr = 3): Field {
   const r = mulberry32(seed)
   const f = createField()
@@ -359,59 +427,29 @@ export function inputPattern(seed = 101, corr = 3): Field {
   return f
 }
 
-export const binOf = (i: number) => Math.floor(Math.floor(i / N) / (N / BINS)) * BINS + Math.floor((i % N) / (N / BINS))
-const BIN_OF = Int32Array.from({ length: NN }, (_, i) => binOf(i))
-
-/**
- * Streaming reservoir: each input u(t) is injected once (amplitude 6·u·P at the input coupler) and the light makes
- * K = 10 round trips. The detector integrates the binned |E|² of the circulating field after each trip (Exp. 29's
- * noise-free features, in field units).
- */
-export class Reservoir {
+/** The cavity with an input stream: each input u is injected once (6·u·P at the input mirror), then K = 10 trips. */
+export class Cavity {
   readonly field = createField()
   readonly pattern = inputPattern()
   private readonly inj = createField()
   private pending = false
-  /** the integrating detector: 256 bins */
-  readonly acc = new Float64Array(BINS * BINS)
-  trip = 0 // round trips completed
-  tripInStep = 0 // 0 … K−1: trips completed in the current input step
-  u = 0 // current input
-  gain = GAIN.G0
+  trip = 0
+  tripInStep = 0
+  u = 0
+  gain = GAIN.smallSignalGain
 
   inject(u: number) {
     this.u = u
     for (let i = 0; i < NN; i++) { this.inj.re[i] = INPUT_AMP * u * this.pattern.re[i]; this.inj.im[i] = INPUT_AMP * u * this.pattern.im[i] }
     this.pending = true
-    this.acc.fill(0)
     this.tripInStep = 0
   }
 
-  /** one round trip; accumulates the detector. Returns true when this trip completes an input step. */
-  step(obs?: Observer): boolean {
+  step(obs?: Observer) {
     const input = this.pending ? this.inj : null
     this.pending = false
     this.gain = roundTrip(this.field, input, obs)
-    const { re, im } = this.field
-    for (let i = 0; i < NN; i++) this.acc[BIN_OF[i]] += re[i] * re[i] + im[i] * im[i]
     this.trip++
     this.tripInStep++
-    return this.tripInStep === K_TRIPS
   }
-
-  /** a whole input step without observation: inject, K trips; returns the 256 features (a copy) */
-  run(u: number): Float64Array {
-    this.inject(u)
-    for (let k = 0; k < K_TRIPS; k++) this.step()
-    return this.acc.slice()
-  }
-}
-
-// ── the digital readout ─────────────────────────────────────────────────────────────────────────────────────────────
-export interface ReadoutTask { id: string; label: string; kind: 'recall' | 'narma10'; delay?: number; w: number[]; b: number; test: { r2: number; nmse: number } }
-/** linear readout on Exp. 29's fixed feature transform log10(x + 1); weights already include the standardisation */
-export function readout(acc: ArrayLike<number>, task: { w: number[]; b: number }): number {
-  let y = task.b
-  for (let i = 0; i < task.w.length; i++) y += task.w[i] * Math.log10(acc[i] + 1)
-  return y
 }

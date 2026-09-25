@@ -1,286 +1,113 @@
 'use client'
 import dynamic from 'next/dynamic'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import READOUT from '@/data/reservoir-readout.json'
+import { useMemo, useRef } from 'react'
 import VALID from '@/data/sim-validation.json'
-import { K_TRIPS, N, SLM_PHASE, TRIP_TIME, readout } from '@/lib/phaser-sim'
-import { LiveRing } from '@/lib/live'
-import type { RingOverviewHandle } from '../machine/RingOverview'
-import { drawGrid, exposure, red, redOver } from './plates'
+import { K_TRIPS, LENGTH, N, PASSIVE_RETENTION, PLANE_DATA, PLANE_Z, ROUTE_LENGTH, TRIP_TIME } from '@/lib/phaser-sim'
+import { LiveStack } from '@/lib/live'
+import type { Annotation } from '../machine/StackView'
+import type { StackStatus } from '../machine/StackScene'
+import { exposure, redOver } from './plates'
 import s from './Machine.module.css'
 
-const RingOverview = dynamic(() => import('../machine/RingOverview'), { ssr: false, loading: () => null })
+const StackView = dynamic(() => import('../machine/StackView'), { ssr: false, loading: () => null })
 
 const REPO = 'https://github.com/TensaCo/phaser-design'
-type Task = { id: string; label: string; kind: 'recall' | 'narma10'; delay?: number; w: number[]; b: number; test: { r2: number; nmse: number } }
-const TASKS = READOUT.tasks as Task[]
-const TRIPS_PER_SECOND = 25 // display pace: 2.5 inputs per second
-const WARM = 200 // input steps run before the first frame (the ring's memory is ~40 inputs)
-const PMAX = Math.max(...SLM_PHASE)
-const SLOWDOWN = 1 / TRIPS_PER_SECOND / TRIP_TIME
+const TRIP_SECONDS = 2.4
+const TOP = LENGTH * 1e3
+const PLATE = 1 // which LCD plane Fig. 3 shows (0-based)
+const PMAX = Math.max(...PLANE_DATA[PLATE].phase)
 const sup = (n: number) => String(n).split('').map((c) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[+c] ?? c).join('')
 const sci = (x: number) => { const e = Math.floor(Math.log10(x)); return `${(x / 10 ** e).toFixed(1)} × 10${sup(e)}` }
-const FEAT = (x: number) => Math.log10(x + 1) // the readout's fixed feature transform (Exp. 29)
+const mm = (z: number) => (z * 1e3).toFixed(1)
 
-/** history of the live run: inputs and the detector's features per completed input step */
-interface Hist { u: number[]; pred: Record<string, number[]>; narma: number[] }
-
-function narmaNext(h: Hist) {
-  // y[t+1] = 0.3 y[t] + 0.05 y[t] Σ_{k=0..9} y[t−k] + 1.5 u[t−9] u[t] + 0.1, aligned as research 15-readout.py
-  const y = h.narma, u = h.u, t = u.length - 1
-  if (t < 9) { y.push(0); return }
-  let sum = 0
-  for (let k = t - 9; k <= t; k++) sum += y[k] ?? 0
-  const prev = y[t] ?? 0
-  y.push(0.3 * prev + 0.05 * prev * sum + 1.5 * u[t - 9] * u[t] + 0.1)
-}
+const NOTES: Annotation[] = [
+  { at: [-2.9, TOP + 1.2, -2.9], side: 'right', children: <><b>End mirror</b>Concave, R 400 mm, 97 % reflective. Sends the light back down the stack and keeps it from spreading.</> },
+  { at: [2.03, PLANE_Z[PLATE] * 1e3, 2.03], side: 'right', children: <><b>2 · Phase planes</b>Four LCDs, 64 × 64 pixels at 63.5 µm. Each pixel delays the light by its programmed phase (up to 1.8π, 256 levels). Crossed twice per round trip.</> },
+  { at: [-2.03, 12, 0], side: 'left', children: <><b>3 · Between planes</b>{mm(PLANE_Z[0])} mm of air. Diffraction spreads each pixel&apos;s light into its neighbours, so every plane sees a mix of the last.</> },
+  { at: [-2.9, -0.8, -2.9], side: 'left', children: <><b>1 · Input</b>u(t) sets the brightness of a fixed light pattern, let in through the input mirror (8 %) once every {K_TRIPS} round trips. Gain here replaces what each trip loses.</> },
+  { at: [-2.4, -7, 2.4], side: 'left', children: <><b>4 · Detector</b>8 % of the returning light leaks out through the input mirror every round trip onto a camera.</> },
+]
 
 export function MachineSection() {
-  const [task, setTask] = useState('recall10')
-  const taskRef = useRef(task)
-  taskRef.current = task
-  const live = useMemo(() => new LiveRing(20260925), [])
-  const hist = useRef<Hist>({ u: [], pred: Object.fromEntries(TASKS.map((t) => [t.id, []])), narma: [0] })
-  const ring = useRef<RingOverviewHandle>(null)
-  const cv = useRef<Record<'slm' | 'input' | 'onslm' | 'relay' | 'det' | 'strip' | 'trace', HTMLCanvasElement | null>>({ slm: null, input: null, onslm: null, relay: null, det: null, strip: null, trace: null })
-  const txt = useRef<Record<'trip' | 'step' | 'u' | 'r2' | 'k', HTMLElement | null>>({ trip: null, step: null, u: null, r2: null, k: null })
-  const root = useRef<HTMLElement>(null)
-  const redraw = useRef<() => void>(() => {})
+  const live = useMemo(() => new LiveStack(20260925), [])
+  const plate = useRef<HTMLCanvasElement>(null)
+  const txt = useRef<Record<'trip' | 'step' | 'u' | 'k', HTMLElement | null>>({ trip: null, step: null, u: null, k: null })
 
-  useEffect(() => {
-    const h = hist.current
-    live.onStep = (u, f) => {
-      h.u.push(u)
-      narmaNext(h)
-      for (const t of TASKS) h.pred[t.id].push(readout(f, t))
-      // the readout's target for step t is aligned with the input injected at step t (features after its K trips)
+  const onStatus = (st: StackStatus) => {
+    const t = txt.current
+    if (t.trip) t.trip.textContent = String(st.trip).padStart(6, '0')
+    if (t.step) t.step.textContent = String(st.step).padStart(4, '0')
+    if (t.u) t.u.textContent = st.u.toFixed(3)
+    if (t.k) t.k.textContent = `${st.tripInStep}/${K_TRIPS}`
+    const c = plate.current
+    if (!c) return
+    // one LCD plane at 4 screen px per field sample (2 samples per pixel): graphite phase per pixel, red light per sample
+    const cell = 4, W = N * cell
+    if (c.width !== W) { c.width = W; c.height = W }
+    const ctx = c.getContext('2d')!
+    const img = ctx.createImageData(N, N)
+    const ph = PLANE_DATA[PLATE].phase, I = live.planeI[PLATE]
+    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+      const k = j * N + i
+      const [r, g, b] = redOver(exposure(I[k], 7), ph[(j >> 1) * 64 + (i >> 1)] / PMAX)
+      img.data[4 * k] = r; img.data[4 * k + 1] = g; img.data[4 * k + 2] = b; img.data[4 * k + 3] = 255
     }
-    let raf = 0, alive = true, visible = false, started = false, acc = 0, last = performance.now(), sinceRing = 0
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
-
-    const draw = (full: boolean) => {
-      const c = cv.current, r = live.res
-      if (full && c.slm) drawGrid(c.slm, N, 8, (i) => redOver(exposure(live.slmI[i], 0.1), SLM_PHASE[i] / PMAX), 0.28)
-      const first = r.tripInStep === 1
-      if (c.input) { drawGrid(c.input, N, 3, (i) => red(exposure(live.inputI[i], 0.02))); c.input.style.opacity = first ? '1' : '0.3' }
-      if (c.onslm) drawGrid(c.onslm, N, 3, (i) => red(exposure(live.slmI[i], 0.1)))
-      if (c.relay) drawGrid(c.relay, N, 3, (i) => red(exposure(live.relayI[i], 0.25)))
-      if (c.det) drawGrid(c.det, 16, 12, (i) => red(Math.min(1, FEAT(r.acc[i]) / 1.7)), 0.5)
-      drawStrip(); drawTrace()
-      const t = txt.current
-      if (t.trip) t.trip.textContent = String(r.trip).padStart(7, '0')
-      if (t.step) t.step.textContent = String(live.step).padStart(5, '0')
-      if (t.u) t.u.textContent = r.u.toFixed(3)
-      if (t.k) t.k.textContent = `${r.tripInStep}/${K_TRIPS}`
-    }
-
-    const drawStrip = () => {
-      const c = cv.current.strip
-      if (!c) return
-      const W = c.clientWidth, H = c.clientHeight, dpr = Math.min(window.devicePixelRatio || 1, 2)
-      if (c.width !== Math.round(W * dpr)) { c.width = Math.round(W * dpr); c.height = Math.round(H * dpr) }
-      const ctx = c.getContext('2d')!
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      ctx.clearRect(0, 0, W, H)
-      const tk = TASKS.find((t) => t.id === taskRef.current)!
-      const bw = W / 256, top = H * 0.62
-      // light: the detector's 256 bins (integrated so far this input step)
-      ctx.fillStyle = '#ff2a12'
-      for (let b = 0; b < 256; b++) {
-        const v = Math.min(1, FEAT(live.res.acc[b]) / 1.7)
-        ctx.fillRect(b * bw, top - v * (top - 6), Math.max(1, bw - 0.6), v * (top - 6))
-      }
-      // digital: the readout's 256 weights (sign and size), graphite
-      let wmax = 0
-      for (const w of tk.w) wmax = Math.max(wmax, Math.abs(w))
-      ctx.fillStyle = 'rgba(233,229,220,0.45)'
-      const mid = H * 0.82
-      for (let b = 0; b < 256; b++) {
-        const v = (tk.w[b] / wmax) * (H * 0.16)
-        ctx.fillRect(b * bw, v > 0 ? mid - v : mid, Math.max(1, bw - 0.6), Math.max(0.6, Math.abs(v)))
-      }
-      ctx.fillStyle = 'rgba(233,229,220,0.14)'
-      ctx.fillRect(0, top + 0.5, W, 1)
-    }
-
-    const drawTrace = () => {
-      const c = cv.current.trace
-      if (!c) return
-      const W = c.clientWidth, H = c.clientHeight, dpr = Math.min(window.devicePixelRatio || 1, 2)
-      if (c.width !== Math.round(W * dpr)) { c.width = Math.round(W * dpr); c.height = Math.round(H * dpr) }
-      const ctx = c.getContext('2d')!
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      ctx.clearRect(0, 0, W, H)
-      const tk = TASKS.find((t) => t.id === taskRef.current)!
-      const n = h.u.length
-      const SHOW = W < 640 ? 36 : 72 // input steps on the trace
-      if (n < SHOW + 60) return
-      const i0 = n - SHOW
-      const x = (i: number) => ((i - i0 + 0.5) / SHOW) * W
-      const target = (i: number) => (tk.kind === 'recall' ? h.u[i - tk.delay!] : h.narma[i])
-      const lo = tk.kind === 'recall' ? -0.05 : 0.1, hi = tk.kind === 'recall' ? 0.55 : 0.75
-      // lanes: input stream on top, target vs prediction below
-      const inTop = 8, inH = H * 0.2, outTop = H * 0.34, outH = H * 0.6
-      const yIn = (v: number) => inTop + inH - (v / 0.5) * inH
-      const yOut = (v: number) => outTop + outH - ((v - lo) / (hi - lo)) * outH
-      ctx.strokeStyle = 'rgba(233,229,220,0.10)'; ctx.lineWidth = 1
-      for (const g of [0, 0.25, 0.5].filter((g) => tk.kind === 'recall' || g > 0)) { ctx.beginPath(); ctx.moveTo(0, Math.round(yOut(tk.kind === 'recall' ? g : 0.2 + g)) + 0.5); ctx.lineTo(W, Math.round(yOut(tk.kind === 'recall' ? g : 0.2 + g)) + 0.5); ctx.stroke() }
-      // input stems (graphite)
-      ctx.strokeStyle = 'rgba(138,133,124,0.9)'
-      for (let i = i0; i < n; i++) { ctx.beginPath(); ctx.moveTo(x(i), yIn(0)); ctx.lineTo(x(i), yIn(h.u[i])); ctx.stroke() }
-      if (tk.kind === 'recall') {
-        // bracket: the input that the latest output recalls
-        const a = x(n - 1 - tk.delay!), b = x(n - 1)
-        ctx.strokeStyle = 'rgba(233,229,220,0.55)'
-        ctx.beginPath(); ctx.moveTo(a, yIn(h.u[n - 1 - tk.delay!]) - 4); ctx.lineTo(a, inTop - 2); ctx.lineTo(b, inTop - 2); ctx.lineTo(b, outTop - 6); ctx.stroke()
-        ctx.fillStyle = 'rgba(233,229,220,0.9)'
-        ctx.beginPath(); ctx.arc(a, yIn(h.u[n - 1 - tk.delay!]), 2.5, 0, Math.PI * 2); ctx.fill()
-      }
-      // target (graphite steps) and the readout's prediction (paper line + dots)
-      ctx.strokeStyle = 'rgba(138,133,124,1)'; ctx.lineWidth = 1.25
-      ctx.beginPath()
-      for (let i = i0; i < n; i++) { const X = x(i) - W / SHOW / 2, Y = yOut(target(i)); if (i === i0) ctx.moveTo(X, Y); else ctx.lineTo(X, Y); ctx.lineTo(X + W / SHOW, Y) }
-      ctx.stroke()
-      ctx.strokeStyle = 'rgba(236,232,223,0.85)'; ctx.lineWidth = 1.25
-      ctx.beginPath()
-      const p = h.pred[tk.id]
-      for (let i = i0; i < n; i++) { const Y = yOut(p[i]); if (i === i0) ctx.moveTo(x(i), Y); else ctx.lineTo(x(i), Y) }
-      ctx.stroke()
-      ctx.fillStyle = '#ece8df'
-      for (let i = i0; i < n; i++) { ctx.beginPath(); ctx.arc(x(i), yOut(p[i]), 2, 0, Math.PI * 2); ctx.fill() }
-      // live score over the last 200 steps
-      const m = Math.min(200, n - 60), a: number[] = [], b: number[] = []
-      for (let i = n - m; i < n; i++) { a.push(p[i]); b.push(target(i)) }
-      const mean = (v: number[]) => v.reduce((q, w) => q + w, 0) / v.length
-      const ma = mean(a), mb = mean(b)
-      let sab = 0, saa = 0, sbb = 0, se = 0
-      for (let i = 0; i < a.length; i++) { sab += (a[i] - ma) * (b[i] - mb); saa += (a[i] - ma) ** 2; sbb += (b[i] - mb) ** 2; se += (a[i] - b[i]) ** 2 }
-      if (txt.current.r2) txt.current.r2.textContent = tk.kind === 'recall' ? `r² ${(sab * sab / (saa * sbb)).toFixed(2)}` : `NMSE ${(se / sbb).toFixed(2)}`
-    }
-    redraw.current = () => draw(false)
-
-    const tick = (now: number) => {
-      raf = requestAnimationFrame(tick)
-      const dt = Math.min(0.1, (now - last) / 1000)
-      last = now
-      if (!visible || document.hidden) return
-      acc += dt * TRIPS_PER_SECOND
-      let n = 0
-      while (acc >= 1 && n < 3) { live.trip(); acc -= 1; n++; sinceRing++ }
-      if (n) {
-        draw(true)
-        // the 3-D ring recomputes its 50 cross-sections every fourth trip
-        if (sinceRing >= 4) { ring.current?.refresh(); sinceRing = 0 }
-      }
-    }
-    const start = () => {
-      if (started) return
-      started = true
-      // warm the ring up in slices so the page stays responsive
-      let done = 0
-      const chunk = () => {
-        if (!alive) return
-        const k = Math.min(20, WARM - done)
-        live.warm(k); done += k
-        if (done < WARM) { setTimeout(chunk, 0); return }
-        draw(true); ring.current?.refresh()
-        if (!reduced) raf = requestAnimationFrame(tick)
-      }
-      chunk()
-    }
-    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) start() }, { rootMargin: '400px 0px' })
-    if (root.current) io.observe(root.current)
-    const onResize = () => { drawStrip(); drawTrace() }
-    window.addEventListener('resize', onResize)
-    return () => { alive = false; cancelAnimationFrame(raf); io.disconnect(); window.removeEventListener('resize', onResize) }
-  }, [live])
-
-  useEffect(() => { redraw.current() }, [task])
-
-  const tk = TASKS.find((t) => t.id === task)!
-  const recall10 = TASKS.find((t) => t.id === 'recall10')!
-  const setCv = (k: keyof typeof cv.current) => (el: HTMLCanvasElement | null) => { cv.current[k] = el }
-  const worst = Math.max(...VALID.checkpoints.map((c) => c.field), VALID.featuresMaxRelL2.vsLiveResearch)
+    const off = document.createElement('canvas'); off.width = off.height = N
+    off.getContext('2d')!.putImageData(img, 0, 0)
+    ctx.imageSmoothingEnabled = false
+    ctx.drawImage(off, 0, 0, W, W)
+    // the LCD's black matrix: 7.8 % of each 8-px pixel ≈ 0.6 of a 1-px line
+    ctx.fillStyle = 'rgba(0,0,0,0.6)'
+    for (let k = 1; k <= 64; k++) { ctx.fillRect(k * 2 * cell - 1, 0, 1, W); ctx.fillRect(0, k * 2 * cell - 1, W, 1) }
+  }
 
   return (
-    <section className={s.sec} id="machine" aria-labelledby="machine-h" ref={root}>
+    <section className={s.sec} id="machine" aria-labelledby="machine-h">
       <div className="wrap">
         <p className="eyebrow">02 / The machine</p>
         <h2 id="machine-h" className={s.h}>Watch the light compute.</h2>
         <p className={s.lede}>
-          This is not an animation. It is the research simulation of the machine, running in your browser: red light circulating
-          a 20 cm ring through a 64 × 64-pixel modulator. Each number you feed it rides the light for ten laps and mixes with
-          what came before. A detector reads 256 values; a simple digital readout turns them into an answer.
+          This is not an animation. It is our research simulator running in your browser, modelling red light bouncing
+          between two mirrors through a stack of four pixelated modulators. Every pass through a plane is programmed arithmetic
+          on the whole light field at once, and the light makes six billion round trips a second.
         </p>
 
         <div className={s.row}>
           <figure className={s.fig}>
-            <div className={s.ring}><RingOverview ref={ring} live={live} /></div>
-            <figcaption><b>Fig. 2</b> The ring at true scale: 20 × 80 mm, a 1.3 mm beam. Each cross-section is the simulated |E|² at that point, every 4 mm.</figcaption>
-          </figure>
-          <figure className={s.fig}>
-            <canvas ref={setCv('slm')} className={s.slm} aria-label="The SLM's 64 by 64 pixels with the light landing on them" />
-            <figcaption><b>Fig. 3</b> The modulator (LCOS SLM), all 64 × 64 pixels. Graphite: its fixed phase program. Red: the light landing on it this lap.</figcaption>
-          </figure>
-        </div>
-
-        <div className={s.trip} aria-label="One lap of the ring">
-          <p className={s.tripHead}><span className="label">One input, ten laps</span><span className="label">input <b ref={(el) => { txt.current.step = el }}>00000</b> · u = <b ref={(el) => { txt.current.u = el }}>0.000</b> · lap <b ref={(el) => { txt.current.k = el }}>0/10</b> · trip <b ref={(el) => { txt.current.trip = el }}>0000000</b></span></p>
-          <ol className={s.planes}>
-            <li><canvas ref={setCv('input')} /><span><b>1</b> Input. u(t) sets the brightness of a fixed light pattern, injected once per input.</span></li>
-            <li><canvas ref={setCv('onslm')} /><span><b>2</b> On the modulator. Its pixels shift the light's phase.</span></li>
-            <li><canvas ref={setCv('relay')} /><span><b>3</b> After 100 mm and a lens. Diffraction has mixed every pixel with its neighbours.</span></li>
-            <li><canvas ref={setCv('det')} /><span><b>4</b> Detector. 5 % of the light, summed into 16 × 16 bins over the ten laps.</span></li>
-          </ol>
-        </div>
-
-        <div className={s.compute}>
-          <figure className={s.fig}>
-            <canvas ref={setCv('strip')} className={s.strip} aria-label="Detector bins and readout weights" />
-            <figcaption><span><span className={s.key} data-k="red" /> 256 detector bins (light)</span><span><span className={s.key} data-k="w" /> × 256 readout weights (digital, trained offline)</span></figcaption>
-          </figure>
-          <figure className={s.fig}>
-            <div className={s.traceHead}>
-              <div className={s.tasks} role="tablist" aria-label="Task">
-                {TASKS.map((t) => (
-                  <button key={t.id} role="tab" aria-selected={t.id === task} onClick={() => setTask(t.id)}>
-                    {t.kind === 'recall' ? `${t.delay} back` : 'NARMA10'}
-                  </button>
-                ))}
-              </div>
-              <span className="label"><b ref={(el) => { txt.current.r2 = el }}>—</b> live · {tk.kind === 'recall' ? `r² ${tk.test.r2.toFixed(2)}` : `NMSE ${tk.test.nmse.toFixed(2)}`} held-out test</span>
+            <div className={s.stack}>
+              <StackView framing="section" tripSeconds={TRIP_SECONDS} annotations={NOTES} onStatus={onStatus} live={live} />
             </div>
-            <canvas ref={setCv('trace')} className={s.trace} aria-label="Input stream, target and the readout's prediction" />
-            <figcaption className={s.traceCap}>
-              {tk.kind === 'recall'
-                ? <>Top: the inputs going in. Below: the task, <b>recall the input from {tk.delay} steps ago</b> ({tk.delay! * K_TRIPS} laps, {(tk.delay! * K_TRIPS * TRIP_TIME * 1e9).toFixed(0)} ns earlier). Graphite: the right answer. White: the readout&apos;s answer from the light.</>
-                : <>NARMA10, the standard nonlinear memory benchmark: a target built from products of inputs up to ten steps back. Graphite: the right answer. White: the readout&apos;s answer from the light.</>}
+            <figcaption>
+              <b>Fig. 2</b> The cavity at true scale: 4 mm wide, {TOP} mm between the mirrors. Each wavefront carries the simulated intensity |E|² at its plane.
+              <span className={s.live}>trip <i ref={(el) => { txt.current.trip = el }}>000000</i> · input <i ref={(el) => { txt.current.step = el }}>0000</i> · u = <i ref={(el) => { txt.current.u = el }}>0.000</i> · <i ref={(el) => { txt.current.k = el }}>0/10</i></span>
             </figcaption>
+          </figure>
+          <figure className={s.fig}>
+            <canvas ref={plate} className={s.slm} aria-label="One LCD plane's 64 by 64 pixels with the light landing on them" />
+            <figcaption><b>Fig. 3</b> Phase plane 2, all 64 × 64 pixels. Graphite: its fixed phase program. Red: the light crossing it this round trip, up and back.</figcaption>
           </figure>
         </div>
 
         <div className={s.metrics}>
-          <div className={s.metric}><span className="num">6.7<small>ns</small></span><p>per input: ten laps of a 20 cm ring at 0.667 ns each.</p></div>
-          <div className={s.metric}><span className="num">150<small>M/s</small></span><p>inputs per second from one ring, with no memory traffic.</p></div>
-          <div className={s.metric}><span className="num">{recall10.test.r2.toFixed(2)}<small>r²</small></span><p>recalling the input from ten steps back, on inputs the readout never saw.</p></div>
+          <div className={s.metric}><span className="num">{(TRIP_TIME * 1e9).toFixed(2)}<small>ns</small></span><p>per round trip: {(ROUTE_LENGTH * 1e3).toFixed(0)} mm up the stack and back.</p></div>
+          <div className={s.metric}><span className="num">10<small>B</small></span><p>steps per second from one stack: 67 wavefronts in flight, 10 ps apart, 100 GHz in and out.</p></div>
+          <div className={s.metric}><span className="num">16,384</span><p>programmable pixels on the light&apos;s path, each crossed twice per round trip.</p></div>
         </div>
 
         <dl className={s.spec}>
           <div><dt>λ</dt><dd>650 nm</dd></div>
-          <div><dt>SLM</dt><dd>LCOS 64 × 64 · 20 µm · 256 levels</dd></div>
-          <div><dt>Lap</dt><dd>200 mm · 0.667 ns</dd></div>
-          <div><dt>Per input</dt><dd>K = 10 laps · 6.7 ns</dd></div>
-          <div><dt>Detector</dt><dd>5 % tap · 256 bins</dd></div>
-          <div><dt>Readout</dt><dd>linear, 257 weights, digital</dd></div>
-          <div><dt>Shown</dt><dd>{sci(SLOWDOWN)}× slower</dd></div>
+          <div><dt>Planes</dt><dd>4 × LCD 64 × 64 · 63.5 µm · 1.8π · 256 levels</dd></div>
+          <div><dt>Cavity</dt><dd>{TOP} mm · end mirror R 400 mm</dd></div>
+          <div><dt>Round trip</dt><dd>{(ROUTE_LENGTH * 1e3).toFixed(0)} mm · {(TRIP_TIME * 1e9).toFixed(3)} ns</dd></div>
+          <div><dt>Loss</dt><dd>{Math.round((1 - PASSIVE_RETENTION) * 100)} % per trip · gain clamped</dd></div>
+          <div><dt>Input</dt><dd>every {K_TRIPS} round trips</dd></div>
+          <div><dt>Shown</dt><dd>{sci(TRIP_SECONDS / TRIP_TIME)}× slower</dd></div>
         </dl>
         <p className={s.note}>
-          Live simulation in your browser of the research model (TensaCo/phaser-design, Experiments 15 and 29: scalar field on a
-          64 × 64 grid, angular-spectrum propagation, the preset SLM ring with its gain clamped). The port matches the research
-          simulator to {worst === 0 ? 'the last bit' : `a relative error of ${worst.toExponential(0)}`} over {VALID.trips.toLocaleString('en-US')} laps.
-          The readout is a digital linear layer trained offline; memory capacity {READOUT.memoryCapacity.toFixed(0)} inputs, NARMA10 NMSE {TASKS.find((t) => t.id === 'narma10')!.test.nmse.toFixed(2)}.
-          No energy saving is claimed for this demo: at this size the research finds it at parity with a digital reservoir of equal
-          quality (Exp. 29). What the light adds here is speed.
+          Live simulation in your browser of a linear-stack cavity built with the research simulator (TensaCo/phaser-design): a
+          scalar field on a {N} × {N} grid at 31.75 µm, angular-spectrum propagation between thin elements, the research&apos;s
+          LCD, coupler and mirror parameters, gain clamped. The browser port matches the research simulator
+          {VALID.maxFieldRelL2 === 0 ? ' to the last bit' : ` to a relative error of ${VALID.maxFieldRelL2.toExponential(0)}`} over {VALID.trips.toLocaleString('en-US')} round trips.
         </p>
       </div>
       <div className={s.bench}>

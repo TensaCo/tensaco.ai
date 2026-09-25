@@ -1,61 +1,74 @@
 {
  "date": "2026-09-25",
- "research": "TensaCo/phaser-design research/2026-09-14, OPS.Apre_lin (15-reservoir.ts), driven as 29-noise.ts with N_c = ∞",
- "steps": 3200,
- "trips": 32000,
+ "research": "TensaCo/phaser-design src/core/physics CompiledSystem, fed src/lib/phaser-sim.ts STACK_CONFIG (linear stack: B_4f/preset LCD parts, 4 planes, concave end mirror)",
+ "trips": 4000,
+ "route": 22,
  "tripTime": {
-  "research": 6.673175776646975e-10,
-  "port": 6.673175776646976e-10
+  "research": 1.6015621863952745e-10,
+  "port": 1.6015621863952745e-10
  },
+ "passiveRetention": {
+  "research": 0.18135617367426074,
+  "port": 0.18135617367426074
+ },
+ "researchWarnings": [],
  "inputPatternRelL2": 0,
+ "maxFieldRelL2": 0,
  "checkpoints": [
   {
    "trip": 1,
    "field": 0,
-   "tap": 0,
-   "power": 26.103726051129648
+   "tap": null,
+   "power": 173.35936822948534,
+   "gain": 5.931990245208131,
+   "rmsRadiusMm": 0.798691311863726,
+   "edgeFraction": 0.00007116096333476138
   },
   {
    "trip": 2,
    "field": 0,
    "tap": 0,
-   "power": 24.634616233735105
+   "power": 243.5764253168298,
+   "gain": 5.904513681418351,
+   "rmsRadiusMm": 0.6293791771951442,
+   "edgeFraction": 0.0015729331026744684
   },
   {
    "trip": 10,
    "field": 0,
    "tap": 0,
-   "power": 28.86825806807941
+   "power": 2231.5644709154426,
+   "gain": 5.148410070354833,
+   "rmsRadiusMm": 0.7642440518145631,
+   "edgeFraction": 0.014563858630575494
   },
   {
    "trip": 100,
    "field": 0,
    "tap": 0,
-   "power": 65.10216499974135
+   "power": 4851.944502446835,
+   "gain": 4.2363067291622105,
+   "rmsRadiusMm": 0.984978680379212,
+   "edgeFraction": 0.046720209257810695
   },
   {
    "trip": 1000,
    "field": 0,
    "tap": 0,
-   "power": 71.07135477597842
+   "power": 4861.744351202781,
+   "gain": 4.233774069902198,
+   "rmsRadiusMm": 0.9768588436898578,
+   "edgeFraction": 0.04654205979826723
   },
   {
-   "trip": 10000,
+   "trip": 4000,
    "field": 0,
    "tap": 0,
-   "power": 64.64349715025064
-  },
-  {
-   "trip": 32000,
-   "field": 0,
-   "tap": 0,
-   "power": 61.314510168802045
+   "power": 4874.500856198871,
+   "gain": 4.231412485421021,
+   "rmsRadiusMm": 0.9500390737964138,
+   "edgeFraction": 0.04227076382887425
   }
  ],
- "featuresMaxRelL2": {
-  "vsLiveResearch": 0,
-  "worstStep": -1,
-  "vsStoredExp29": 0
- },
- "seconds": 77.673728681
+ "seconds": 141.60574486
 }
