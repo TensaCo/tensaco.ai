@@ -91,6 +91,14 @@
    "duration": "4s",
    "generate_audio": false,
    "image": "team/_group/executive-team.jpg"
+  },
+  "i02b_engineers": {
+   "prompt": "Slow gentle camera push in on this office scene. The people make small natural movements while looking at the monitor. Realistic, stable, natural daylight.",
+   "aspect_ratio": "16:9",
+   "resolution": "1080p",
+   "duration": "4s",
+   "generate_audio": false,
+   "image": "team/_group/engineers-reviewing-screens.jpg"
   }
  },
  "music": {
@@ -106,6 +114,6 @@
   "v07_align": "oversized gloved hands",
   "v09_skyline": "drone propellers in frame",
   "v10_team": "generic people; replaced by the team photo",
-  "i02_engineers": "content filter; used a push-in on team/_group/engineers-reviewing-screens.jpg instead"
+  "i02_engineers": "first prompt refused by the content filter; the neutral re-prompt (i02b_engineers) is used"
  }
 }

@@ -21,7 +21,7 @@ Music: 120 BPM, 2 s bars. Sparse pulse 0–8 s, drums in at 8 s, full drive 16�
 | 8–10 | red laser beam through lenses on an optical table (Veo) | COMPUTE / Computation, with light. |
 | 10–13 | optical cavity, photonic chip macro, hand aligning a mirror mount (Veo) | Neural-network math, done in an optical cavity. |
 | 13–16 | optical cavity, slowed and dimmed (Veo) | **PHASER** (Archivo) / A neural accelerator that runs at the speed of light. / Built from an off-the-shelf supply chain · phaser.tensaco.ai |
-| 16–20 | developer typing at night (Veo); push-in on the team photo `team/_group/engineers-reviewing-screens.jpg` | **TensorCode** / Write what you know. Train what you don't. / Part code, part trained model · tensorcode.dev |
+| 16–20 | developer typing at night (Veo); the team at the lab screens (`team/_group/engineers-reviewing-screens.jpg` animated with Veo image-to-video) | **TensorCode** / Write what you know. Train what you don't. / Part code, part trained model · tensorcode.dev |
 | 20–22 | TensaCo team in the SF office (`team/_group/executive-team.jpg` animated with Veo image-to-video) | TENSACO / Faster, more efficient, accountable AI. |
 | 22–23 | San Francisco skyline at blue hour (Veo) | Built in San Francisco. |
 | 23–24 | quarter-beat montage: laser, servers (stock), chip, grid | |

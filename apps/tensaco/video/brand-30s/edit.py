@@ -54,7 +54,7 @@ SHOTS = [
     # Act 3: software and the company (music: full drive, accents at 16 and 20 s)
     dict(t=(16.0, 18.0), f='gen/v08_code.mp4',       at=0.8, z=(1.00, 1.06), dim=0.3),
     # the team (team/_group photos, animated with Veo image-to-video; falls back to a push-in on the still)
-    dict(t=(18.0, 20.0), f=first('gen/i02b_engineers.mp4', 'team/engineers.jpg', 'gen/v10_team.mp4'), at=0.8, z=(1.12, 1.18), cx=0.3, dim=0.35),
+    dict(t=(18.0, 20.0), f=first('gen/i02b_engineers.mp4', 'team/engineers.jpg', 'gen/v10_team.mp4'), at=0.3, z=(1.10, 1.14), cx=0.3, dim=0.35),
     dict(t=(20.0, 22.0), f=first('gen/i01_group.mp4', 'team/group.jpg', 'stock:team-collaboration-hero'), at=1.2, z=(1.02, 1.08), dim=0.2),
     dict(t=(22.0, 23.0), f='gen/v09b_skyline.mp4',   at=0.8, z=(1.00, 1.04)),
     # build to the hit: quarter-beat cuts
