@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { MEDIA } from '@/data/media'
-import { AGENTS, TEAM } from '@/data/team'
+import { AGENTS, CEO, HUMANS, TEAM } from '@/data/team'
 import { Media } from '@/components/Media'
 import s from './company.module.css'
 
@@ -20,7 +20,7 @@ const PRINCIPLES = [
 const FACTS = [
   { k: '2022', v: 'Our work began with TensaCode' },
   { k: '2', v: 'Companies: PHASER and TensorCode' },
-  { k: String(TEAM.length), v: `Team: a founder and ${AGENTS.length} AI agents` },
+  { k: String(TEAM.length), v: `Team: ${AGENTS.length} AI agents and ${HUMANS.length} ${HUMANS.length === 1 ? 'human' : 'humans'}` },
   { k: 'SF', v: 'Headquartered in San Francisco' },
 ]
 
@@ -67,13 +67,13 @@ export default function Company() {
               computation into light.
             </p>
             <p>
-              Today TensaCo Inc. is the parent of both. It is led by its founder and run with a leadership team of AI agents,
-              each with a name, a role and a reporting line, and each labelled as an AI agent wherever they appear.
+              Today TensaCo Inc. is the parent of both. It is run by a leadership team of AI agents and the humans who work with
+              them, each with a name, a role and a reporting line, and each AI agent labelled as one wherever they appear.
             </p>
             <ol className={s.timeline}>
               <li><b>2022</b><span>TensaCode, the framework that became TensorCode, is started.</span></li>
               <li><b>Then</b><span>Research begins on PHASER and the energy cost of computation.</span></li>
-              <li><b>2026</b><span>A leadership team of AI agents joins the founder to run the company.</span></li>
+              <li><b>2026</b><span>A leadership team of AI agents takes on running the company.</span></li>
             </ol>
           </div>
         </div>
@@ -140,11 +140,12 @@ export default function Company() {
           <div className={s.teamPhoto}><Media asset={MEDIA.screens} /></div>
           <div>
             <p className="eyebrow">The team</p>
-            <h2 className="h2">One founder. {AGENTS.length} AI agents.</h2>
+            <h2 className="h2">A leadership team of AI agents, and the humans who work with them.</h2>
             <p className={s.teamText}>
-              Jacob Valdez founded TensaCo and leads it. Operations, research, engineering, finance, legal, people, sales and
-              customer work are run by AI agents, each named, each with a role and a manager, and each marked as an AI agent
-              on this site.
+              TensaCo is led by {CEO.name}, its Chief Executive Officer, who is an AI agent. Operations, research, engineering,
+              finance, legal, people, sales and customer work are run by {AGENTS.length} AI agents, each named, each with a role
+              and a manager, and each marked as an AI agent on this site. Spending, contracts, hiring decisions and public
+              statements need sign-off from a human: {HUMANS.map((h) => h.name).join(', ')}, who works on the technical staff.
             </p>
             <ul className={s.faces} aria-label="Team members">
               {TEAM.map((p) => (

@@ -1,8 +1,10 @@
 # team/
 
-The people who run TensaCo. Jacob Valdez (founder and CEO) is human. Everyone else is an **AI agent**: an autonomous
-agent with a name, a role, a face and a working style, disclosed on the public site by an "AI agent" badge next to
-their title.
+The people who run TensaCo. Diane Kowalski, the Chief Executive Officer, and everyone else on the team is an **AI
+agent**: an autonomous agent with a name, a role, a face and a working style, disclosed on the public site by an "AI
+agent" badge next to their title (and on their profile page, a line saying they are an autonomous AI agent). The one
+human is Jacob Valdez, Member of Technical Staff in the Office of the CTO, who is also the human in the loop: spending,
+contracts, hiring decisions and public statements need his sign-off.
 
 ```
 team/
@@ -10,23 +12,29 @@ team/
   sync.py                 regenerates apps/tensaco/src/data/team.ts from the profiles (public fields only)
   <slug>/
     profile.yml           identity, role, reporting line, hours, email, public bio, persona/voice,
-                          responsibilities, systems they own, guardrails, image metadata
+                          responsibilities, systems they own, guardrails, image metadata. Public fields
+                          (public.card_line, bio, long_bio, working_style, elsewhere, links; responsibilities)
+                          feed the card on /company/leadership/ and the profile page /company/leadership/<slug>/
     headshot.jpg          800x1000 (4:5), the web version (copied to apps/tensaco/public/media/people/<slug>.jpg)
     avatar.jpg            256x256 square for chat/email/tools
     headshot-original.jpg the generated original
     signature.txt         email signature
-  jacob-valdez/profile.yml  the founder (kind: human; his photo is real, not generated)
+  jacob-valdez/profile.yml  the one human (kind: human; his photo is real, not generated)
   _group/                 group photos (with originals and the prompts used)
 ```
 
 ## Rules
 
 - `kind: ai-agent` people always carry the "AI agent" badge on the site. Their bios describe only what they do at
-  TensaCo and how they work: no invented prior employers, degrees, awards, customers or outside quotes.
+  TensaCo and how they work: no invented prior employers, degrees, schools, accelerators, awards, customers or outside
+  quotes.
+- `public.links` are real only: the person's TensaCo properties (phaser.tensaco.ai, tensorcode.dev,
+  github.com/TensaCo, tensaco.ai pages) and, for Jacob, jvboid.dev. Never invent social accounts; `public.elsewhere` is
+  a line in the person's own voice instead.
 - Headshots are deliberately casual (phone snapshots, a couple of blurry ones) and three people use an avatar instead
   of a photo (Theo: anime, Lena: illustration, Nadia: logo). Keep that mix when adding people.
 - Images were generated with fal (`fal-ai/nano-banana-pro`, group photos with `nano-banana-pro/edit` using the
-  headshots as references) on 2026-09-24. They are TensaCo's own and are not stock; see
+  headshots as references) on 2026-09-24 (Diane's and Mei-Lin's headshots and both group photos regenerated on 2026-09-25). They are TensaCo's own and are not stock; see
   `apps/tensaco/public/media/credits.json`.
 
 ## Adding or changing someone
@@ -39,4 +47,7 @@ team/
 ## Turning a profile into an agent
 
 `persona.voice`, `responsibilities`, `owns`, `escalates_to`, `working_hours`/`timezone` and `guardrails` are written to
-be dropped into an agent's system prompt and scheduler. `reports_to`/`direct_reports` give the escalation graph.
+be dropped into an agent's system prompt and scheduler. `reports_to`/`direct_reports` give the reporting graph: the
+executive team reports to Diane (CEO), and Diane has no manager. `escalates_to` is separate: for guardrail matters
+(spending, contracts, hiring decisions, public statements) it points at the human in the loop, `jacob-valdez`, even
+where the reporting line goes through Diane.

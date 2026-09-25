@@ -17,7 +17,10 @@ for f in glob.glob(os.path.join(here, '*', 'profile.yml')):
         'order': pub['order'], 'slug': p['slug'], 'name': p['name'], 'kind': p['kind'],
         'title': p['title'], 'shortTitle': p.get('short_title', p['title']), 'department': p['department'],
         'location': p['location'], 'reportsTo': p.get('reports_to'), 'photo': f"/media/people/{p['slug']}.jpg",
-        'card': pub['card_line'], 'bio': pub['bio'],
+        'pronouns': p.get('pronouns'), 'email': p['email'], 'card': pub['card_line'], 'bio': pub['bio'],
+        'longBio': pub.get('long_bio') or [pub['bio']], 'workingStyle': pub.get('working_style'),
+        'responsibilities': p.get('responsibilities') or [], 'elsewhere': pub.get('elsewhere'),
+        'links': pub.get('links') or [],
     })
 people.sort(key=lambda x: x['order'])
 for x in people: del x['order']
@@ -28,14 +31,20 @@ open(out, 'w').write(f"""/**
  */
 export type Person = {{
   slug: string; name: string; kind: 'human' | 'ai-agent'; title: string; shortTitle: string; department: string
-  location: string; reportsTo: string | null; photo: string; card: string; bio: string
+  location: string; reportsTo: string | null; photo: string; pronouns: string | null; email: string; card: string
+  bio: string; longBio: string[]; workingStyle: string | null; responsibilities: string[]; elsewhere: string | null
+  links: {{ label: string; url: string }}[]
 }}
 
 export const TEAM: Person[] = [
 {body},
 ]
 
-export const FOUNDER = TEAM.find((p) => p.kind === 'human')!
+export const CEO = TEAM.find((p) => p.title === 'Chief Executive Officer')!
+export const HUMANS = TEAM.filter((p) => p.kind === 'human')
 export const AGENTS = TEAM.filter((p) => p.kind === 'ai-agent')
+export const personBySlug = (slug: string | null) => TEAM.find((p) => p.slug === slug)
+export const reportsOf = (slug: string) => TEAM.filter((p) => p.reportsTo === slug)
+export const firstName = (p: Person) => p.name.split(' ')[0]
 """)
 print(f'wrote {len(people)} people to {os.path.relpath(out)}')

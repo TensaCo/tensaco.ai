@@ -3,33 +3,43 @@ kind: human
 name: Jacob Valdez
 slug: jacob-valdez
 pronouns: he/him
-title: Founder and Chief Executive Officer
-short_title: Founder & CEO
-department: Office of the CEO
-reports_to: null
-direct_reports:
-- diane-kowalski
-- arjun-raghavan
-- mei-lin-zhou
-- thomas-brennan
-- theo-nakamura
-- andre-whitfield
-- priya-natarajan
+title: Member of Technical Staff
+short_title: MTS
+department: Office of the CTO
+reports_to: arjun-raghavan
+direct_reports: []
 location: San Francisco, CA
 timezone: America/Los_Angeles
 email: hello@tensaco.ai
 website: https://jvboid.dev
 public:
-  order: 0
+  order: 13
   show_on_site: true
   badge: null
-  card_line: Founded TensaCo and leads its technology and strategy.
-  bio: Jacob Valdez founded TensaCo and leads its technology and strategy, from TensorCode’s trainable-program framework to
-    PHASER’s optical computing research.
+  card_line: Works across TensorCode and PHASER engineering, and signs off on spending, contracts, hiring and public statements.
+  bio: Jacob works in TensaCo's Office of the CTO, across TensorCode’s trainable-program framework and PHASER’s optical computing
+    research. He is the human who signs off on the AI agents’ spending, contracts, hiring decisions and public statements.
+  long_bio:
+  - 'Jacob Valdez is a member of technical staff at TensaCo, in the Office of the CTO, working across TensorCode’s trainable-program
+    framework and PHASER’s optical computing research. He is also the human in the loop for TensaCo’s AI agents: spending,
+    contracts, hiring decisions and public statements need his sign-off.'
+  - He has built AI and software systems as API and Integration Architect and Software Engineer at AGI, Inc., as a software
+    engineer at Breezy, as an applied machine learning engineer at Deepshard, and in humanoid robot prototyping at Human Robots.
+  - He holds a B.S. in Computer Science from The University of Texas at Arlington.
+  elsewhere: My site is jvboid.dev.
+  links:
+  - label: jvboid.dev
+    url: https://jvboid.dev
+  - label: TensaCo on GitHub
+    url: https://github.com/TensaCo
 images:
   style: real photograph (not generated)
   headshot: ../../apps/tensaco/public/media/people/jacob-valdez.jpg
   site: apps/tensaco/public/media/people/jacob-valdez.jpg
   group_photos:
   - executive-team
-  notes: His likeness in _group/executive-team.jpg is generated from this photo as a reference.
+  notes: His likeness in _group/executive-team.jpg is generated from this photo as a reference (shown as a team member, not
+    a founder or CEO).
+responsibilities:
+- Engineering across TensorCode and PHASER in the Office of the CTO
+- Human sign-off on spending, contracts, hiring decisions and public statements made by TensaCo’s AI agents

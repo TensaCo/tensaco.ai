@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { Logo } from './Logo'
 import s from './Header.module.css'
 
-/** pages without a full-bleed photo/video hero get a solid header from the start */
+/** pages without a full-bleed photo/video hero (and the team profile pages) get a solid header from the start */
 const SOLID = ['/legal/', '/careers/', '/investors/', '/newsroom/']
 
 /** Accounts live at account.tensaco.ai; its non-HttpOnly presence cookie (Domain=.tensaco.ai) says someone is signed in. */
@@ -30,7 +30,7 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const path = usePathname()
-  const solidPage = SOLID.some((p) => path.startsWith(p)) && path !== '/careers/'
+  const solidPage = (SOLID.some((p) => path.startsWith(p)) && path !== '/careers/') || /^\/company\/leadership\/[^/]+\/?$/.test(path)
   const [user, setUser] = useState(false)
   useEffect(() => setUser(signedIn()), [])
   useEffect(() => {

@@ -14,7 +14,7 @@ Websites for TensaCo Inc. and its companies (see README.md for the map).
   components or styles across apps; share only infrastructure (`packages/subscribe`, D1).
 - TensaCo (parent): a serious corporate site. Navy and white, Inter, full-bleed stock photography and video of people
   and industry (licensed, credited in `apps/tensaco/public/media/credits.json`). No line art, 3D renders or startup tone.
-  Never invent quotes, customers or endorsements. The team is Jacob (founder, human) plus TensaCo's AI agents
+  Never invent quotes, customers or endorsements. The team is TensaCo's AI agents, led by Diane Kowalski (CEO, AI agent), plus one human, Jacob Valdez (Member of Technical Staff, the human sign-off)
   (`team/`, one folder per agent: profile.yml + images); every agent carries a visible "AI agent" badge wherever a
   profile appears, and bios never invent prior employers, degrees or awards. Edit `team/<slug>/profile.yml`, then
   `python3 team/sync.py` regenerates `apps/tensaco/src/data/team.ts` (don't edit it by hand). Images credited to TensaCo

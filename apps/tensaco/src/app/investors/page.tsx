@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { LIVE, MILESTONES, TRACTION } from '@/data/traction'
 import { formatDate } from '@/data/news'
+import Link from 'next/link'
+import { AGENTS, CEO, HUMANS } from '@/data/team'
 import { Subscribe } from '@/components/Subscribe'
 import s from './investors.module.css'
 
@@ -33,7 +35,7 @@ export default function Investors() {
             <div><dt>Business lines</dt><dd>PHASER — optical AI acceleration<br />TensorCode — accountable AI software</dd></div>
             <div><dt>Stage</dt><dd>PHASER: research and simulation<br />TensorCode: 0.4 alpha, open source</dd></div>
             <div><dt>Distribution</dt><dd>TensorCode on PyPI and npm; PHASER research and simulator on GitHub</dd></div>
-            <div><dt>Leadership</dt><dd>Jacob Valdez, Founder and CEO</dd></div>
+            <div><dt>Leadership</dt><dd><Link href={`/company/leadership/${CEO.slug}/`}>{CEO.name}</Link>, {CEO.title}{CEO.kind === 'ai-agent' ? ' (AI agent)' : ''}<br />{AGENTS.length} AI agents and {HUMANS.length} {HUMANS.length === 1 ? 'human' : 'humans'}; <Link href="/company/leadership/">see the team</Link></dd></div>
             <div><dt>Contact</dt><dd><a href="mailto:hello@tensaco.ai?subject=Investor%20inquiry">hello@tensaco.ai</a></dd></div>
           </dl>
         </div>
