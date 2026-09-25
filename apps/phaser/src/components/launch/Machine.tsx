@@ -74,7 +74,7 @@ export function MachineSection() {
               <StackView framing="section" tripSeconds={TRIP_SECONDS} annotations={NOTES} onStatus={onStatus} live={live} />
             </div>
             <figcaption>
-              <b>Fig. 2</b> The cavity at true scale: {(N * DX * 1e3).toFixed(2)} mm wide, {TOP} mm between the mirrors. Each wavefront carries the simulated intensity |E|² at its plane.<Fn id="figure" />
+              <b>Fig. 2</b><span>The cavity at true scale: {(N * DX * 1e3).toFixed(2)} mm wide, {TOP} mm between the mirrors. Each wavefront carries the simulated intensity |E|² at its plane.<Fn id="figure" /></span>
               <span className={s.live}>round trip <i ref={(el) => { txt.current.trip = el }}>000000</i></span>
             </figcaption>
           </figure>
