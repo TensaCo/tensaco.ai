@@ -1,5 +1,7 @@
 # tensaco.ai
 
+Current state and open items: [STATUS.md](STATUS.md).
+
 The websites of **TensaCo Inc.** and its companies. Each company presents as its own product and brand; they share only
 infrastructure (Cloudflare Workers, one D1 subscriber database).
 
