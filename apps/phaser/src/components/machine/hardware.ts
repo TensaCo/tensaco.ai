@@ -72,9 +72,6 @@ const brushedTex = (label?: string[]) => canvasTex(512, 512, (c) => {
   }
 })
 
-/** BoxGeometry's top face maps u the other way round from how the marking is drawn */
-const mirrorU = (t: THREE.Texture) => { t.wrapS = THREE.RepeatWrapping; t.repeat.x = -1; return t }
-
 /** Board layout (mm, board coordinates: x across −12.7…12.7, z along −34.5…34.5; WROOM at −z, USB at +z) */
 const LAYOUT = {
   wroom: { x: 0, z: -21.75, w: 18, l: 25.5 },
@@ -150,7 +147,7 @@ const boardTex = () => canvasTex(BOARD.w * PX, BOARD.l * PX, (c) => {
   outline(LAYOUT.zif.x, LAYOUT.zif.z, 16.8, 5)
   c.font = `600 ${1.2 * PX}px monospace`; c.textAlign = 'center'; c.textBaseline = 'middle'
   const text = (s: string, x: number, z: number, rot = 0, size = 1.2) => {
-    c.save(); c.translate(bx(x), bz(z)); c.rotate(rot); c.font = `600 ${size * PX}px monospace`; c.fillText(s, 0, 0); c.restore()
+    c.save(); c.translate(bx(x), bz(z)); c.rotate(rot + Math.PI); c.font = `600 ${size * PX}px monospace`; c.fillText(s, 0, 0); c.restore() // + π: upright for the front camera once the board is turned
   }
   for (const b of LAYOUT.buttons) text(b.name, b.x, b.z - 2.6, 0, 0.9)
   for (const u of LAYOUT.usb) text(u.name, u.x, u.z - 4.8, 0, 0.9)
@@ -204,7 +201,8 @@ const mats = () => {
     fr4: new THREE.MeshStandardMaterial({ color: 0x151614, roughness: 0.7, metalness: 0 }),
     boardTop: new THREE.MeshStandardMaterial({ map: boardTex(), roughness: 0.55, metalness: 0.15 }),
     moduleTop: new THREE.MeshStandardMaterial({ map: moduleTex(), roughness: 0.55, metalness: 0.1 }),
-    can: new THREE.MeshStandardMaterial({ map: mirrorU(brushedTex(['ESP32-S3-WROOM-1', 'N16R8', 'FCC ID 2AC7Z-ESPS3WROOM1'])), roughness: 0.35, metalness: 1 }),
+    can: new THREE.MeshStandardMaterial({ map: brushedTex(), roughness: 0.35, metalness: 1 }),
+    canMark: new THREE.MeshStandardMaterial({ map: brushedTex(['ESP32-S3-WROOM-1', 'N16R8', 'FCC ID 2AC7Z-ESPS3WROOM1']), roughness: 0.35, metalness: 1 }),
     gold: new THREE.MeshStandardMaterial({ color: 0xbfa062, roughness: 0.28, metalness: 1 }),
     tin: new THREE.MeshStandardMaterial({ color: 0xc9c7c1, roughness: 0.3, metalness: 1 }),
     shell: new THREE.MeshStandardMaterial({ color: 0xbdbab3, roughness: 0.3, metalness: 1 }),
@@ -404,6 +402,11 @@ export function buildAssembly(): Assembly {
   modTop.position.set(W.x, top0 + 0.81, W.z - W.l / 2 + 3.25)
   bgp.add(modTop)
   bgp.add(box(m.can, 16.6, 2.3, 17.6, W.x, top0 + 0.8 + 1.15, W.z + 3.2, 0.25))
+  // laser marking on the can's lid: a plane turned so it reads upright (not mirrored) from the front camera,
+  // through the board's own 180° turn
+  const mark = new THREE.Mesh(new THREE.PlaneGeometry(15.6, 16.6).rotateX(-Math.PI / 2).rotateY(Math.PI), m.canMark)
+  mark.position.set(W.x, top0 + 0.8 + 2.3 + 0.01, W.z + 3.2)
+  bgp.add(mark)
   for (let k = 0; k < 13; k++) for (const s of [-1, 1]) bgp.add(box(m.gold, 0.9, 0.12, 0.5, W.x + s * 8.75, top0 + 0.06, W.z + 3.2 - 8.4 + k * 1.27)) // castellations
   // USB-C receptacles (8.94 × 3.26 × 7.35) at the +z edge
   for (const u of LAYOUT.usb) {
