@@ -21,6 +21,9 @@ npm run preview         # build + wrangler dev: pages and /api/subscribe against
 npm run deploy          # build + wrangler deploy (Cloudflare account jacobfv123@gmail.com)
 ```
 
+Pushing to `main` deploys whichever apps changed (`.github/workflows/deploy.yml`; needs the `CLOUDFLARE_API_TOKEN`
+repository secret).
+
 First local run of the API: `npx wrangler d1 migrations apply tensaco-subscribers --local` in the app folder.
 
 ## Subscribers

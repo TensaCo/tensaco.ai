@@ -7,7 +7,7 @@ export function Footer() {
       <div className="wrap">
         <div className={s.foot}>
           <span>PHASER · a <a href="https://tensaco.ai">TensaCo</a> company</span>
-          <span className={s.links}><a href="/blog/">Blog</a><a href="/notes/">Methods &amp; sources</a><a href="https://github.com/TensaCo/phaser-design">Research</a></span>
+          <span className={s.links}><a href="mailto:hello@tensaco.ai">hello@tensaco.ai</a><a href="/blog/">Blog</a><a href="/notes/">Methods &amp; sources</a><a href="https://github.com/TensaCo/phaser-design">Research</a></span>
         </div>
       </div>
     </footer>

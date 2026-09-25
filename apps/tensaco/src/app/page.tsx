@@ -17,6 +17,7 @@ export default function Home() {
           <a href="#companies">Companies</a>
           <a href="#values">Values</a>
           <a href="#investors">Investors</a>
+          <a href="mailto:hello@tensaco.ai">Contact</a>
           <a href="#updates" className={s.navCta}>Updates</a>
         </nav>
       </header>
@@ -95,7 +96,7 @@ export default function Home() {
             </div>
           </div>
           <p className={s.contact}>
-            Investor and partnership conversations: message <a href="https://x.com/TensacoInc">@TensacoInc</a>, or leave your email below and we will reach out.
+            Investor and partnership conversations: write to <a href="mailto:hello@tensaco.ai">hello@tensaco.ai</a>.
           </p>
         </section>
 
@@ -108,6 +109,7 @@ export default function Home() {
       <footer className={`wrap ${s.foot}`}>
         <span>© 2026 TensaCo Inc.</span>
         <span className={s.footLinks}>
+          <a href="mailto:hello@tensaco.ai">hello@tensaco.ai</a>
           <a href="https://phaser.tensaco.ai">PHASER</a>
           <a href="https://tensorcode.dev">TensorCode</a>
           <a href="https://github.com/TensaCo">GitHub</a>

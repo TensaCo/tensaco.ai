@@ -5,7 +5,8 @@ Websites for TensaCo Inc. and its companies (see README.md for the map).
 ## Git workflow
 
 - Work and commit directly on `main`. Don't create feature branches or PRs unless asked.
-- Deploys are manual (`npm run deploy` in an app); pushing does not deploy.
+- Pushing to `main` deploys the apps whose files changed (`.github/workflows/deploy.yml`, secret
+  `CLOUDFLARE_API_TOKEN`). By hand: `npm run deploy` in an app.
 
 ## Brands stay separate
 
