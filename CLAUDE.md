@@ -14,8 +14,12 @@ Websites for TensaCo Inc. and its companies (see README.md for the map).
   components or styles across apps; share only infrastructure (`packages/subscribe`, D1).
 - TensaCo (parent): a serious corporate site. Navy and white, Inter, full-bleed stock photography and video of people
   and industry (licensed, credited in `apps/tensaco/public/media/credits.json`). No line art, 3D renders or startup tone.
-  Never invent people, quotes, customers or endorsements; Leadership shows only real people. Traction figures on
-  /investors are real (zeros included) and dated.
+  Never invent quotes, customers or endorsements. The team is Jacob (founder, human) plus TensaCo's AI agents
+  (`team/`, one folder per agent: profile.yml + images); every agent carries a visible "AI agent" badge wherever a
+  profile appears, and bios never invent prior employers, degrees or awards. Traction figures on /investors are real
+  (zeros included) and dated.
+- Legal entity: TENSACO INC, a Delaware corporation (governing law Delaware). Office: San Francisco, CA — publish the
+  city only, not the street address.
 - PHASER: darkroom, 650 nm red, Archivo + IBM Plex Mono. Its art direction is `apps/phaser/VISUAL_BIBLE.md`.
 - TensorCode: canonical at tensorcode.dev, built in the TensaCo/tensacode repo. `tensorcode.tensaco.ai` only redirects.
 
