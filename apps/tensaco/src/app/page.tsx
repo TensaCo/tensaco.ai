@@ -39,7 +39,7 @@ export default function Home() {
           <div className={s.filmHead}>
             <div>
               <p className="eyebrow">The TensaCo film</p>
-              <h2 className="h2">Compute built on light. Software built on trust.</h2>
+              <h2 className={`h2 ${s.filmTitle}`}>Compute built on light. Software built on trust.</h2>
             </div>
             <p className={s.filmAside}>Thirty seconds on why TensaCo exists, and the two companies building its answer: PHASER and TensorCode.</p>
           </div>

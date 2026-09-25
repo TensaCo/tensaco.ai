@@ -21,7 +21,8 @@ export function BrandFilm() {
     v.currentTime = state === 'ended' ? 0 : v.currentTime
     v.muted = false
     setState('playing')
-    v.play().catch(() => setState('idle'))
+    // if the browser refuses playback with sound, leave the native controls up so a tap on them starts it
+    v.play().catch(() => {})
   }
 
   return (

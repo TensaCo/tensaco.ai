@@ -9,7 +9,7 @@
 /* Brand film */
 .filmSection { background: linear-gradient(180deg, var(--navy) 0%, #071733 100%); color: var(--white); }
 .filmHead { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px 48px; flex-wrap: wrap; margin-bottom: clamp(32px, 4vw, 48px); }
-.filmHead .h2 { max-width: 16em; }
+.filmTitle { max-width: 12.5em; }
 .filmAside { max-width: 26em; margin: 0; color: rgba(255, 255, 255, 0.72); font-size: 16px; }
 .film { position: relative; aspect-ratio: 16 / 9; border-radius: var(--radius); overflow: hidden; background: #050e22; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35); }
 .filmVideo { width: 100%; height: 100%; object-fit: cover; background: #050e22; }
@@ -20,7 +20,7 @@
   padding-left: 4px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35); transition: transform .25s, background .25s, color .25s; }
 .filmPlay svg { width: 38%; height: 38%; }
 .filmCover:hover .filmPlay { transform: scale(1.06); background: var(--blue); color: var(--white); }
-.filmLabel { display: flex; flex-direction: column; align-items: flex-start; font-size: clamp(18px, 1.6vw, 22px); font-weight: 700; letter-spacing: -0.01em; text-shadow: 0 1px 12px rgba(0, 0, 0, 0.4); }
+.filmLabel { display: flex; flex-direction: column; align-items: flex-start; font-size: clamp(18px, 1.6vw, 22px); font-weight: 700; letter-spacing: -0.01em; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), 0 2px 18px rgba(0, 0, 0, 0.5); }
 .filmDur { font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255, 255, 255, 0.75); margin-top: 2px; }
 .filmMeta { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 18px; }
 @media (max-width: 600px) { .filmLabel { display: none; } }
