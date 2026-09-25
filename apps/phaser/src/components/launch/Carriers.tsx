@@ -63,7 +63,7 @@ class Layer {
   /** lay the lattice out for a W × H figure (px, before the layer's depth scaling) */
   layout(W: number, H: number) {
     const L = Math.min(W, H * 1.6), sp = 0.085 * L, a = 0.022 * L
-    this.cols = Math.max(3, Math.floor((W * (W < 700 ? 0.9 : 0.46)) / sp))
+    this.cols = Math.max(3, Math.floor((W * (W < 700 ? 0.46 : 0.44)) / sp))
     const x0 = W * 0.06
     this.atoms = []
     for (let r = 0; r < this.rows; r++) for (let c = 0; c < this.cols; c++) {
@@ -96,7 +96,7 @@ class Layer {
     this.spawn += dt * this.cfg.rain
     while (this.spawn >= 1) {
       this.spawn -= 1
-      const u = W < 700 ? 0.08 + 0.84 * r() : 0.54 + 0.4 * r()
+      const u = W < 700 ? 0.6 + 0.3 * r() : 0.64 + 0.26 * r() // light lands on one region of the glass, well clear of the atoms
       this.photons.push({ u, path: -0.08 - 0.05 * r(), speed: 0.28 + 0.02 * r() })
     }
     for (const p of this.photons) p.path += p.speed * dt
@@ -242,8 +242,8 @@ class Raster {
 
 interface Note { key: string; side: 'left' | 'right'; top: number; target: (W: number, H: number, l: Layer) => [number, number]; body: React.ReactNode }
 const NOTES: Note[] = [
-  { key: 'light', side: 'right', top: 0.04, target: (W, H) => [W * 0.72, H * 0.2], body: <><b>Light</b>A steady rain of 650 nm wave packets. The bands are its crests.</> },
-  { key: 'glass', side: 'right', top: 0.62, target: (W, H) => [W * 0.9, H * (GLASS.top + GLASS.bottom) / 2], body: <><b>Glass</b>Light slows to c/1.5 inside and passes through; the glass absorbs almost none of it.</> },
+  { key: 'light', side: 'right', top: 0.04, target: (W, H) => [W * 0.7, H * 0.22], body: <><b>Light</b>A steady rain of 650 nm wave packets. The bands are its crests.</> },
+  { key: 'glass', side: 'right', top: 0.62, target: (W, H) => [W * 0.77, H * (GLASS.top + GLASS.bottom) / 2], body: <><b>Glass</b>Light slows to c/1.5 inside and passes through; the glass absorbs almost none of it.</> },
   { key: 'electron', side: 'left', top: 0.08, target: (_W, _H, l) => { const a = l.atoms[Math.min(l.atoms.length - 1, 2)]; return [a.x, a.y - 10] }, body: <><b>Electron</b>Tunnels toward the next atom, mostly falls back, and only sometimes gets through. Each hop leaves the lattice shaking: heat. The glass stops it entirely.</> },
   { key: 'atom', side: 'left', top: 0.9, target: (_W, _H, l) => { const a = l.atoms[l.cols + 1] ?? l.atoms[0]; return [a.x, a.y + 12] }, body: <><b>Atom</b>A nucleus inside its electron cloud: points sampled from the orbital&apos;s density.</> },
 ]

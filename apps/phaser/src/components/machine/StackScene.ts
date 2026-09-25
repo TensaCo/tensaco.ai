@@ -2,7 +2,8 @@
  * The machine: the linear-stack cavity at true proportions (mm), drawn from the live simulation.
  *
  * The cavity axis is vertical: input mirror/coupler at y = 0, four fabricated phase plates 5 mm apart, concave end mirror
- * at y = 25 mm; the output tap leaves through the input mirror to a detector below it. Light goes up through the planes,
+ * at y = 25 mm; the output tap leaves through the input mirror to a camera below it. The hardware around the cavity (cage,
+ * mounts, gain crystal, camera module, dev board) is modelled at true scale in hardware.ts. Light goes up through the planes,
  * reflects, and comes back down: route position s (mm) runs 0 → 24 up and 24 → 48 down.
  *
  * Wavefronts: dozens of short packets travel the route at once (time-multiplexed, nearly overlapping), each drawn as a handful of crest sheets (stylised: true 650 nm crests cannot
@@ -14,6 +15,8 @@
 import * as THREE from 'three'
 import { DX, GAPS, LENGTH, N, PLANES, PLANE_DATA, PLANE_Z, slice, createField } from '@/lib/phaser-sim'
 import { LiveStack } from '@/lib/live'
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
+import { addLights, buildAssembly } from './hardware'
 
 const RED = new THREE.Vector3(1.0, 0.165, 0.07)
 const L_MM = LENGTH * 1e3 // 24
@@ -25,19 +28,20 @@ const PACKETS = 36 // time-multiplexed wavefronts in flight at once, 1.4 mm apar
 const CRESTS = 3
 const CREST_GAP = 0.3 // mm between drawn crests (stylised)
 const ENVELOPE = [0.5, 1, 0.5]
-export const DETECTOR_Y = -6
 
 export type V3 = [number, number, number]
-type View = { pos: V3; target: V3; shift: [number, number] }
+/** a camera: the direction it looks from, and the rectangle of the frame (normalised device coordinates, −1…1, y up)
+ *  that the whole assembly must fit inside; distance and lens shift are solved from these */
+type View = { dir: V3; box: [number, number, number, number] }
 export type Framing = 'hero' | 'section'
 const FRAMING: Record<Framing, { landscape: View; portrait: View }> = {
   hero: {
-    landscape: { pos: [16, 26, 20], target: [0, 11, 0], shift: [-0.2, 0] },
-    portrait: { pos: [18, 28, 24], target: [0, 11.5, 0], shift: [0, 0.04] },
+    landscape: { dir: [0.3, 0.25, 0.92], box: [0.02, 0.56, -0.86, 0.8] },
+    portrait: { dir: [0.3, 0.25, 0.92], box: [-0.62, 0.62, -0.25, 0.74] },
   },
   section: {
-    landscape: { pos: [46, 40, 92], target: [0, 8.5, 0], shift: [0, 0] },
-    portrait: { pos: [56, 50, 110], target: [0, 8.5, 0], shift: [0, 0] },
+    landscape: { dir: [0.3, 0.25, 0.92], box: [-0.34, 0.34, -0.94, 0.94] },
+    portrait: { dir: [0.3, 0.25, 0.92], box: [-0.3, 0.3, -0.94, 0.94] },
   },
 }
 
@@ -72,7 +76,8 @@ export class StackScene {
   private aLayer: THREE.InstancedBufferAttribute
   private aWeight: THREE.InstancedBufferAttribute
   private panels: { tex: THREE.DataTexture; data: Uint8Array }[] = []
-  private detector: { tex: THREE.DataTexture; data: Uint8Array }
+  private bounds = new THREE.Box3()
+  private fitted = { key: '', dist: 100, target: new THREE.Vector3(), sx: 0, sy: 0 }
   private work = createField()
   private sliceI = new Float64Array(N * N)
   private clock = 0 // route mm travelled by the leading packet
@@ -88,8 +93,14 @@ export class StackScene {
     const r = new THREE.WebGLRenderer({ canvas: opts.canvas, antialias: true, alpha: false, powerPreference: 'high-performance' })
     if (!r.capabilities.isWebGL2) throw new Error('WebGL2 required')
     r.setClearColor(0x0a0908, 1)
+    r.toneMapping = THREE.ACESFilmicToneMapping
+    r.toneMappingExposure = 1.0
     this.renderer = r
-    this.camera = new THREE.PerspectiveCamera(22, 1, 1, 800)
+    const pmrem = new THREE.PMREMGenerator(r)
+    this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
+    this.scene.environmentIntensity = 0.45
+    pmrem.dispose()
+    this.camera = new THREE.PerspectiveCamera(22, 1, 1, 3000)
     this.resize(opts.width, opts.height, opts.dpr)
 
     // ── cross-sections: an 8-bit array texture, LAYERS per trip, two trips (ring buffer by trip parity) ──
@@ -133,13 +144,22 @@ export class StackScene {
     this.scene.add(this.crests)
 
     // ── phase plates: etched pattern in graphite (per pixel), light crossing them in red ──
-    const panelMat = (tex: THREE.DataTexture) => new THREE.ShaderMaterial({
-      uniforms: { uMap: { value: tex } },
+    // the etched face: light (red) over the program (graphite), with the relief of the etch drawn where neighbouring
+    // pixels differ in depth (a step catches light along its edge); the steps fade out when a pixel is smaller than ~2 px
+    const panelMat = (tex: THREE.DataTexture, depth: THREE.DataTexture) => new THREE.ShaderMaterial({
+      uniforms: { uMap: { value: tex }, uDepth: { value: depth } },
       vertexShader: /* glsl */ `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
       fragmentShader: /* glsl */ `
-        uniform sampler2D uMap; varying vec2 vUv;
+        uniform sampler2D uMap; uniform sampler2D uDepth; varying vec2 vUv;
         void main() {
-          gl_FragColor = vec4(texture2D(uMap, vUv).rgb, 1.0); // fabricated plates have no dead zone between pixels
+          vec3 c = texture2D(uMap, vUv).rgb;
+          vec2 g = vUv * 64.0, f = fract(g), w = fwidth(g);
+          float d0 = texture2D(uDepth, vUv).r;
+          float dx = abs(texture2D(uDepth, vUv + vec2(1.0 / 64.0, 0.0)).r - d0) * step(1.0 - 0.08, f.x);
+          float dy = abs(texture2D(uDepth, vUv + vec2(0.0, 1.0 / 64.0)).r - d0) * step(1.0 - 0.08, f.y);
+          float vis = 1.0 - smoothstep(0.3, 0.6, max(w.x, w.y));
+          c += vec3(0.55, 0.53, 0.5) * clamp(2.5 * max(dx, dy), 0.0, 1.0) * vis;
+          gl_FragColor = vec4(c, 1.0);
         }`,
       side: THREE.DoubleSide, transparent: true, depthWrite: false,
     })
@@ -147,59 +167,27 @@ export class StackScene {
       const data = new Uint8Array(N * N * 4)
       const tex = new THREE.DataTexture(data, N, N, THREE.RGBAFormat)
       tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.LinearFilter; tex.needsUpdate = true
-      const m = new THREE.Mesh(new THREE.PlaneGeometry(W, W).rotateX(-Math.PI / 2), panelMat(tex))
-      m.position.y = PLANE_Z[p] * 1e3
+      const ph = PLANE_DATA[p].phase
+      let pm = 0
+      for (const x of ph) pm = Math.max(pm, x)
+      const dd = new Uint8Array(ph.length)
+      for (let k = 0; k < ph.length; k++) dd[k] = Math.round((255 * ph[k]) / pm)
+      const depth = new THREE.DataTexture(dd, 64, 64, THREE.RedFormat)
+      depth.magFilter = depth.minFilter = THREE.NearestFilter; depth.needsUpdate = true
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(W, W).rotateX(-Math.PI / 2), panelMat(tex, depth))
+      m.position.y = PLANE_Z[p] * 1e3 + 0.01
       m.renderOrder = 1
       this.scene.add(m)
       this.panels.push({ tex, data })
     }
-    {
-      const data = new Uint8Array(N * N * 4)
-      const tex = new THREE.DataTexture(data, N, N, THREE.RGBAFormat)
-      tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.LinearFilter; tex.needsUpdate = true
-      const m = new THREE.Mesh(new THREE.PlaneGeometry(W, W).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide }))
-      m.position.y = DETECTOR_Y
-      this.scene.add(m)
-      this.detector = { tex, data }
-    }
-    this.scene.add(this.hardware())
+    const asm = buildAssembly()
+    this.scene.add(asm.group)
+    this.bounds.copy(asm.bounds)
+    addLights(this.scene)
 
     if (this.live.cav.trip === 0) this.live.warm(40)
     this.clock = (this.live.cav.trip - 1) * ROUTE_MM + ROUTE_MM * 0.62 // start mid-trip: packets spread over the stack
     this.paintPanels()
-  }
-
-  /** hairline drawings of the parts at true size */
-  private hardware() {
-    const g = new THREE.Group()
-    const mat = (opacity: number) => new THREE.LineBasicMaterial({ color: 0xe9e5dc, transparent: true, opacity, depthWrite: false })
-    const box = (w: number, h: number, d: number, y: number, opacity: number) => {
-      const e = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(w, h, d)), mat(opacity))
-      e.position.y = y
-      g.add(e)
-    }
-    const fill = (w: number, h: number, d: number, y: number, color: number, opacity: number) => {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshBasicMaterial({ color, transparent: true, opacity, depthWrite: false }))
-      m.position.y = y
-      g.add(m)
-    }
-    // input mirror / coupler (reflecting face at y = 0) and the end mirror (face at y = 24)
-    box(3.2, 1.6, 3.2, -0.8, 0.5); fill(3.2, 1.6, 3.2, -0.8, 0xe9e5dc, 0.035)
-    box(3.2, 2.4, 3.2, L_MM + 1.2, 0.5); fill(3.2, 2.4, 3.2, L_MM + 1.2, 0xe9e5dc, 0.035)
-    // fused-silica substrate (1 mm) of each phase plate, etched face at the plate's plane
-    for (const z of PLANE_Z) box(2.2, 1, 2.2, z * 1e3 + 0.5, 0.24)
-    // detector below the input mirror, and its package
-    box(2.2, 0.8, 2.2, DETECTOR_Y - 0.45, 0.3)
-    // the optical axis
-    const axis = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, DETECTOR_Y, 0), new THREE.Vector3(0, L_MM + 2.4, 0)])
-    g.add(new THREE.Line(axis, mat(0.08)))
-    // the bench: 5 mm hairline grid under the detector
-    const pts: THREE.Vector3[] = []
-    const y0 = DETECTOR_Y - 1
-    for (let x = -30; x <= 30; x += 5) pts.push(new THREE.Vector3(x, y0, -30), new THREE.Vector3(x, y0, 30))
-    for (let z = -30; z <= 30; z += 5) pts.push(new THREE.Vector3(-30, y0, z), new THREE.Vector3(30, y0, z))
-    g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), mat(0.035)))
-    return g
   }
 
   private layerFor(trip: number, s: number) {
@@ -240,12 +228,6 @@ export class StackScene {
       }
       tex.needsUpdate = true
     }
-    const { data, tex } = this.detector
-    for (let k = 0; k < N * N; k++) {
-      const t = 1 - Math.exp(-this.live.tapI[k] / 0.03)
-      data[4 * k] = 255 * (0.05 * (1 - t) + t); data[4 * k + 1] = 255 * (0.05 * (1 - t) + 0.165 * t); data[4 * k + 2] = 255 * (0.048 * (1 - t) + 0.07 * t); data[4 * k + 3] = 255
-    }
-    tex.needsUpdate = true
     const c = this.live.cav
     this.onTrip?.({ trip: c.trip, step: this.live.step, u: c.u, tripInStep: c.tripInStep, gain: c.gain })
   }
@@ -282,17 +264,42 @@ export class StackScene {
     this.camera.updateProjectionMatrix()
   }
 
+  /** distance and lens shift that fit the whole assembly into the view's frame rectangle */
+  private fit(v: View) {
+    const key = `${this.aspect.toFixed(3)}|${v.dir}|${v.box}`
+    if (this.fitted.key === key) return this.fitted
+    const dir = new THREE.Vector3(...v.dir).normalize(), target = this.bounds.getCenter(new THREE.Vector3())
+    const cam = this.camera.clone()
+    const b = this.bounds, corners: THREE.Vector3[] = []
+    for (const x of [b.min.x, b.max.x]) for (const y of [b.min.y, b.max.y]) for (const z of [b.min.z, b.max.z]) corners.push(new THREE.Vector3(x, y, z))
+    const [x0, x1, y0, y1] = v.box
+    const extent = (d: number) => {
+      cam.position.copy(target).addScaledVector(dir, d); cam.lookAt(target); cam.clearViewOffset(); cam.updateMatrixWorld(); cam.updateProjectionMatrix()
+      let a = Infinity, bx = -Infinity, c = Infinity, e = -Infinity
+      for (const k of corners) { const q = k.clone().project(cam); a = Math.min(a, q.x); bx = Math.max(bx, q.x); c = Math.min(c, q.y); e = Math.max(e, q.y) }
+      return { minX: a, maxX: bx, minY: c, maxY: e }
+    }
+    let lo = 10, hi = 3000
+    for (let it = 0; it < 40; it++) {
+      const d = (lo + hi) / 2, r = extent(d)
+      if (r.maxX - r.minX > x1 - x0 || r.maxY - r.minY > y1 - y0) lo = d; else hi = d
+    }
+    const r = extent(hi)
+    const dx = (x0 + x1) / 2 - (r.minX + r.maxX) / 2, dy = (y0 + y1) / 2 - (r.minY + r.maxY) / 2
+    this.fitted = { key, dist: hi, target, sx: -dx / 2, sy: dy / 2 }
+    return this.fitted
+  }
+
   private placeCamera() {
     const f = FRAMING[this.opts.framing][this.aspect < 0.9 ? 'portrait' : 'landscape']
     const vw = this.view ?? f
     const a = (this.t / 15) * Math.PI * 2
-    const base = v(vw.pos)
-    const orbit = 0.05 * Math.sin(a) + 0.03 * this.pointer.x
-    base.applyAxisAngle(new THREE.Vector3(0, 1, 0), orbit)
-    base.y += 0.8 * Math.cos(a) - 1.2 * this.pointer.y
-    this.camera.position.copy(base)
-    this.camera.lookAt(v(vw.target))
-    const [sx, sy] = vw.shift
+    const { dist, target, sx, sy } = this.fit(vw)
+    const base = new THREE.Vector3(...vw.dir).normalize().multiplyScalar(dist)
+    base.applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.04 * Math.sin(a) + 0.03 * this.pointer.x)
+    base.y += dist * (0.01 * Math.cos(a) - 0.015 * this.pointer.y)
+    this.camera.position.copy(target).add(base)
+    this.camera.lookAt(target)
     this.camera.setViewOffset(1000, 1000 / this.aspect, sx * 1000, (sy * 1000) / this.aspect, 1000, 1000 / this.aspect)
   }
 
@@ -323,6 +330,5 @@ export class StackScene {
     this.renderer.dispose()
     this.tex.dispose()
     for (const p of this.panels) p.tex.dispose()
-    this.detector.tex.dispose()
   }
 }

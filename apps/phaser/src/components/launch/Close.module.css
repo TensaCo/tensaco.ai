@@ -25,3 +25,6 @@
 .note { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--graphite-2); font-weight: 400; line-height: 1.5; }
 .links { display: flex; gap: 24px; }
 .claim :global(.num).range { font-size: clamp(64px, 12vw, 220px); white-space: nowrap; }
+.flush { padding-bottom: 0; }
+.rfoot { display: flex; justify-content: space-between; margin-top: 48px; padding-top: 18px; font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
+.rfoot a { text-decoration: none; color: var(--graphite); }

@@ -12,7 +12,6 @@ import s from './Machine.module.css'
 
 const StackView = dynamic(() => import('../machine/StackView'), { ssr: false, loading: () => null })
 
-const REPO = 'https://github.com/TensaCo/phaser-design'
 const TRIP_SECONDS = 2.4
 const TOP = LENGTH * 1e3
 const PLATE = 1 // which phase plate Fig. 3 shows (0-based)
@@ -21,11 +20,11 @@ const EXPOSURE = 1 // |E|² (field units) at 63 % red
 const mm = (z: number) => (z * 1e3).toFixed(1)
 
 const NOTES: Annotation[] = [
-  { at: [-1.6, TOP + 1.2, -1.6], side: 'right', children: <><b>End mirror</b>Concave, R 120 mm, 99.9 % reflective. Sends the light back down the stack and keeps it from spreading. A programmable reflective SLM can take its place.</> },
-  { at: [0.64, PLANE_Z[PLATE] * 1e3, 0.64], side: 'right', children: <><b>2 · Phase plates</b>Four fused-silica plates, 64 × 64 pixels at 20 µm, each pixel etched to its own depth: the program, fixed at fabrication. Crossed twice per round trip.</> },
+  { at: [0, TOP + 1.5, 3.2], side: 'right', children: <><b>End mirror</b>Concave, R 120 mm, 99.9 % dielectric coating, in a kinematic mount. Sends the light back down the stack and keeps it from spreading.</> },
+  { at: [2.5, PLANE_Z[PLATE] * 1e3, 2.5], side: 'right', children: <><b>2 · Phase plates</b>Four fused-silica plates, 1 mm thick, AR coated. The central 64 × 64 pixels (20 µm) are each etched to their own depth: the program, fixed at fabrication. Crossed twice per round trip.</> },
   { at: [-0.64, (PLANE_Z[1] + PLANE_Z[2]) * 500, 0], side: 'left', children: <><b>3 · Between plates</b>{mm(PLANE_Z[1] - PLANE_Z[0])} mm of air. Diffraction spreads each pixel&apos;s light into its neighbours, so every plate sees a mix of the last.</> },
-  { at: [-1.6, -0.8, -1.6], side: 'left', children: <><b>1 · Input</b>u(t) sets the brightness of a fixed light pattern, let in through the coupler (5 %) every round trip. The gain crystal here replaces what each trip loses.</> },
-  { at: [-1.1, -6, 1.1], side: 'left', children: <><b>4 · Detector</b>5 % of the returning light leaks out through the coupler every round trip onto a camera.</> },
+  { at: [-1.5, 0, 1.5], side: 'left', children: <><b>1 · Input</b>The gain crystal&apos;s top face is the input mirror: u(t) sets the brightness of a fixed light pattern let in through it (5 %) every round trip, and the crystal replaces what each trip loses.</> },
+  { at: [-3, -16, 3], side: 'left', children: <><b>4 · Camera</b>5 % of the returning light leaks through that coating onto an OV3660 camera module, read out over its flex cable by an ESP32-S3.</> },
 ]
 
 export function MachineSection() {
@@ -76,7 +75,7 @@ export function MachineSection() {
             </div>
             <figcaption>
               <b>Fig. 2</b> The cavity at true scale: {(N * DX * 1e3).toFixed(2)} mm wide, {TOP} mm between the mirrors. Each wavefront carries the simulated intensity |E|² at its plane.<Fn id="figure" />
-              <span className={s.live}>trip <i ref={(el) => { txt.current.trip = el }}>000000</i> · input <i ref={(el) => { txt.current.step = el }}>0000</i> · u = <i ref={(el) => { txt.current.u = el }}>0.000</i> · <i ref={(el) => { txt.current.k = el }}>0/10</i></span>
+              <span className={s.live}>round trip <i ref={(el) => { txt.current.trip = el }}>000000</i></span>
             </figcaption>
           </figure>
           <figure className={s.fig}>
@@ -87,7 +86,7 @@ export function MachineSection() {
 
         <div className={s.metrics}>
           <div className={s.metric}><span className="num">{(TRIP_TIME * 1e9).toFixed(2)}<small>ns</small><Fn id="machine" /></span><p>per input step: one round trip up the stack and back, glass included.</p></div>
-          <div className={s.metric}><span className="num">10<small>B</small><Fn id="steps" /></span><p>input steps per second, modeled, with 13 light pulses in flight sharing one optical program. 0.75–4 billion per stream without them.</p></div>
+          <div className={s.metric}><span className="num">10<small>B</small><Fn id="steps" /></span><p>input steps per second, modeled: this stack gets there with about 3 light pulses in flight at once, sharing one optical program (a ring needs 13). 3.9 billion per stream without them.</p></div>
           <div className={s.metric}><span className="num">{Math.round((VALID.passiveRetention as number) * 100)}<small>%</small><Fn id="loss" /></span><p>of the light kept each round trip, modeled. The gain replaces the rest every trip.</p></div>
         </div>
 
@@ -97,22 +96,6 @@ export function MachineSection() {
           glass slabs, gain clamped just above threshold, one round trip per input. The browser port matches the research simulator
           {VALID.maxFieldRelL2 === 0 ? ' to the last bit' : ` to a relative error of ${VALID.maxFieldRelL2.toExponential(0)}`} over {VALID.trips.toLocaleString('en-US')} round trips.
         </p>
-      </div>
-      <div className={s.bench}>
-        <video className={s.benchVideo} src="/video/broll/lab-oscilloscope.mp4" poster="/video/broll/lab-oscilloscope.jpg" autoPlay muted loop playsInline aria-hidden="true" />
-        <div className={`wrap ${s.benchBody}`}>
-          <div className={s.close}>
-          <p className={s.body}>
-            Pushing charge through a wire costs energy every time. Light crossing glass barely loses any: it interferes with itself on
-            the way through, and that interference is the arithmetic. It still loses 10–30 % per round trip to mirrors and coatings,
-            and PHASER pays to put that back.
-          </p>
-          <div className={s.cta}>
-            <a href={`${REPO}/blob/main/research/2026-09-14/REPORT.md`}>Read the research <span>↗</span></a>
-            <a href={`${REPO}/tree/main/research/2026-09-14/out/29`}>See the energy model <span>↗</span></a>
-          </div>
-          </div>
-        </div>
       </div>
     </section>
   )

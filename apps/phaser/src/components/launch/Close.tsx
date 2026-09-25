@@ -41,7 +41,7 @@ export function Receipts() {
       <div className="wrap">
         <p className="eyebrow">Methods &amp; sources</p>
         <ol>{R.map(([id, r]) => <li key={id} id={id}>{r}</li>)}</ol>
-        <div className={s.foot}><a href={`/`}>← PHASER</a><span>λ 650 nm</span></div>
+        <div className={s.rfoot}><a href={`/`}>← PHASER</a><span>λ 650 nm</span></div>
       </div>
     </main>
   )

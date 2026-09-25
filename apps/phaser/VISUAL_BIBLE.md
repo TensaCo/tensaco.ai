@@ -58,21 +58,26 @@ No blue, no gradients, no glass, no glow outside the beam itself.
   not drawn: the research found a stack of them keeps ~0.5 % per trip. `scripts/validate-sim.ts` hands the same config to
   the research simulator and compares every round trip; rerun it whenever the port changes. Nothing on the page may
   pretend to compute what the model didn't.
-- The hero and Fig. 2 show the cavity at true proportions (mm), axis vertical, long lens (22°). Wavefronts bounce up and
-  down the stack, dozens in flight (time-multiplexed, nearly overlapping), each drawn as a few crest sheets. The crests are stylised (true 650 nm crests can't be
-  drawn at this scale), but every sheet's cross-section is the simulated |E|² at its plane on its round trip, from the model's
-  own angular spectrum, so the pattern changes as it passes each plane and reflects. Don't label the crest spacing; the time
-  plate states the slow-down. The phase plates show their etched programs in graphite (per pixel) and the light crossing them in red;
-  the detector under the input mirror shows the 5 % tap in red.
+- The hero and Fig. 2 show the real bench assembly at true scale (`hardware.ts`, mm): two stainless cage rods; the four
+  etched fused-silica plates (5 × 5 × 1 mm, AR-coated, the etch's pixel relief visible up close) in slim anodised cells on
+  cantilever arms; the concave end mirror in a kinematic mount; the gain crystal whose top face is the input-mirror coating;
+  an OV3660 camera module on its polyimide flex to an ESP32-S3 dev board. Physically based materials (anodised aluminium,
+  stainless, fused silica, dielectric coatings, FR-4, gold), dim darkroom lighting; no floor grid. Light is the only red
+  (including the faint red it throws on the parts next to the beam). The camera fits the whole assembly inside the frame on
+  every screen (it solves distance and lens shift from a target rectangle). Dozens of wavefronts bounce up and down the
+  stack (time-multiplexed, nearly overlapping), each drawn as a few crest sheets. The crests are stylised (true 650 nm crests
+  can't be drawn at this scale), but every sheet's cross-section is the simulated |E|² at its plane on its round trip. Don't
+  label the crest spacing.
 - Fig. 2's annotations are hairline leaders to mono labels, stacked so they never overlap. Fig. 3 is one plate’s 64 × 64 pixels.
 - The electrons-and-light figure is one illustration with a shallow depth of field (front layer sharp, layers behind
-  blurred): light rains down through a glass slab above (red wave packets whose fringes close up by n = 1.5 inside), and
+  blurred): light rains down onto one region of a glass slab above (red wave packets whose fringes close up by n = 1.5 inside), and
   below, atoms drawn as points sampled from orbital densities, with electrons struggling to tunnel from cloud to cloud (most
   attempts fall back; each hop shakes the lattice: heat). Labels are leader-line annotations inside it (a list below it on
   phones). Its numbers live in one object (`CARRIER_NUMBERS`): ~1 pJ per MAC on today's chips vs ≤ 0.001 pJ per *equivalent* multiply for PHASER, modeled at 10⁶ modes.
 - Slow 15-second drift and faint pointer parallax; no cuts. Page motion is discrete: numbers count once, rules draw once,
   and nothing floats. Simulations pause offscreen. Reduced motion shows one still frame of a warmed-up state.
-- The oscilloscope bench at the end of 02 butts directly against the 03 reel: no black gap, no fade between them.
+- The oscilloscope bench (the line about where the energy goes) sits directly under the electrons-and-light figure, with hard
+  top and bottom edges. No video on the page fades into black; seams between sections are hard cuts with no black gap.
 
 ## Composition rules
 

@@ -1,10 +1,11 @@
+import { Bench } from './Bench'
 import { Carriers } from './Carriers'
 import { Fn } from './Close'
 import s from './Close.module.css'
 
 export function Light() {
   return (
-    <section className={s.sec} id="light" aria-labelledby="light-h">
+    <section className={`${s.sec} ${s.flush}`} id="light" aria-labelledby="light-h">
       <div className="wrap">
         <p className="eyebrow">01 / The light</p>
         <h2 id="light-h" className={s.h}>
@@ -19,6 +20,7 @@ export function Light() {
         </div>
         <Carriers />
       </div>
+      <Bench />
     </section>
   )
 }
