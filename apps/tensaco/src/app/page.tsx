@@ -3,6 +3,7 @@ import { MEDIA } from '@/data/media'
 import { NEWS, formatDate } from '@/data/news'
 import { Band, Card, Hero, Split, Stats } from '@/components/Blocks'
 import { Subscribe } from '@/components/Subscribe'
+import { BrandFilm } from './BrandFilm'
 import s from './home.module.css'
 
 export default function Home() {
@@ -30,6 +31,22 @@ export default function Home() {
             <p>TensaCo addresses both, with hardware that changes the cost of computation and software that keeps AI accountable.</p>
             <Link href="/company/" className="link-arrow">About TensaCo →</Link>
           </Split>
+        </div>
+      </section>
+
+      <section className={`section on-dark ${s.filmSection}`} id="film">
+        <div className="wrap">
+          <div className={s.filmHead}>
+            <div>
+              <p className="eyebrow">The TensaCo film</p>
+              <h2 className="h2">Compute built on light. Software built on trust.</h2>
+            </div>
+            <p className={s.filmAside}>Thirty seconds on why TensaCo exists, and the two companies building its answer: PHASER and TensorCode.</p>
+          </div>
+          <BrandFilm />
+          <div className={s.filmMeta}>
+            <span className="note">Footage and music generated for TensaCo with AI video and music models.</span>
+          </div>
         </div>
       </section>
 

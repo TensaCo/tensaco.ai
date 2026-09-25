@@ -294,5 +294,13 @@
     "source_page": null,
     "author": "TensaCo Inc.",
     "license": "Owned by TensaCo Inc. Generated for TensaCo with fal (nano-banana-pro); not stock."
+  },
+  {
+    "slug": "tensaco-brand-30s",
+    "kind": "video",
+    "subject": "TensaCo 30-second brand film (landing page)",
+    "source_page": null,
+    "author": "TensaCo Inc.",
+    "license": "Owned by TensaCo Inc. Generated for TensaCo with fal: footage by Google Veo 3.1 Fast (text-to-video, and image-to-video of team/_group/executive-team.jpg), music by ElevenLabs Music v2.5; includes the TensaCo team photos (team/_group/) and a cut of the stock clip datacenter-servers (Pexels License, MrColo). Edit sources: apps/tensaco/video/brand-30s/."
   }
 ]

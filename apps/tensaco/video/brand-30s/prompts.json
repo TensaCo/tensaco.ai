@@ -1,0 +1,111 @@
+{
+ "video_model": "fal-ai/veo3.1/fast (text-to-video) and fal-ai/veo3.1/fast/image-to-video; 1080p, 4 s, no audio",
+ "music_model": "elevenlabs/music/v2.5 (30 s, instrumental)",
+ "clips": {
+  "v01_datacenter": {
+   "prompt": "Cinematic slow dolly forward down a long dark data center aisle at night, rows of server racks on both sides with tiny blue and white status LEDs blinking, cool cyan light, subtle haze, reflections on the polished floor, anamorphic lens, shallow depth of field, photorealistic, shot on ARRI Alexa, high-end technology brand film.",
+   "negative_prompt": "text, captions, subtitles, watermark, logo, brand names, cartoon, illustration, CGI look, 3D render, low resolution, blurry, distorted hands, extra fingers, warped faces",
+   "aspect_ratio": "16:9",
+   "resolution": "1080p",
+   "duration": "4s",
+   "generate_audio": false,
+   "auto_fix": true
+  },
+  "v02_grid": {
+   "prompt": "Cinematic wide shot of high-voltage transmission towers and power lines silhouetted against a deep orange and navy dusk sky, slow push in, the lines glowing faintly, city lights starting to appear on the horizon, photorealistic, anamorphic, shot on ARRI Alexa, serious documentary tone.",
+   "negative_prompt": "text, captions, subtitles, watermark, logo, brand names, cartoon, illustration, CGI look, 3D render, low resolution, blurry, distorted hands, extra fingers, warped faces",
+   "aspect_ratio": "16:9",
+   "resolution": "1080p",
+   "duration": "4s",
+   "generate_audio": false,
+   "auto_fix": true
+  },
+  "v03_review": {
+   "prompt": "Cinematic close-up of a focused software engineer in her thirties in a dark office at night, her face lit by the cool glow of a monitor, eyes scanning lines of code, reflections of the screen in her glasses, slow push in, shallow depth of field, photorealistic, natural skin texture, premium technology brand film.",
+   "negative_prompt": "text, captions, subtitles, watermark, logo, brand names, cartoon, illustration, CGI look, 3D render, low resolution, blurry, distorted hands, extra fingers, warped faces",
+   "aspect_ratio": "16:9",
+   "resolution": "1080p",
+   "duration": "4s",
+   "generate_audio": false,
+   "auto_fix": true
+  },
+  "v04_laser": {
+   "prompt": "Cinematic macro shot in a dark optics laboratory: a thin bright red 650 nanometer laser beam travels through a series of precision glass lenses and mirrors mounted on a black optical table, the beam visible in light haze, slow sliding camera move along the beam, crisp lens flares, shallow depth of field, photorealistic, shot on ARRI Alexa.",
+   "negative_prompt": "text, captions, subtitles, watermark, logo, brand names, cartoon, illustration, CGI look, 3D render, low resolution, blurry, distorted hands, extra fingers, warped faces",
+   "aspect_ratio": "16:9",
+   "resolution": "1080p",
+   "duration": "4s",
+   "generate_audio": false,
+   "auto_fix": true
+  },
+  "v05b_cavity": {
+   "prompt": "Cinematic low-angle side view across a black optical table in a dark lab: a bright red laser beam runs horizontally between two small round mirrors on precision kinematic mounts about thirty centimetres apart, the beam clearly visible in light haze, a faint glow where it strikes each mirror, slow smooth lateral dolly along the beam, shallow depth of field with bokeh, photorealistic laboratory footage, shot on ARRI Alexa.",
+   "negative_prompt": "text, captions, watermark, logo, brand names, markings, cartoon, illustration, CGI look, 3D render, faces, eyes, low resolution, blurry, distorted hands, extra fingers",
+   "aspect_ratio": "16:9",
+   "resolution": "1080p",
+   "duration": "4s",
+   "generate_audio": false,
+   "auto_fix": true
+  },
+  "v06_chip": {
+   "prompt": "Extreme macro cinematic shot of a silicon photonic chip on a test fixture, delicate glass optical fibers aligned to the chip edge, faint red light glowing inside tiny waveguides on the iridescent silicon surface, slow rack focus, dark laboratory, photorealistic, shallow depth of field, premium technology film.",
+   "negative_prompt": "text, captions, subtitles, watermark, logo, brand names, cartoon, illustration, CGI look, 3D render, low resolution, blurry, distorted hands, extra fingers, warped faces",
+   "aspect_ratio": "16:9",
+   "resolution": "1080p",
+   "duration": "4s",
+   "generate_audio": false,
+   "auto_fix": true
+  },
+  "v07b_align": {
+   "prompt": "Cinematic close-up of a scientist's hand in a thin black nitrile glove turning a small knurled adjustment knob on a mirror mount on a black optical breadboard with a neat grid of threaded holes; a thin red laser beam passes through the optics behind; realistic hand proportions, slow push in, dark lab with soft blue rim light, shallow depth of field, photorealistic.",
+   "negative_prompt": "text, captions, watermark, logo, brand names, markings, cartoon, illustration, CGI look, 3D render, faces, eyes, low resolution, blurry, distorted hands, extra fingers",
+   "aspect_ratio": "16:9",
+   "resolution": "1080p",
+   "duration": "4s",
+   "generate_audio": false,
+   "auto_fix": true
+  },
+  "v08_code": {
+   "prompt": "Cinematic shot over the shoulder of a developer typing on a keyboard at night, a large monitor showing a Python code editor with syntax highlighting in soft focus, city lights through the window behind, slow parallax camera move, shallow depth of field, photorealistic, modern tech company brand film.",
+   "negative_prompt": "text, captions, subtitles, watermark, logo, brand names, cartoon, illustration, CGI look, 3D render, low resolution, blurry, distorted hands, extra fingers, warped faces",
+   "aspect_ratio": "16:9",
+   "resolution": "1080p",
+   "duration": "4s",
+   "generate_audio": false,
+   "auto_fix": true
+  },
+  "v09b_skyline": {
+   "prompt": "Cinematic aerial establishing shot of the San Francisco skyline at blue hour, downtown skyscrapers with lit windows and the Bay Bridge in the background, low fog drifting over the bay, smooth slow forward glide, clean unobstructed view, photorealistic, anamorphic, shot on a high-end cinema camera.",
+   "negative_prompt": "drone, propellers, aircraft parts in frame, text, captions, watermark, logo, cartoon, CGI look, low resolution, blurry",
+   "aspect_ratio": "16:9",
+   "resolution": "1080p",
+   "duration": "4s",
+   "generate_audio": false,
+   "auto_fix": true
+  },
+  "i01_group": {
+   "prompt": "Subtle, realistic documentary camera motion: a slow gentle dolly in on the team standing around the meeting table in a bright San Francisco office; they continue their natural conversation with small movements, nodding and smiling, one person gestures lightly. Faces and bodies stay stable and natural. Photorealistic, natural daylight.",
+   "negative_prompt": "text, captions, watermark, logo, warped faces, distorted hands, extra fingers, morphing, cartoon",
+   "aspect_ratio": "16:9",
+   "resolution": "1080p",
+   "duration": "4s",
+   "generate_audio": false,
+   "image": "team/_group/executive-team.jpg"
+  }
+ },
+ "music": {
+  "audio": {
+   "url": "https://v3b.fal.media/files/b/0aabcda0/df-dL4Dr8ZP56ThoOyx4u_music_generated.mp3",
+   "content_type": "audio/mpeg",
+   "file_name": "music_generated.mp3",
+   "file_size": 720621
+  }
+ },
+ "not_used": {
+  "v05_cavity": "mirrors glowed like eyes",
+  "v07_align": "oversized gloved hands",
+  "v09_skyline": "drone propellers in frame",
+  "v10_team": "generic people; replaced by the team photo",
+  "i02_engineers": "content filter; used a push-in on team/_group/engineers-reviewing-screens.jpg instead"
+ }
+}
