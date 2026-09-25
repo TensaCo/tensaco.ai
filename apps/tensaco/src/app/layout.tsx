@@ -1,25 +1,29 @@
 import type { Metadata, Viewport } from 'next'
-import { Newsreader, Inter, IBM_Plex_Mono } from 'next/font/google'
+import { Inter } from 'next/font/google'
+import { Header } from '@/components/Header'
+import { Footer } from '@/components/Footer'
 import './globals.css'
 
-const serif = Newsreader({ subsets: ['latin'], weight: ['300', '400', '500'], style: ['normal', 'italic'], variable: '--f-serif', display: 'swap' })
-const sans = Inter({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--f-sans', display: 'swap' })
-const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '500'], variable: '--f-mono', display: 'swap' })
+const sans = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'], variable: '--f-sans', display: 'swap' })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://tensaco.ai/'),
-  title: 'TensaCo — we are building artificial superintelligence',
-  description: 'TensaCo Inc. is a company of companies, each removing one limit between today’s AI and superintelligence: PHASER (optical compute) and TensorCode (AI your team can check, correct, and own).',
-  openGraph: { title: 'TensaCo', description: 'We are building artificial superintelligence.', images: ['og.png'] },
-  twitter: { card: 'summary_large_image', site: '@TensacoInc', title: 'TensaCo', description: 'We are building artificial superintelligence.', images: ['og.png'] },
+  title: { default: 'TensaCo — Intelligence infrastructure for the enterprise', template: '%s — TensaCo' },
+  description: 'TensaCo builds the compute and software that make AI faster, more efficient and accountable: PHASER optical AI acceleration and TensorCode accountable AI software.',
+  openGraph: { siteName: 'TensaCo', images: ['og.jpg'] },
+  twitter: { card: 'summary_large_image', site: '@TensacoInc', images: ['og.jpg'] },
 }
 
-export const viewport: Viewport = { themeColor: '#ffffff', colorScheme: 'light' }
+export const viewport: Viewport = { themeColor: '#0a1f44' }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${serif.variable} ${sans.variable} ${mono.variable}`}>
-      <body>{children}</body>
+    <html lang="en" className={sans.variable}>
+      <body>
+        <Header />
+        <main>{children}</main>
+        <Footer />
+      </body>
     </html>
   )
 }

@@ -12,7 +12,9 @@ Websites for TensaCo Inc. and its companies (see README.md for the map).
 
 - Each company is presented as a self-contained product with its own audience and visual identity. Don't share
   components or styles across apps; share only infrastructure (`packages/subscribe`, D1).
-- TensaCo (parent): white letterhead, Newsreader serif, black ink, no accent of its own.
+- TensaCo (parent): a serious corporate site. Navy and white, Inter, full-bleed stock photography and video of people
+  and industry (licensed, credited in `apps/tensaco/public/media/credits.json`). No line art, 3D renders or startup tone.
+  Never invent people, quotes, customers or endorsements; Leadership shows only real people.
 - PHASER: darkroom, 650 nm red, Archivo + IBM Plex Mono. Its art direction is `apps/phaser/VISUAL_BIBLE.md`.
 - TensorCode: canonical at tensorcode.dev, built in the TensaCo/tensacode repo. `tensorcode.tensaco.ai` only redirects.
 

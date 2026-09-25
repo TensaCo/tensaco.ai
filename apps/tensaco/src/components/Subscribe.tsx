@@ -24,7 +24,7 @@ export function Subscribe({ source }: { source: string }) {
       setState('error')
     }
   }
-  if (state === 'done') return <p className={s.done} role="status">Thank you. You’re on the list.</p>
+  if (state === 'done') return <p className={s.done} role="status">Thank you. You’re subscribed to TensaCo news.</p>
   return (
     <form className={s.form} onSubmit={onSubmit}>
       <label className={s.hidden} htmlFor={`email-${source}`}>Email address</label>
@@ -32,7 +32,7 @@ export function Subscribe({ source }: { source: string }) {
       <input name="company" type="text" tabIndex={-1} autoComplete="off" className={s.trap} aria-hidden="true" />
       <button type="submit" className={s.button} disabled={state === 'busy'}>{state === 'busy' ? 'Subscribing…' : 'Subscribe'}</button>
       {state === 'error' && <p className={s.error} role="alert">{error}</p>}
-      <p className={s.fine}>Company news from TensaCo. No spam; unsubscribe any time.</p>
+      <p className={s.fine}>News from TensaCo. See our <a href="/privacy/">privacy notice</a>. Unsubscribe any time.</p>
     </form>
   )
 }

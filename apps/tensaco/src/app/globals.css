@@ -1,17 +1,49 @@
+/* TensaCo corporate design system: navy and white, Inter, full-bleed photography and video. */
 :root {
-  --paper: #ffffff;
-  --ink: #0d0d0c;
-  --ink-2: #3a3a37;
-  --dim: #6d6c67;
-  --rule: #e4e2dc;
-  --gutter: clamp(16px, 4vw, 64px);
-  --maxw: 1280px;
+  --navy: #0a1f44;
+  --navy-2: #13306a;
+  --ink: #0b1220;
+  --ink-2: #334155;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --mist: #f4f6fa;
+  --white: #ffffff;
+  --blue: #1d4ed8;
+  --blue-2: #2563eb;
+  --maxw: 1320px;
+  --gutter: clamp(20px, 4vw, 56px);
+  --radius: 4px;
 }
 * { box-sizing: border-box; }
-html { background: var(--paper); color: var(--ink); -webkit-font-smoothing: antialiased; }
-body { margin: 0; background: var(--paper); font-family: var(--f-sans), system-ui, sans-serif; font-size: 17px; line-height: 1.55; }
+html { color: var(--ink); background: var(--white); -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+body { margin: 0; font-family: var(--f-sans), system-ui, sans-serif; font-size: 17px; line-height: 1.6; }
 a { color: inherit; }
-::selection { background: var(--ink); color: var(--paper); }
+img, video { display: block; max-width: 100%; }
 .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gutter); }
-.label { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); }
-:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.eyebrow { font-size: 13px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue); margin: 0 0 14px; }
+.on-dark .eyebrow { color: #93c5fd; }
+h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; margin: 0; }
+.h1 { font-size: clamp(40px, 5.6vw, 76px); line-height: 1.04; }
+.h2 { font-size: clamp(30px, 3.4vw, 48px); line-height: 1.1; }
+.h3 { font-size: clamp(22px, 1.8vw, 26px); line-height: 1.25; }
+.lead { font-size: clamp(18px, 1.45vw, 21px); line-height: 1.55; color: var(--ink-2); }
+.on-dark .lead { color: rgba(255, 255, 255, 0.86); }
+.section { padding: clamp(72px, 9vw, 128px) 0; }
+.section.mist { background: var(--mist); }
+.section.navy { background: var(--navy); color: var(--white); }
+.btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 24px; border-radius: var(--radius); font-weight: 600; font-size: 16px; text-decoration: none; border: 2px solid transparent; transition: background .2s, color .2s, border-color .2s; }
+.btn-primary { background: var(--blue); color: var(--white); }
+.btn-primary:hover { background: var(--navy-2); }
+.btn-ghost { border-color: currentColor; color: inherit; }
+.btn-ghost:hover { background: var(--white); color: var(--navy); border-color: var(--white); }
+.btn-row { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 36px; }
+.link-arrow { font-weight: 600; color: var(--blue); text-decoration: none; }
+.link-arrow:hover { text-decoration: underline; }
+.on-dark .link-arrow { color: #93c5fd; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 5vw, 80px); align-items: center; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+.note { font-size: 13px; color: var(--muted); }
+.on-dark .note { color: rgba(255, 255, 255, 0.6); }
+:focus-visible { outline: 3px solid var(--blue-2); outline-offset: 3px; }
+@media (max-width: 900px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }

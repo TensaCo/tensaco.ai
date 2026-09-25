@@ -1,7 +1,8 @@
 # Status — where we left off (2026-09-24)
 
 ## Live
-- https://tensaco.ai (www → apex) — `apps/tensaco`
+- https://tensaco.ai (www → apex) — `apps/tensaco`: corporate site (home, solutions ×3, company, leadership, careers,
+  investors, newsroom, contact, privacy)
 - https://phaser.tensaco.ai — `apps/phaser` (launch page, blog with the PHASER post copied from jvboid.dev, subscribe)
 - https://tensorcode.tensaco.ai → 301 https://tensorcode.dev — `apps/tensorcode-alias` (TensorCode itself: TensaCo/tensacode)
 - `/api/subscribe` on tensaco.ai and phaser.tensaco.ai → D1 `tensaco-subscribers` (collect only; empty as of this note)
@@ -23,6 +24,11 @@
    - DNS changes are made by the user or with explicit approval — wrangler's login cannot edit DNS.
 3. **tensaco.ai negative DNS cache** after the old A records were deleted (SOA negative TTL 1800 s): cleared by ~19:05 PDT
    2026-09-24. Nothing to do unless a resolver still misses it (flush at developers.google.com/speed/public-dns/cache).
+
+## Also open
+- Leadership page uses Jacob’s jvboid.dev photo (casual, cap); replace `apps/tensaco/public/media/people/jacob-valdez.jpg`
+  with a professional headshot (4:5).
+- Stock gaps: no licensed video of an engineer in a data center or of an optics lab; photos cover both.
 
 ## Nice to have
 - RSS for the PHASER blog; per-post share images; favicons; Cloudflare Web Analytics.

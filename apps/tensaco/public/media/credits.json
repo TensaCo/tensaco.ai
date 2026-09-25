@@ -1,0 +1,290 @@
+[
+  {
+    "slug": "team-collaboration-hero",
+    "kind": "video",
+    "subject": "Diverse team applauding around a table in a bright office",
+    "source_page": "https://www.pexels.com/video/happy-people-in-workplace-7687926/",
+    "author": "Kindel Media",
+    "license": "Pexels License (https://www.pexels.com/license/)"
+  },
+  {
+    "slug": "boardroom-presentation",
+    "kind": "video",
+    "subject": "Executive presenting to colleagues in a boardroom with city windows",
+    "source_page": "https://www.pexels.com/video/colleagues-having-a-meeting-at-the-conference-room-7644023/",
+    "author": "MART PRODUCTION",
+    "license": "Pexels License (https://www.pexels.com/license/)"
+  },
+  {
+    "slug": "handshake-deal",
+    "kind": "video",
+    "subject": "Business partners shaking hands over a signed agreement",
+    "source_page": "https://www.pexels.com/video/businessmen-shaking-hans-for-a-deal-done-8426049/",
+    "author": "Kampus Production",
+    "license": "Pexels License (https://www.pexels.com/license/)"
+  },
+  {
+    "slug": "conference-speaker",
+    "kind": "video",
+    "subject": "Speaker presenting to a seated audience at a business conference",
+    "source_page": "https://www.pexels.com/video/man-talking-at-a-conference-8716579/",
+    "author": "Pavel Danilyuk",
+    "license": "Pexels License (https://www.pexels.com/license/)"
+  },
+  {
+    "slug": "city-skyline-golden-hour",
+    "kind": "video",
+    "subject": "Aerial drone shot of downtown skyscrapers at golden hour",
+    "source_page": "https://www.pexels.com/video/drone-footage-of-skyscrapers-in-a-city-6595764/",
+    "author": "Kelly (@kelly)",
+    "license": "Pexels License (https://www.pexels.com/license/)"
+  },
+  {
+    "slug": "datacenter-servers",
+    "kind": "video",
+    "subject": "Close-up rack-mounted servers with status LEDs in a data center",
+    "source_page": "https://www.pexels.com/video/close-up-of-a-cpu-7140928/",
+    "author": "MrColo",
+    "license": "Pexels License (https://www.pexels.com/license/)"
+  },
+  {
+    "slug": "lab-oscilloscope",
+    "kind": "video",
+    "subject": "Engineer probing a circuit and adjusting an oscilloscope",
+    "source_page": "https://www.pexels.com/video/people-working-on-oscilloscopes-4684800/",
+    "author": "Atul Saini",
+    "license": "Pexels License (https://www.pexels.com/license/)"
+  },
+  {
+    "slug": "software-team-code-review",
+    "kind": "video",
+    "subject": "Software team discussing code on a monitor",
+    "source_page": "https://www.pexels.com/video/people-programming-on-a-computer-8632602/",
+    "author": "Kampus Production",
+    "license": "Pexels License (https://www.pexels.com/license/)"
+  },
+  {
+    "slug": "substation-crew",
+    "kind": "video",
+    "subject": "Line crew working on equipment at an electrical substation (aerial)",
+    "source_page": "https://www.pexels.com/video/electricians-working-at-substation-10151854/",
+    "author": "Videas Cl",
+    "license": "Pexels License (https://www.pexels.com/license/)"
+  },
+  {
+    "slug": "office-lobby-walking",
+    "kind": "video",
+    "subject": "Colleagues walking and chatting through a bright corporate lobby",
+    "source_page": "https://www.pexels.com/video/coworkers-chatting-while-walking-in-the-lobby-7652286/",
+    "author": "Kindel Media",
+    "license": "Pexels License (https://www.pexels.com/license/)"
+  },
+  {
+    "slug": "glass-atrium-office",
+    "kind": "video",
+    "subject": "Colleagues talking on a balcony of a multi-storey glass office atrium",
+    "source_page": "https://www.pexels.com/video/colleagues-talking-at-office-7147624/",
+    "author": "Tiger Lily",
+    "license": "Pexels License (https://www.pexels.com/license/)"
+  },
+  {
+    "slug": "operations-control-room",
+    "kind": "video",
+    "subject": "Operators in a control room with a large wall of monitoring displays",
+    "source_page": "https://www.pexels.com/video/high-tech-control-room-with-traffic-monitoring-38779099/",
+    "author": "Kiwi and Camera",
+    "license": "Pexels License (https://www.pexels.com/license/)"
+  },
+  {
+    "slug": "executive-team",
+    "kind": "photo",
+    "subject": "Executive team group portrait in an office lobby",
+    "source_page": "https://unsplash.com/photos/four-professionals-in-business-attire-stand-together-gItonyvrdUA",
+    "author": "Vitaly Gariev",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "boardroom-meeting",
+    "kind": "photo",
+    "subject": "Boardroom meeting around a long conference table",
+    "source_page": "https://unsplash.com/photos/people-on-conference-table-looking-at-talking-woman-Q80LYxv_Tbs",
+    "author": "Christina @ wocintechchat.com M",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "team-presentation-screen",
+    "kind": "photo",
+    "subject": "Presenter walking a team through charts on a display",
+    "source_page": "https://unsplash.com/photos/man-presenting-to-colleagues-in-a-modern-office-OpOsPgGiFwc",
+    "author": "Vitaly Gariev",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "conference-audience",
+    "kind": "photo",
+    "subject": "Conference audience in an auditorium",
+    "source_page": "https://unsplash.com/photos/crowd-of-people-sitting-on-chairs-inside-room-F2KRf_QfCqw",
+    "author": "Headway",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "speaker-audience",
+    "kind": "photo",
+    "subject": "Speaker addressing a large audience (from behind)",
+    "source_page": "https://unsplash.com/photos/man-speaking-in-front-of-crowd-RfiBK6Y_upQ",
+    "author": "Miguel Henriques",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "handshake-office",
+    "kind": "photo",
+    "subject": "Two businessmen shaking hands at a meeting table",
+    "source_page": "https://unsplash.com/photos/two-businessmen-shaking-hands-across-a-table-lZXX-QVdyXY",
+    "author": "Vitaly Gariev",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "office-interior",
+    "kind": "photo",
+    "subject": "Modern open-plan office interior with people working",
+    "source_page": "https://unsplash.com/photos/man-walking-on-stairs-3h7j04-6y3Q",
+    "author": "Proxyclick Visitor Management System",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "city-skyline-dusk",
+    "kind": "photo",
+    "subject": "City skyline at dusk across the water",
+    "source_page": "https://unsplash.com/photos/city-skyline-across-water-at-dusk-with-buildings-illuminated-zAcv_8CCbRs",
+    "author": "Gan ZJ",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "datacenter-engineer",
+    "kind": "photo",
+    "subject": "Engineer patching fiber in a server rack",
+    "source_page": "https://unsplash.com/photos/man-in-black-and-white-plaid-dress-shirt-zBLtU0zbJcU",
+    "author": "ThisisEngineering",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "datacenter-racks",
+    "kind": "photo",
+    "subject": "Server racks with cabling in a data center",
+    "source_page": "https://unsplash.com/photos/cable-network-M5tzZtFCOfs",
+    "author": "Taylor Vick",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "lab-laser-optics",
+    "kind": "photo",
+    "subject": "Laser on an optical table in a photonics lab",
+    "source_page": "https://unsplash.com/photos/an-electronic-device-with-a-purple-light-on-top-of-it-LlQy3Id5XXM",
+    "author": "LaserWorld LaserBeam",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "cleanroom-engineers",
+    "kind": "photo",
+    "subject": "Engineers in clean-room suits reviewing a tablet",
+    "source_page": "https://unsplash.com/photos/a-couple-of-people-wearing-masks-and-gloves-and-gloves-q5JSJiiR9D4",
+    "author": "Toon Lambrechts",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "electronics-bench",
+    "kind": "photo",
+    "subject": "Hands adjusting a bench power supply in an electronics lab",
+    "source_page": "https://unsplash.com/photos/person-holding-gray-audio-mixer-Kzx7m3JwkcQ",
+    "author": "ThisisEngineering",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "engineers-reviewing-screens",
+    "kind": "photo",
+    "subject": "Engineers reviewing work on a monitor",
+    "source_page": "https://unsplash.com/photos/man-in-maroon-long-sleeve-shirt-holding-a-book-lr5RHwBmrbs",
+    "author": "ThisisEngineering",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "engineering-team-lab",
+    "kind": "photo",
+    "subject": "Engineering team with a laptop in a hardware lab",
+    "source_page": "https://unsplash.com/photos/people-looking-at-laptop-in-workspace-bIltCMXIwRE",
+    "author": "ThisisEngineering",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "substation",
+    "kind": "photo",
+    "subject": "Electrical substation in daylight",
+    "source_page": "https://unsplash.com/photos/a-bunch-of-power-lines-that-are-in-the-dirt-Vu38TclLaNo",
+    "author": "Sam LaRussa",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "transmission-lines",
+    "kind": "photo",
+    "subject": "High-voltage transmission lines across fields",
+    "source_page": "https://unsplash.com/photos/transmission-towers-and-wind-turbines-on-the-field-znytbxrOv_4",
+    "author": "American Public Power Association",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "glass-headquarters",
+    "kind": "photo",
+    "subject": "Glass office towers reflecting sky",
+    "source_page": "https://unsplash.com/photos/a-very-tall-building-with-lots-of-windows-GP6-P0QAEzY",
+    "author": "Zouhir Zouhir",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "woman-executive-desk",
+    "kind": "photo",
+    "subject": "Businesswoman working at her desk by the window",
+    "source_page": "https://unsplash.com/photos/a-woman-sitting-at-a-table-with-a-laptop-computer-b6Fo9loWZUk",
+    "author": "Creatopy",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "man-suit-phone",
+    "kind": "photo",
+    "subject": "Businessman in a suit on the phone in a glass office",
+    "source_page": "https://unsplash.com/photos/man-in-suit-talking-on-phone-at-desk-with-laptop-NWT8Hya-_WQ",
+    "author": "Vitaly Gariev",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "team-whiteboard",
+    "kind": "photo",
+    "subject": "Team meeting at a whiteboard",
+    "source_page": "https://unsplash.com/photos/team-collaborating-around-a-whiteboard-in-a-modern-office-K0aM-ztA76Q",
+    "author": "Vitaly Gariev",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "networking-event",
+    "kind": "photo",
+    "subject": "Business networking event",
+    "source_page": "https://unsplash.com/photos/a-group-of-people-standing-around-each-other-Tc1mBpMS-zs",
+    "author": "jimylloyd laumain",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "operations-center",
+    "kind": "photo",
+    "subject": "Operations center with wall displays and workstations",
+    "source_page": "https://unsplash.com/photos/man-in-black-and-white-checkered-dress-shirt-using-computer-_XLJy3h77cw",
+    "author": "CDC",
+    "license": "Unsplash License (https://unsplash.com/license)"
+  },
+  {
+    "slug": "datacenter-engineer-laptop",
+    "kind": "photo",
+    "subject": "Engineer with a laptop beside server racks in a data center",
+    "source_page": "https://www.pexels.com/photo/engineer-holding-laptop-1181316/",
+    "author": "Christina Morillo",
+    "license": "Pexels License (https://www.pexels.com/license/)"
+  }
+]

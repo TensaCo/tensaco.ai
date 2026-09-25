@@ -1,0 +1,14 @@
+.footer { background: var(--ink); color: rgba(255, 255, 255, 0.78); padding-top: 72px; font-size: 15px; }
+.cols { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; padding-bottom: 56px; }
+.cols div { display: flex; flex-direction: column; gap: 10px; }
+.cols a { text-decoration: none; }
+.cols a:hover { color: var(--white); }
+.cols h4 { margin: 0 0 6px; color: var(--white); font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; }
+.brand p { margin: 8px 0 4px; max-width: 26ch; }
+.logo { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; color: var(--white); }
+.logo span { color: #60a5fa; }
+.legal { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding-top: 24px; padding-bottom: 32px; border-top: 1px solid rgba(255, 255, 255, 0.12); font-size: 13.5px; }
+.legalLinks { display: flex; gap: 22px; }
+.legal a { text-decoration: none; }
+.legal a:hover { color: var(--white); }
+@media (max-width: 900px) { .cols { grid-template-columns: 1fr 1fr; } }
