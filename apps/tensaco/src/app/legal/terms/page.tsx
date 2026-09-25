@@ -15,7 +15,7 @@ export default function Terms() {
         <>
           <p>
             These Terms of Use (“Terms”) govern your access to and use of tensaco.ai, phaser.tensaco.ai and related websites (the
-            “Sites”), TensaCo accounts, the customer portal, and any services TensaCo Inc. (“TensaCo,” “we,” “us” or “our”) makes
+            “Sites”), TensaCo accounts, the customer portal, and any services TENSACO INC, a Delaware corporation (“TensaCo,” “we,” “us” or “our”) makes
             available through them (together with the Sites, the “Services”).
           </p>
           <p>
@@ -151,7 +151,7 @@ export default function Terms() {
         },
         {
           id: 'law', title: 'Governing law and disputes',
-          body: <p>These Terms are governed by the laws of the United States and of the state in which TensaCo Inc. is incorporated, without regard to conflict-of-laws rules. Before filing a claim, you agree to contact us at {M} and attempt to resolve the dispute informally for at least 30 days.</p>,
+          body: <p>These Terms are governed by the laws of the State of Delaware and applicable federal law of the United States, without regard to conflict-of-laws rules. Subject to the informal-resolution step below, any claim not subject to the jurisdiction of a small-claims court will be brought exclusively in the state or federal courts located in Delaware, and you and TensaCo consent to personal jurisdiction there. Before filing a claim, you agree to contact us at {M} and attempt to resolve the dispute informally for at least 30 days.</p>,
         },
         {
           id: 'changes', title: 'Changes to these Terms',

@@ -30,7 +30,7 @@ export function Legal({ title, updated, intro, sections }: { title: string; upda
               {x.body}
             </section>
           ))}
-          <p className={s.contact}>TensaCo Inc. · <a href="mailto:hello@tensaco.ai">hello@tensaco.ai</a></p>
+          <p className={s.contact}>TENSACO INC · San Francisco, California · <a href="mailto:hello@tensaco.ai">hello@tensaco.ai</a></p>
         </article>
       </div>
     </div>

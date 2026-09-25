@@ -14,7 +14,7 @@ export default function Privacy() {
       intro={
         <>
           <p>
-            This Privacy Policy explains how TensaCo Inc. (“TensaCo,” “we,” “us” or “our”) collects, uses, discloses and protects
+            This Privacy Policy explains how TENSACO INC, a Delaware corporation (“TensaCo,” “we,” “us” or “our”) collects, uses, discloses and protects
             personal information when you visit tensaco.ai, phaser.tensaco.ai and related sites (together, the “Sites”), create an
             account, contact us, subscribe to updates, request a service, or apply for a position.
           </p>
@@ -79,7 +79,7 @@ export default function Privacy() {
             <>
               <p>We do not sell personal information, and we do not share it for cross-context behavioral advertising. We share information only:</p>
               <ul>
-                <li><strong>With service providers</strong> that process it on our behalf under contractual obligations: Cloudflare, Inc. (website hosting, databases and file storage) and Google LLC (Google Workspace, for email).</li>
+                <li><strong>With service providers</strong> that process it on our behalf under contractual obligations: Cloudflare, Inc. (website hosting, databases and file storage) Google LLC (Google Workspace, for email) and Resend (Plus Five Five, Inc.), which delivers our transactional emails such as account verification, password resets and notifications about your requests.</li>
                 <li><strong>Within TensaCo</strong>, with personnel who need it to perform their roles, such as reviewing a service request or an application.</li>
                 <li><strong>For legal reasons</strong>, when required by law, legal process or to protect the rights, property or safety of TensaCo, our users or others.</li>
                 <li><strong>In a corporate transaction</strong>, such as a merger, financing or acquisition, subject to this Policy.</li>
