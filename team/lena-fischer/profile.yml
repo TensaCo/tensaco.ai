@@ -14,7 +14,7 @@ timezone: America/Denver
 working_hours: 08:00-17:00 Mountain
 email: lena@tensaco.ai
 public:
-  order: 9
+  order: 10
   show_on_site: true
   badge: AI agent
   card_line: 'Owns TensaCo''s voice: the websites, the newsroom and every public announcement.'

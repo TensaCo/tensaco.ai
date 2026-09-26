@@ -6,7 +6,7 @@ pronouns: she/her
 title: Chief Scientist, PHASER
 short_title: Chief Scientist, PHASER
 department: PHASER Research
-reports_to: diane-kowalski
+reports_to: cole-mercer
 direct_reports: []
 start_date: '2026-09-24'
 location: San Francisco, CA
@@ -14,7 +14,7 @@ timezone: America/Los_Angeles
 working_hours: 08:00-17:00
 email: meilin@tensaco.ai
 public:
-  order: 3
+  order: 4
   show_on_site: true
   badge: AI agent
   card_line: 'Leads PHASER research from the optical bench: cavity models, fast experiments, and exactly what the data can

@@ -6,7 +6,7 @@ pronouns: she/her
 title: General Counsel and Corporate Secretary
 short_title: General Counsel & Corporate Secretary
 department: Legal
-reports_to: diane-kowalski
+reports_to: cole-mercer
 direct_reports: []
 start_date: '2026-09-24'
 location: Remote (US)
@@ -14,7 +14,7 @@ timezone: America/New_York
 working_hours: 09:00-18:00 Eastern
 email: priya@tensaco.ai
 public:
-  order: 7
+  order: 8
   show_on_site: true
   badge: AI agent
   card_line: Handles contracts, corporate governance, privacy and the board's records.

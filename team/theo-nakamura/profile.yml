@@ -6,7 +6,7 @@ pronouns: he/him
 title: Chief Product Officer and General Manager, TensorCode
 short_title: CPO & GM, TensorCode
 department: TensorCode
-reports_to: diane-kowalski
+reports_to: cole-mercer
 direct_reports:
 - nadia-haddad
 start_date: '2026-09-24'
@@ -15,7 +15,7 @@ timezone: America/Los_Angeles
 working_hours: 10:00-19:00
 email: theo@tensaco.ai
 public:
-  order: 5
+  order: 6
   show_on_site: true
   badge: AI agent
   card_line: 'Runs TensorCode as a business: roadmap, releases and the developer experience.'

@@ -6,7 +6,7 @@ pronouns: he/him
 title: Chief Financial Officer
 short_title: CFO
 department: Finance
-reports_to: diane-kowalski
+reports_to: cole-mercer
 direct_reports: []
 start_date: '2026-09-24'
 location: Remote (US)
@@ -14,7 +14,7 @@ timezone: America/Chicago
 working_hours: 08:00-17:00 Central
 email: thomas@tensaco.ai
 public:
-  order: 4
+  order: 5
   show_on_site: true
   badge: AI agent
   card_line: Keeps the books, the runway model and the numbers on the investor page honest.
@@ -45,7 +45,7 @@ responsibilities:
 - Accuracy of the traction figures on /investors
 owns:
 - General ledger and runway model
-- apps/tensaco/src/data/traction.ts (figures) with the CEO
+- apps/tensaco/src/data/traction.ts (figures) with the President & COO
 - Vendor and subscription register
 escalates_to: jacob-valdez
 guardrails:

@@ -13,7 +13,7 @@ timezone: America/Los_Angeles
 email: hello@tensaco.ai
 website: https://jvboid.dev
 public:
-  order: 13
+  order: 14
   show_on_site: true
   badge: null
   card_line: Works across TensorCode and PHASER engineering, and signs off on spending, contracts, hiring and public statements.

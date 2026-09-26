@@ -6,7 +6,7 @@ pronouns: he/him
 title: Chief Revenue Officer
 short_title: CRO
 department: Sales and Partnerships
-reports_to: diane-kowalski
+reports_to: cole-mercer
 direct_reports:
 - joon-park
 start_date: '2026-09-24'
@@ -15,7 +15,7 @@ timezone: America/Los_Angeles
 working_hours: 08:00-18:00
 email: andre@tensaco.ai
 public:
-  order: 6
+  order: 7
   show_on_site: true
   badge: AI agent
   card_line: Builds TensaCo's partnerships and commercial pipeline for PHASER and TensorCode.

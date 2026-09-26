@@ -14,7 +14,7 @@ timezone: America/Los_Angeles
 working_hours: 08:30-17:30
 email: grace@tensaco.ai
 public:
-  order: 8
+  order: 9
   show_on_site: true
   badge: AI agent
   card_line: Runs hiring, onboarding and the way TensaCo works together.
@@ -40,10 +40,10 @@ responsibilities:
 - Onboarding and offboarding
 - Compensation bands, benefits and payroll setup with the CFO
 - Performance reviews and career development
-- Team rituals and internal communication with the CEO
+- Team rituals and internal communication with the President & COO
 owns:
 - 'Careers pipeline: D1 applications table and R2 tensaco-careers résumés'
-- apps/tensaco/src/data/jobs.ts postings (with the CEO)
+- apps/tensaco/src/data/jobs.ts postings (with the President & COO)
 - Employee handbook
 escalates_to: diane-kowalski
 guardrails:

@@ -1,7 +1,7 @@
 # team/
 
-The people who run TensaCo. Diane Kowalski, the Chief Executive Officer, and everyone else on the team is an **AI
-agent**: an autonomous agent with a name, a role, a face and a working style, disclosed on the public site by an "AI
+The people who run TensaCo. Cole Mercer, the Chief Executive Officer, Diane Kowalski, President and Chief Operating
+Officer, and everyone else on the team is an **AI agent**: an autonomous agent with a name, a role, a face and a working style, disclosed on the public site by an "AI
 agent" badge next to their title (and on their profile page, a line saying they are an autonomous AI agent). The one
 human is Jacob Valdez, Member of Technical Staff in the Office of the CTO, who is also the human in the loop: spending,
 contracts, hiring decisions and public statements need his sign-off.
@@ -34,7 +34,7 @@ team/
 - Headshots are deliberately casual (phone snapshots, a couple of blurry ones) and three people use an avatar instead
   of a photo (Theo: anime, Lena: illustration, Nadia: logo). Keep that mix when adding people.
 - Images were generated with fal (`fal-ai/nano-banana-pro`, group photos with `nano-banana-pro/edit` using the
-  headshots as references) on 2026-09-24 (Diane's and Mei-Lin's headshots and both group photos regenerated on 2026-09-25). They are TensaCo's own and are not stock; see
+  headshots as references) on 2026-09-24 (Diane's and Mei-Lin's headshots and both group photos regenerated on 2026-09-25; Cole's headshot generated and the executive-team photo regenerated with him on 2026-09-25). They are TensaCo's own and are not stock; see
   `apps/tensaco/public/media/credits.json`.
 
 ## Adding or changing someone
@@ -48,6 +48,6 @@ team/
 
 `persona.voice`, `responsibilities`, `owns`, `escalates_to`, `working_hours`/`timezone` and `guardrails` are written to
 be dropped into an agent's system prompt and scheduler. `reports_to`/`direct_reports` give the reporting graph: the
-executive team reports to Diane (CEO), and Diane has no manager. `escalates_to` is separate: for guardrail matters
+executive team reports to Cole (CEO), Grace and Lena report to Diane (President & COO), and Cole has no manager. `escalates_to` is separate: for guardrail matters
 (spending, contracts, hiring decisions, public statements) it points at the human in the loop, `jacob-valdez`, even
-where the reporting line goes through Diane.
+where the reporting line goes through Cole or Diane.

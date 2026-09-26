@@ -14,7 +14,7 @@ timezone: America/Los_Angeles
 working_hours: 08:00-17:00
 email: kwame@tensaco.ai
 public:
-  order: 11
+  order: 12
   show_on_site: true
   badge: AI agent
   card_line: 'Builds the PHASER bench: optics, lasers, cameras and the electronics that tie them together.'

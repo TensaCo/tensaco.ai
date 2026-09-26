@@ -2,53 +2,60 @@
 company: TensaCo Inc. (TENSACO INC, Delaware), San Francisco, CA
 updated: '2026-09-25'
 people:
-- slug: diane-kowalski
-  name: Diane Kowalski
+- slug: cole-mercer
+  name: Cole Mercer
   kind: ai-agent
   title: Chief Executive Officer
   reports_to: null
+  email: cole@tensaco.ai
+  headshot_style: casual phone snapshot
+- slug: diane-kowalski
+  name: Diane Kowalski
+  kind: ai-agent
+  title: President and Chief Operating Officer
+  reports_to: cole-mercer
   email: diane@tensaco.ai
   headshot_style: casual phone snapshot
 - slug: arjun-raghavan
   name: Arjun Raghavan
   kind: ai-agent
   title: Chief Technology Officer
-  reports_to: diane-kowalski
+  reports_to: cole-mercer
   email: arjun@tensaco.ai
   headshot_style: blurry iPhone photo
 - slug: mei-lin-zhou
   name: Mei-Lin Zhou
   kind: ai-agent
   title: Chief Scientist, PHASER
-  reports_to: diane-kowalski
+  reports_to: cole-mercer
   email: meilin@tensaco.ai
   headshot_style: casual phone snapshot
 - slug: thomas-brennan
   name: Thomas Brennan
   kind: ai-agent
   title: Chief Financial Officer
-  reports_to: diane-kowalski
+  reports_to: cole-mercer
   email: thomas@tensaco.ai
   headshot_style: casual phone snapshot
 - slug: theo-nakamura
   name: Theo Nakamura
   kind: ai-agent
   title: Chief Product Officer and General Manager, TensorCode
-  reports_to: diane-kowalski
+  reports_to: cole-mercer
   email: theo@tensaco.ai
   headshot_style: anime-style avatar
 - slug: andre-whitfield
   name: Andre Whitfield
   kind: ai-agent
   title: Chief Revenue Officer
-  reports_to: diane-kowalski
+  reports_to: cole-mercer
   email: andre@tensaco.ai
   headshot_style: phone flash snapshot at night
 - slug: priya-natarajan
   name: Priya Natarajan
   kind: ai-agent
   title: General Counsel and Corporate Secretary
-  reports_to: diane-kowalski
+  reports_to: cole-mercer
   email: priya@tensaco.ai
   headshot_style: soft-focus phone snapshot
 - slug: grace-adeyemi
@@ -92,9 +99,16 @@ people:
   title: Member of Technical Staff
   reports_to: arjun-raghavan
 org_chart:
-  slug: diane-kowalski
+  slug: cole-mercer
   title: Chief Executive Officer
   reports:
+  - slug: diane-kowalski
+    title: President and Chief Operating Officer
+    reports:
+    - slug: grace-adeyemi
+      title: Chief People Officer
+    - slug: lena-fischer
+      title: Vice President, Communications
   - slug: arjun-raghavan
     title: Chief Technology Officer
     reports:
@@ -118,15 +132,12 @@ org_chart:
       title: Vice President, Customer Success
   - slug: priya-natarajan
     title: General Counsel and Corporate Secretary
-  - slug: grace-adeyemi
-    title: Chief People Officer
-  - slug: lena-fischer
-    title: Vice President, Communications
 group_photos:
   executive-team:
     file: _group/executive-team.jpg
     used_as: apps/tensaco/public/media/photo/executive-team.jpg
     people:
+    - cole-mercer
     - jacob-valdez
     - diane-kowalski
     - arjun-raghavan

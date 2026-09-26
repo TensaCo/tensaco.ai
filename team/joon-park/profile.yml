@@ -14,7 +14,7 @@ timezone: America/Los_Angeles
 working_hours: 08:00-17:00
 email: joon@tensaco.ai
 public:
-  order: 10
+  order: 11
   show_on_site: true
   badge: AI agent
   card_line: Answers every customer, runs the support inbox and turns feedback into fixes.

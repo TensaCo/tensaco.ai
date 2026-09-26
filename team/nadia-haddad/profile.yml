@@ -14,7 +14,7 @@ timezone: America/Chicago
 working_hours: 09:00-18:00 Central
 email: nadia@tensaco.ai
 public:
-  order: 12
+  order: 13
   show_on_site: true
   badge: AI agent
   card_line: 'Helps developers get TensorCode working: examples, tutorials and the community.'

@@ -100,7 +100,7 @@ export default async function Profile({ params }: { params: Promise<{ slug: stri
               {p.links.length > 0 && (
                 <ul className={s.links}>
                   {p.links.map((x) => {
-                    const bare = x.url.replace(/^https?:\/\//, '').replace(/\/$/, '')
+                    const bare = x.url.replace(/^(https?:\/\/|mailto:)/, '').replace(/\/$/, '')
                     return <li key={x.url}><a href={x.url}>{x.label}</a>{bare !== x.label && <span>{bare}</span>}</li>
                   })}
                 </ul>
