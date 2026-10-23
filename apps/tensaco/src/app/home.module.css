@@ -1,33 +1,30 @@
 .head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; margin-bottom: 48px; }
 .news { display: flex; flex-direction: column; gap: 14px; padding: 28px 0; border-top: 1px solid var(--line); text-decoration: none; }
-.newsMeta { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
-.newsTitle { font-size: 21px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; }
-.news:hover .newsTitle { color: var(--blue); }
-.cta { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+.newsMeta { font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.newsTitle { font-size: 21px; font-weight: 500; line-height: 1.3; letter-spacing: -0.02em; }
+.news:hover .newsTitle { text-decoration: underline; text-underline-offset: 3px; }
+.cta { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
 @media (max-width: 900px) { .cta { grid-template-columns: 1fr; } }
 
-/* Brand film */
-.filmSection { background: linear-gradient(180deg, var(--navy) 0%, #071733 100%); color: var(--white); }
-.filmHead { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px 48px; flex-wrap: wrap; margin-bottom: clamp(32px, 4vw, 48px); }
-.filmTitle { max-width: 12.5em; }
-.filmAside { max-width: 26em; margin: 0; color: rgba(255, 255, 255, 0.72); font-size: 16px; }
-.film { position: relative; aspect-ratio: 16 / 9; border-radius: var(--radius); overflow: hidden; background: #050e22; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35); }
-.filmVideo { width: 100%; height: 100%; object-fit: cover; background: #050e22; }
-.filmCover { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 18px; padding: 0; border: 0; cursor: pointer; color: var(--white); font: inherit;
-  background: linear-gradient(0deg, rgba(5, 14, 34, 0.55) 0%, rgba(5, 14, 34, 0.1) 55%, rgba(5, 14, 34, 0.2) 100%); transition: background .3s; }
-.filmCover:hover { background: linear-gradient(0deg, rgba(5, 14, 34, 0.45) 0%, rgba(5, 14, 34, 0.05) 55%, rgba(5, 14, 34, 0.1) 100%); }
-.filmPlay { display: grid; place-items: center; width: clamp(64px, 7vw, 96px); height: clamp(64px, 7vw, 96px); border-radius: 50%; background: var(--white); color: var(--navy);
-  padding-left: 4px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35); transition: transform .25s, background .25s, color .25s; }
-.filmPlay svg { width: 38%; height: 38%; }
-.filmCover:hover .filmPlay { transform: scale(1.06); background: var(--blue); color: var(--white); }
-.filmLabel { display: flex; flex-direction: column; align-items: flex-start; font-size: clamp(18px, 1.6vw, 22px); font-weight: 700; letter-spacing: -0.01em; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), 0 2px 18px rgba(0, 0, 0, 0.5); }
-.filmDur { font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255, 255, 255, 0.75); margin-top: 2px; }
+/* Brand film: flat. One slate field, the film edge to edge of the column, no frame, no shadow, no glow; the
+   play control is a pill in the corner, as on the hero. */
+.filmSection { background: var(--navy); color: var(--white); }
+.filmHead { display: grid; grid-template-columns: 1.4fr 1fr; align-items: end; gap: 24px 64px; margin-bottom: clamp(36px, 4vw, 56px); }
+.filmTitle { max-width: 11em; }
+.filmAside { max-width: 26em; margin: 0; color: rgba(255, 255, 255, 0.72); font-size: 15px; }
+.film { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: #10161d; }
+.filmVideo { width: 100%; height: 100%; object-fit: cover; background: #10161d; }
+.filmCover { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: flex-start; padding: clamp(16px, 2.4vw, 32px); border: 0; cursor: pointer; color: var(--ink); font: inherit; background: transparent; }
+.filmPlay { display: inline-flex; align-items: center; gap: 10px; padding: 11px 20px 11px 16px; border-radius: var(--pill); background: var(--paper); font-size: 14px; font-weight: 600; transition: background .2s; }
+.filmPlay svg { width: 14px; height: 14px; }
+.filmCover:hover .filmPlay { background: var(--white); }
+.filmDur { color: var(--muted); font-weight: 500; }
 .filmMeta { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 18px; }
-@media (max-width: 600px) { .filmLabel { display: none; } }
+@media (max-width: 900px) { .filmHead { grid-template-columns: 1fr; } }
 
 /* Hero background loop */
 .heroVideo { opacity: 0; transition: opacity .8s ease; }
 .heroVideoOn { opacity: 1; }
 .heroPause { position: absolute; z-index: 2; right: var(--gutter); bottom: clamp(24px, 4vh, 40px); display: grid; place-items: center; width: 38px; height: 38px; padding: 0;
-  border: 1.5px solid rgba(255, 255, 255, 0.55); border-radius: 50%; background: rgba(6, 18, 42, 0.35); color: var(--white); cursor: pointer; transition: background .2s, border-color .2s; }
-.heroPause:hover { background: rgba(6, 18, 42, 0.6); border-color: var(--white); }
+  border: 1.5px solid rgba(255, 255, 255, 0.6); border-radius: 50%; background: transparent; color: var(--white); cursor: pointer; transition: background .2s, border-color .2s; }
+.heroPause:hover { background: rgba(255, 255, 255, 0.14); border-color: var(--white); }

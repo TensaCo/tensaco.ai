@@ -13,7 +13,7 @@ export default function Home() {
       <Hero
         background={(bg) => <HeroVideo className={bg} />}
         eyebrow="TensaCo Inc."
-        title="Intelligence infrastructure for the enterprise."
+        title={<>Intelligence infrastructure <span className="soft">for the enterprise.</span></>}
         lead="TensaCo builds the compute and the software that make AI faster, more efficient and accountable, so organizations can adopt it at scale with confidence."
       >
         <div className="btn-row">
@@ -24,7 +24,7 @@ export default function Home() {
 
       <section className="section">
         <div className="wrap">
-          <Split media={MEDIA.boardroom} eyebrow="Why TensaCo" title="AI is now a question of energy and trust.">
+          <Split media={MEDIA.boardroom} eyebrow="01 / Why TensaCo" title={<>AI is now a question <span className="soft">of energy and trust.</span></>}>
             <p>
               Every organization is under pressure to put AI to work. Two constraints decide how far it can go: the power it
               takes to run, and whether people can check, correct and stand behind what it does.
@@ -39,8 +39,8 @@ export default function Home() {
         <div className="wrap">
           <div className={s.filmHead}>
             <div>
-              <p className="eyebrow">The TensaCo film</p>
-              <h2 className={`h2 ${s.filmTitle}`}>Compute built on light. Software built on trust.</h2>
+              <p className="eyebrow">02 / The TensaCo film</p>
+              <h2 className={`h2 ${s.filmTitle}`}>Compute built on light. <span className="soft">Software built on trust.</span></h2>
             </div>
             <p className={s.filmAside}>Thirty seconds on why TensaCo exists, and the two companies building its answer: PHASER and TensorCode.</p>
           </div>
@@ -51,12 +51,12 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section mist" id="solutions">
+      <section className="section" id="solutions">
         <div className="wrap">
           <div className={s.head}>
             <div>
-              <p className="eyebrow">Solutions</p>
-              <h2 className="h2">Built for practical deployment.</h2>
+              <p className="eyebrow">03 / Solutions</p>
+              <h2 className="h2">Built for practical <span className="soft">deployment.</span></h2>
             </div>
           </div>
           <div className="grid-2">
@@ -72,8 +72,8 @@ export default function Home() {
 
       <section className="section">
         <div className="wrap">
-          <p className="eyebrow">By the numbers</p>
-          <h2 className="h2" style={{ marginBottom: 48 }}>What our technology makes possible.</h2>
+          <p className="eyebrow">04 / By the numbers</p>
+          <h2 className="h2" style={{ marginBottom: 48 }}>What our technology <span className="soft">makes possible.</span></h2>
           <Stats
             items={[
               { value: '~1,000×', label: 'less energy per step than a GPU', note: 'PHASER, modeled at one megapixel of optics' },
@@ -85,7 +85,7 @@ export default function Home() {
         </div>
       </section>
 
-      <Band media={MEDIA.podium} title="The decisions about AI’s future are being made now.">
+      <Band media={MEDIA.podium} title={<>The decisions about AI’s future <span className="soft">are being made now.</span></>}>
         <p className="lead" style={{ maxWidth: '38em', marginTop: 20 }}>
           Governments, utilities and enterprises are planning for a decade of AI growth. TensaCo works on the technology that
           determines what that growth costs.
@@ -97,8 +97,8 @@ export default function Home() {
         <div className="wrap">
           <div className={s.head}>
             <div>
-              <p className="eyebrow">Newsroom</p>
-              <h2 className="h2">Latest from TensaCo.</h2>
+              <p className="eyebrow">05 / Newsroom</p>
+              <h2 className="h2">Latest <span className="soft">from TensaCo.</span></h2>
             </div>
             <Link href="/newsroom/" className="link-arrow">All news →</Link>
           </div>
@@ -114,10 +114,11 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section navy on-dark">
+      <section className="section">
         <div className={`wrap ${s.cta}`}>
           <div>
-            <h2 className="h2">Stay informed.</h2>
+            <p className="eyebrow">Stay connected</p>
+            <h2 className="h2">Stay <span className="soft">informed.</span></h2>
             <p className="lead" style={{ marginTop: 16 }}>Company announcements, product releases and research updates from TensaCo.</p>
           </div>
           <Subscribe source="home" />

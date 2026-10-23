@@ -59,6 +59,7 @@ export default function Investors() {
             <div><b>29</b><span>PHASER research experiments published</span></div>
           </div>
           <h3 className={s.h3}>Commercial pipeline</h3>
+          <div className={s.tableWrap}>
           <table className={s.table}>
             <thead><tr><th>Stage</th><th>PHASER</th><th>TensorCode</th><th>Total</th></tr></thead>
             <tbody>
@@ -66,6 +67,7 @@ export default function Investors() {
               <tr className={s.total}><td>All stages</td><td>{t.pipeline.reduce((a, r) => a + r.phaser, 0)}</td><td>{t.pipeline.reduce((a, r) => a + r.tensorcode, 0)}</td><td>{totals}</td></tr>
             </tbody>
           </table>
+          </div>
         </div>
       </section>
 

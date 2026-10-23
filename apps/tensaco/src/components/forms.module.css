@@ -3,9 +3,9 @@
 .field { display: grid; gap: 7px; }
 .field label { font-size: 14px; font-weight: 600; color: var(--ink); }
 .field small { font-size: 13px; color: var(--muted); font-weight: 400; }
-.input, .select, .textarea { font: inherit; font-size: 16px; color: var(--ink); background: var(--white); border: 1px solid #cbd5e1; border-radius: var(--radius); padding: 12px 14px; outline: none; width: 100%; }
+.input, .select, .textarea { font: inherit; font-size: 16px; color: var(--ink); background: var(--white); border: 1px solid var(--line-2); border-radius: var(--radius); padding: 12px 14px; outline: none; width: 100%; }
 .textarea { min-height: 140px; resize: vertical; line-height: 1.5; }
-.input:focus, .select:focus, .textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+.input:focus, .select:focus, .textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(23, 32, 42, 0.15); }
 .check { display: flex; gap: 10px; align-items: flex-start; font-size: 14.5px; color: var(--ink-2); }
 .check input { margin-top: 4px; }
 .submit { justify-self: start; font: inherit; font-weight: 600; font-size: 16px; background: var(--blue); color: var(--white); border: 0; border-radius: var(--radius); padding: 13px 26px; cursor: pointer; }

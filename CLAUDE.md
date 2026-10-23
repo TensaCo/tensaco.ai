@@ -12,8 +12,9 @@ Websites for TensaCo Inc. and its companies (see README.md for the map).
 
 - Each company is presented as a self-contained product with its own audience and visual identity. Don't share
   components or styles across apps; share only infrastructure (`packages/subscribe`, D1).
-- TensaCo (parent): a serious corporate site. Navy and white, Inter, full-bleed stock photography and video of people
-  and industry (licensed, credited in `apps/tensaco/public/media/credits.json`). No line art, 3D renders or startup tone.
+- TensaCo (parent): a serious corporate site, flat and quiet: warm paper, deep slate and ink, Manrope; numbered section
+  labels ("01 / Why TensaCo"), two-tone headlines (`.soft`), pill buttons, square media, no shadows; full-bleed stock
+  photography and video of people and industry (licensed, credited in `apps/tensaco/public/media/credits.json`). No line art, 3D renders or startup tone.
   Never invent quotes, customers or endorsements. The team is TensaCo's AI agents, led by Cole Mercer (CEO, AI agent), plus one human, Jacob Valdez (Member of Technical Staff, the human sign-off)
   (`team/`, one folder per agent: profile.yml + images); every agent carries a visible "AI agent" badge wherever a
   profile appears, and bios never invent prior employers, degrees or awards. Edit `team/<slug>/profile.yml`, then

@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
+import { Manrope } from 'next/font/google'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import './globals.css'
 
-const sans = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'], variable: '--f-sans', display: 'swap' })
+const sans = Manrope({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--f-sans', display: 'swap' })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://tensaco.ai/'),
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   twitter: { card: 'summary_large_image', site: '@TensacoInc', images: ['og.jpg'] },
 }
 
-export const viewport: Viewport = { themeColor: '#0a1f44' }
+export const viewport: Viewport = { themeColor: '#1a232e' }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

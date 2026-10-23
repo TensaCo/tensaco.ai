@@ -40,9 +40,9 @@ export function BrandFilm() {
       {state !== 'playing' && (
         <button type="button" className={s.filmCover} onClick={play} aria-label={state === 'ended' ? 'Replay the TensaCo film' : 'Play the TensaCo film with sound'}>
           <span className={s.filmPlay} aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="28" height="28"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
+            <svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
+            {state === 'ended' ? 'Watch again' : 'Watch with sound'}<span className={s.filmDur}>0:30</span>
           </span>
-          <span className={s.filmLabel}>{state === 'ended' ? 'Watch again' : 'Play film'}<span className={s.filmDur}>0:30 · sound on</span></span>
         </button>
       )}
     </div>
