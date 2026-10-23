@@ -1,5 +1,7 @@
-.footer { background: var(--ink); color: rgba(255, 255, 255, 0.72); font-size: 14px; }
-.top { display: flex; justify-content: space-between; gap: 48px; flex-wrap: wrap; padding-top: 48px; padding-bottom: 36px; }
+/* margin-top: a band of page white between the last section (often navy, mist or a full-bleed photo) and the footer */
+.footer { margin-top: clamp(32px, 4vw, 56px); background: var(--ink); color: rgba(255, 255, 255, 0.72); font-size: 14px; }
+/* `.footer .x`: the global `.wrap { padding: 0 var(--gutter) }` otherwise wins over a single class and zeroes the vertical padding */
+.footer .top { display: flex; justify-content: space-between; gap: 48px; flex-wrap: wrap; padding-top: clamp(48px, 5vw, 64px); padding-bottom: 40px; }
 .brand { display: flex; flex-direction: column; gap: 14px; color: var(--white); }
 .brand a:last-child { color: rgba(255, 255, 255, 0.72); text-decoration: none; }
 .cols { display: flex; gap: clamp(32px, 6vw, 88px); flex-wrap: wrap; }
@@ -7,6 +9,6 @@
 .cols h4 { margin: 0 0 4px; color: var(--white); font-size: 12.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
 .cols a, .legal a { text-decoration: none; }
 .cols a:hover, .legal a:hover, .brand a:hover { color: var(--white); }
-.legal { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; padding-top: 18px; padding-bottom: 22px; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 13px; }
+.footer .legal { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; padding-top: 20px; padding-bottom: 28px; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 13px; }
 .social { margin-left: auto; display: flex; gap: 18px; }
 @media (max-width: 700px) { .social { margin-left: 0; } }

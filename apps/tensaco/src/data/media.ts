@@ -8,7 +8,6 @@ const v = (slug: string, alt: string): Asset => ({ kind: 'video', src: `/media/v
 const p = (slug: string, alt: string): Asset => ({ kind: 'photo', src: `/media/photo/${slug}.jpg`, alt })
 
 export const MEDIA = {
-  homeHero: v('team-collaboration-hero', 'A team collaborating in a modern office'),
   boardroom: v('boardroom-presentation', 'A presentation to executives in a boardroom'),
   podium: v('conference-speaker', 'A speaker addressing an audience from a podium'),
   handshake: v('handshake-deal', 'Business partners shaking hands in a lobby'),

@@ -4,13 +4,14 @@ import { NEWS, formatDate } from '@/data/news'
 import { Band, Card, Hero, Split, Stats } from '@/components/Blocks'
 import { Subscribe } from '@/components/Subscribe'
 import { BrandFilm } from './BrandFilm'
+import { HeroVideo } from './HeroVideo'
 import s from './home.module.css'
 
 export default function Home() {
   return (
     <>
       <Hero
-        media={MEDIA.homeHero}
+        background={(bg) => <HeroVideo className={bg} />}
         eyebrow="TensaCo Inc."
         title="Intelligence infrastructure for the enterprise."
         lead="TensaCo builds the compute and the software that make AI faster, more efficient and accountable, so organizations can adopt it at scale with confidence."

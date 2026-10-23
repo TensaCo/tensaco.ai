@@ -3,12 +3,12 @@ import type { Asset } from '@/data/media'
 import { Media } from './Media'
 import s from './Blocks.module.css'
 
-/** Full-screen hero over a background video or photo. */
-export function Hero({ media, eyebrow, title, lead, children, tall = true }: { media: Asset; eyebrow?: string; title: React.ReactNode; lead?: React.ReactNode; children?: React.ReactNode; tall?: boolean }) {
+/** Full-screen hero over a background video or photo; `background` takes a custom one (it is given the `bg` class). */
+export function Hero({ media, background, eyebrow, title, lead, children, tall = true }: { media?: Asset; background?: (bgClass: string) => React.ReactNode; eyebrow?: string; title: React.ReactNode; lead?: React.ReactNode; children?: React.ReactNode; tall?: boolean }) {
   return (
     <section className={`${s.hero} ${tall ? s.tall : ''} on-dark`}>
-      <Media asset={media} className={s.bg} priority />
-      <div className={s.shade} />
+      {background ? background(s.bg) : media && <Media asset={media} className={s.bg} priority />}
+      <div className={`${s.shade} ${background ? s.shadeFull : ''}`} />
       <div className={`wrap ${s.heroBody}`}>
         {eyebrow && <p className="eyebrow">{eyebrow}</p>}
         <h1 className="h1">{title}</h1>

@@ -2,6 +2,10 @@
 .hero.tall { min-height: 100svh; }
 .bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .shade { position: absolute; inset: 0; background: linear-gradient(to top, rgba(6, 18, 42, 0.88) 0%, rgba(6, 18, 42, 0.45) 45%, rgba(6, 18, 42, 0.25) 100%); }
+.shadeFull { background:
+  linear-gradient(to bottom, rgba(6, 18, 42, 0.6) 0, rgba(6, 18, 42, 0) 200px),
+  linear-gradient(90deg, rgba(6, 18, 42, 0.5) 0%, rgba(6, 18, 42, 0) 75%),
+  linear-gradient(to top, rgba(6, 18, 42, 0.92) 0%, rgba(6, 18, 42, 0.55) 50%, rgba(6, 18, 42, 0.3) 100%); }
 .heroBody { position: relative; padding-top: 140px; padding-bottom: clamp(64px, 10vh, 120px); }
 .heroBody h1 { max-width: 15em; }
 .heroLead { max-width: 40em; margin: 24px 0 0; }
